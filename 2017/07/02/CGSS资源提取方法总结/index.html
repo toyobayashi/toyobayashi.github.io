@@ -1,20 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 
 
 
   
 
 
-<html class="theme-next pisces use-motion" lang="zh-Hans">
+<html class="theme-next muse use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
 
 
 
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
+
 
 
 
@@ -42,7 +50,22 @@
 
 <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
 
 
   <meta name="keywords" content="CGSS," />
@@ -50,11 +73,6 @@
 
 
 
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
 
 
 
@@ -68,6 +86,7 @@
 <meta property="og:url" content="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/index.html">
 <meta property="og:site_name" content="Toyo">
 <meta property="og:description" content="本文介绍一下提取手游《偶像大师灰姑娘女孩星光舞台》游戏资源的过程和方法。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/phone.png">
 <meta property="og:image" content="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/sql_00.png">
 <meta property="og:image" content="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/cmd_01.png">
@@ -83,7 +102,7 @@
 <meta property="og:image" content="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/sql_export_03.png">
 <meta property="og:image" content="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/UABE_01.png">
 <meta property="og:image" content="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/UABE_02.png">
-<meta property="og:updated_time" content="2017-07-09T06:58:23.985Z">
+<meta property="og:updated_time" content="2017-07-09T06:58:23.986Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CGSS资源提取方法总结">
 <meta name="twitter:description" content="本文介绍一下提取手游《偶像大师灰姑娘女孩星光舞台》游戏资源的过程和方法。">
@@ -95,10 +114,12 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Pisces',
-    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
-    motion: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
       author: '博主'
@@ -121,11 +142,7 @@
 
 
 
-  <title> CGSS资源提取方法总结 | Toyo </title>
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
+  <title>CGSS资源提取方法总结 | Toyo</title>
   
 
 
@@ -135,18 +152,16 @@
 
 
 
+</head>
 
-
-
-
-
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
   
     
   
 
-  <div class="container sidebar-position-right page-post-detail ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -193,21 +208,11 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
+          <a href="/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
-            
-            标签
           </a>
         </li>
       
@@ -239,7 +244,11 @@
   
   
 
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2017/07/02/CGSS资源提取方法总结/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -257,14 +266,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                CGSS资源提取方法总结
-              
-            
-          </h1>
+          <h1 class="post-title" itemprop="name headline">CGSS资源提取方法总结</h1>
         
 
         <div class="post-meta">
@@ -305,7 +307,9 @@
       </header>
     
 
-
+    
+    
+    
     <div class="post-body" itemprop="articleBody">
 
       
@@ -314,39 +318,39 @@
       
         <p>本文介绍一下提取手游《偶像大师灰姑娘女孩星光舞台》游戏资源的过程和方法。</p>
 <a id="more"></a>
-<h2 id="第一章-背景说明"><a href="#第一章-背景说明" class="headerlink" title="第一章　背景说明"></a>第一章　背景说明</h2><h3 id="什么是CGSS"><a href="#什么是CGSS" class="headerlink" title="什么是CGSS"></a>什么是CGSS</h3><p>由日本<a href="http://www.cygames.co.jp/" target="_blank" rel="external">Cygames</a>、<a href="http://bandainamcoent.co.jp/" target="_blank" rel="external">BANDAI NAMCO Entertainment Inc.</a>共同开发・运营的手机游戏《<a href="http://cinderella.idolmaster.jp/sl-stage/" target="_blank" rel="external">アイドルマスターシンデレラガールズスターライトステージ</a>》，简称《デレステ》，英文译名为《THE IDOL M@STER CINDERELLA GIRLS STARLIGHT STAGE》，中文译名为《偶像大师灰姑娘女孩星光舞台》，其首字母缩写即CGSS，是一款以偶像卡牌养成为主题的音乐节奏游戏。<a href="https://ja.wikipedia.org/wiki/%E3%82%A2%E3%82%A4%E3%83%89%E3%83%AB%E3%83%9E%E3%82%B9%E3%82%BF%E3%83%BC_%E3%82%B7%E3%83%B3%E3%83%87%E3%83%AC%E3%83%A9%E3%82%AC%E3%83%BC%E3%83%AB%E3%82%BA" target="_blank" rel="external">Wiki传送门</a>←</p>
+<h2 id="第一章-背景说明"><a href="#第一章-背景说明" class="headerlink" title="第一章　背景说明"></a>第一章　背景说明</h2><h3 id="什么是CGSS"><a href="#什么是CGSS" class="headerlink" title="什么是CGSS"></a>什么是CGSS</h3><p>由日本<a href="http://www.cygames.co.jp/" target="_blank" rel="noopener">Cygames</a>、<a href="http://bandainamcoent.co.jp/" target="_blank" rel="noopener">BANDAI NAMCO Entertainment Inc.</a>共同开发・运营的手机游戏《<a href="http://cinderella.idolmaster.jp/sl-stage/" target="_blank" rel="noopener">アイドルマスターシンデレラガールズスターライトステージ</a>》，简称《デレステ》，英文译名为《THE IDOL M@STER CINDERELLA GIRLS STARLIGHT STAGE》，中文译名为《偶像大师灰姑娘女孩星光舞台》，其首字母缩写即CGSS，是一款以偶像卡牌养成为主题的音乐节奏游戏。<a href="https://ja.wikipedia.org/wiki/%E3%82%A2%E3%82%A4%E3%83%89%E3%83%AB%E3%83%9E%E3%82%B9%E3%82%BF%E3%83%BC_%E3%82%B7%E3%83%B3%E3%83%87%E3%83%AC%E3%83%A9%E3%82%AC%E3%83%BC%E3%83%AB%E3%82%BA" target="_blank" rel="noopener">Wiki传送门</a>←</p>
 <h3 id="为什么要提取资源"><a href="#为什么要提取资源" class="headerlink" title="为什么要提取资源"></a>为什么要提取资源</h3><p>喜欢，想收藏，网上找不到就只有自己动手咯。</p>
 <h3 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h3><p>进入正篇前请注意，如果你是一位只求得到资源的伸手党，请右上角，本文不会给出完整的资源包，只会提供思路和方法。通过阅读本文成功提取出来的资源版权归BANDAI NAMCO Entertainment Inc.所有，请勿用于商业用途，如有因此引发的任何法律问题，一切与本文作者无关，后果自负。</p>
 <h2 id="第二章-前置分析"><a href="#第二章-前置分析" class="headerlink" title="第二章　前置分析"></a>第二章　前置分析</h2><h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><ul>
 <li>【必需】耐心</li>
-<li>【必需】<a href="https://github.com/sqlitebrowser/sqlitebrowser/" target="_blank" rel="external">DB Browser for SQLite · Github</a></li>
-<li>【非必需】<a href="http://www.telerik.com/fiddler" target="_blank" rel="external">Fiddler</a></li>
+<li>【必需】<a href="https://github.com/sqlitebrowser/sqlitebrowser/" target="_blank" rel="noopener">DB Browser for SQLite · Github</a></li>
+<li>【非必需】<a href="http://www.telerik.com/fiddler" target="_blank" rel="noopener">Fiddler</a></li>
 <li>【非必需】英语基础、编程基础</li>
 </ul>
 <h3 id="manifest资源表"><a href="#manifest资源表" class="headerlink" title="manifest资源表"></a>manifest资源表</h3><p>当我想拿走别人的东西时，我首先得知道他的柜子是什么样的，还有我想要的东西被放在哪里。安卓系统下的柜子是</p>
 <pre><code>Android/data/jp.co.bandainamcoent.BNEI0242/files
-</code></pre><img src="/2017/07/02/CGSS资源提取方法总结/phone.png" alt="游戏目录" title="游戏目录">
+</code></pre><img src="/2017/07/02/CGSS资源提取方法总结/phone.png" title="游戏目录">
 <p>我第一次打开它的时候真的是傻眼了，这只有一个字母的目录命名到底是什么鬼！不仅如此，随便打开其中一个，里面的文件都是以一长串数字和字母的组合命名的，很明显被加密了，根本无法识别是什么东西。</p>
 <p>总之先把整个目录复制到电脑上，无奈回到files目录下，从简单的地方开始入手，先不管那些只有一个字母的目录。来看看这个manifest目录，这个目录里始终都只有一个文件，并且我注意到只有游戏更新后这个文件才会发生改变，这就很关键了。一次偶然，我用万能的记事本打开了这个文件，发现了第一行中竟出现了「SQLite format 3」这几个字。</p>
 <p>这就意味着，这是个SQLite3的数据库文件！</p>
 <p>接下来用DB Browser for SQLite打开它，很庆幸这个数据库没有上锁，发现有一张名为「manifests」的表，里面有30000多条记录，仔细一看，第一列name下大部分都是.unity3d的后缀，还有少部分.acb、.bdb、.mdb的后缀，第二列的列名是hash。直觉告诉我，这就是游戏所依赖的所有文件和它们的md5哈希值，而且这游戏是用unity引擎开发的！</p>
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_00.png" alt="manifest" title="manifest">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_00.png" title="manifest">
 <h3 id="摸清目录结构"><a href="#摸清目录结构" class="headerlink" title="摸清目录结构"></a>摸清目录结构</h3><p>为了验证我的猜想，我用一段nodejs代码来计算文件的md5哈希值</p>
-<figure class="highlight javascript"><figcaption><span>md5.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> crypto = <span class="built_in">require</span>(<span class="string">'crypto'</span>);</div><div class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</div><div class="line"><span class="keyword">var</span> args = process.argv.splice(<span class="number">2</span>);</div><div class="line"></div><div class="line"><span class="comment">/* ... */</span></div><div class="line"></div><div class="line"><span class="keyword">if</span>(args.length === <span class="number">1</span>) &#123;</div><div class="line">    md5Hash(args[<span class="number">0</span>]);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* ... */</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">md5Hash</span>(<span class="params">file</span>) </span>&#123;</div><div class="line">    <span class="keyword">const</span> hash = crypto.createHash(<span class="string">'md5'</span>);</div><div class="line">    <span class="keyword">const</span> input = fs.createReadStream(file);</div><div class="line">    input.on(<span class="string">'readable'</span>, () =&gt; &#123;</div><div class="line">        <span class="keyword">const</span> data = input.read();</div><div class="line">        <span class="keyword">if</span> (data)&#123;</div><div class="line">            hash.update(data);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> &#123;</div><div class="line">            <span class="built_in">console</span>.log(hash.digest(<span class="string">'hex'</span>));</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* ... */</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><figcaption><span>md5.js</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> crypto = <span class="built_in">require</span>(<span class="string">'crypto'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> args = process.argv.splice(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* ... */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(args.length === <span class="number">1</span>) &#123;</span><br><span class="line">    md5Hash(args[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* ... */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">md5Hash</span>(<span class="params">file</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> hash = crypto.createHash(<span class="string">'md5'</span>);</span><br><span class="line">    <span class="keyword">const</span> input = fs.createReadStream(file);</span><br><span class="line">    input.on(<span class="string">'readable'</span>, () =&gt; &#123;</span><br><span class="line">        <span class="keyword">const</span> data = input.read();</span><br><span class="line">        <span class="keyword">if</span> (data)&#123;</span><br><span class="line">            hash.update(data);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(hash.digest(<span class="string">'hex'</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* ... */</span></span><br></pre></td></tr></table></figure>
 <p>我在b目录下随便选了一个叫1b4a29bf3b9c655b43cf1e6ea8273137acaefb0e的文件做试验，在命令行中执行下面的命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ node md5.js ./files/b/1b4a29bf3b9c655b43cf1e6ea8273137acaefb0e</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ node md5.js ./files/b/1b4a29bf3b9c655b43cf1e6ea8273137acaefb0e</span><br></pre></td></tr></table></figure>
 <p>结果如下</p>
-<img src="/2017/07/02/CGSS资源提取方法总结/cmd_01.png" alt="计算md5 hash值" title="计算md5 hash值">
+<img src="/2017/07/02/CGSS资源提取方法总结/cmd_01.png" title="计算md5 hash值">
 <p>把f73a51c5022ce269f9684fe8643fc6f7粘贴到工具里筛选hash列</p>
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_01.png" alt="hash筛选结果" title="hash筛选结果">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_01.png" title="hash筛选结果">
 <p>果然出来了一行结果。仔细观察name，惊奇地发现前面有一个b/，而这个文件恰好又在b目录下，第一次见acb后缀虽然不知道是什么东西，但我觉得八九不离十应该是跟音频有关的。于是我有了一个大胆的猜测。尝试在name列筛选输入b/</p>
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_02.png" alt="b筛选结果" title="b筛选结果">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_02.png" title="b筛选结果">
 <p>得出结论，b目录下存放的都是背景音乐（bgm）。同理我也试了一下l/，v/，s/，c/，r/</p>
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_03.png" alt="l筛选结果" title="l筛选结果">
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_04.png" alt="v筛选结果" title="v筛选结果">
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_05.png" alt="s筛选结果" title="s筛选结果">
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_06.png" alt="c筛选结果" title="c筛选结果">
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_07.png" alt="r筛选结果" title="r筛选结果">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_03.png" title="l筛选结果">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_04.png" title="v筛选结果">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_05.png" title="s筛选结果">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_06.png" title="c筛选结果">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_07.png" title="r筛选结果">
 <p>进一步发现，l目录下存放的是乐曲（live），v目录下存放的是卡片语音（voice），s目录下存放的是音效（se），c目录下存放的是故事剧情的语音（communication），r目录下存放的是小屋物品的音效（room）。</p>
 <p>大发现！别急，音频找到了，可是图片呢？排除了这几个目录，剩下就是a目录和d目录了，d目录下只有一个localData.db数据库文件，显然不是，那就只有a目录咯。a目录下有几千个文件，再看看资源表，有上万个unity3d文件，肯定跑不掉了，图片都藏在unity3d文件里。再用上面提到的md5.js去测试一下a目录下的文件，发现果然能和资源表里的unity3d文件匹配上。</p>
 <p>到此为止，游戏柜子的结构已经基本上搞清楚了，列个表。</p>
@@ -412,92 +416,80 @@ table th:first-of-type {
 </code></pre><p>一切都清楚了，完事！</p>
 <h2 id="第三章-开始提取"><a href="#第三章-开始提取" class="headerlink" title="第三章　开始提取"></a>第三章　开始提取</h2><p>有两种方法，一种是本地「提取」，一种是在线「偷取」。这里我介绍「在线偷取」的方法。音频和图片的提取步骤分开介绍。</p>
 <h3 id="准备-1"><a href="#准备-1" class="headerlink" title="准备"></a>准备</h3><ul>
-<li>【必需】<a href="https://github.com/mirror/wget" target="_blank" rel="external">wget · Github</a></li>
+<li>【必需】<a href="https://github.com/mirror/wget" target="_blank" rel="noopener">wget · Github</a></li>
 </ul>
 <h4 id="提取音频需要用到的工具"><a href="#提取音频需要用到的工具" class="headerlink" title="提取音频需要用到的工具"></a>提取音频需要用到的工具</h4><ul>
-<li>【推荐】<a href="https://github.com/OpenCGSS/DereTore" target="_blank" rel="external">DereTore · Github</a> （使用这个就不需要用下面两个）</li>
+<li>【推荐】<a href="https://github.com/OpenCGSS/DereTore" target="_blank" rel="noopener">DereTore · Github</a> （使用这个就不需要用下面两个）</li>
 </ul>
 <p>或者</p>
 <ul>
-<li>【可选】<a href="https://sourceforge.net/projects/vgmtoolbox/" target="_blank" rel="external">vgmtoolbox</a> （解压acb用）</li>
-<li>【可选】<a href="http://pan.baidu.com/s/1i5Hvgrj" target="_blank" rel="external">HCADecoder v1.15 · 百度网盘</a> （解码hca用，日本人写的，我自己重新编译了，解决了中文环境下控制台输出乱码的问题，附源码）</li>
+<li>【可选】<a href="https://sourceforge.net/projects/vgmtoolbox/" target="_blank" rel="noopener">vgmtoolbox</a> （解压acb用）</li>
+<li>【可选】<a href="http://pan.baidu.com/s/1i5Hvgrj" target="_blank" rel="noopener">HCADecoder v1.15 · 百度网盘</a> （解码hca用，日本人写的，我自己重新编译了，解决了中文环境下控制台输出乱码的问题，附源码）</li>
 </ul>
 <h4 id="提取图片需要用到的工具"><a href="#提取图片需要用到的工具" class="headerlink" title="提取图片需要用到的工具"></a>提取图片需要用到的工具</h4><ul>
-<li>【必需】<a href="https://github.com/subdiox/UnityLz4" target="_blank" rel="external">UnityLz4 · Github</a> （建议使用<a href="http://pan.baidu.com/s/1nuFAPct" target="_blank" rel="external">我重新编译好的</a>，原始的输出后缀为.dec，我改成了.unity3d）</li>
-<li>【必需】<a href="https://7daystodie.com/forums/showthread.php?22675-Unity-Assets-Bundle-Extractor" target="_blank" rel="external">Unity Assets Bundle Extractor</a> （先安装2.1版本，再打补丁升级到2.1d，不打补丁不能批处理）</li>
+<li>【必需】<a href="https://github.com/subdiox/UnityLz4" target="_blank" rel="noopener">UnityLz4 · Github</a> （建议使用<a href="http://pan.baidu.com/s/1nuFAPct" target="_blank" rel="noopener">我重新编译好的</a>，原始的输出后缀为.dec，我改成了.unity3d）</li>
+<li>【必需】<a href="https://7daystodie.com/forums/showthread.php?22675-Unity-Assets-Bundle-Extractor" target="_blank" rel="noopener">Unity Assets Bundle Extractor</a> （先安装2.1版本，再打补丁升级到2.1d，不打补丁不能批处理）</li>
 </ul>
 <h4 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h4><p>由于从2017年6月22日开始游戏服务器设置了访问权限，需要伪造请求头才给正常返回文件，所以必须用wget设置好请求头才能正常下载。</p>
 <p>【重要】<strong>在wget目录下创建wget.ini，输入以下三行代码保存。</strong></p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">header</span> = User-Agent: Dalvik/<span class="number">2.1</span>.<span class="number">0</span> (Linux; U; Android <span class="number">7.0</span>; Nexus <span class="number">42</span> Build/XYZZ1Y)</div><div class="line"><span class="attr">header</span> = X-Unity-Version: <span class="number">5.1</span>.<span class="number">2</span>f1</div><div class="line"><span class="attr">header</span> = Accept-Encoding: gzip</div></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">header</span> = User-Agent: Dalvik/<span class="number">2.1</span>.<span class="number">0</span> (Linux; U; Android <span class="number">7.0</span>; Nexus <span class="number">42</span> Build/XYZZ1Y)</span><br><span class="line"><span class="attr">header</span> = X-Unity-Version: <span class="number">5.1</span>.<span class="number">2</span>f1</span><br><span class="line"><span class="attr">header</span> = Accept-Encoding: gzip</span><br></pre></td></tr></table></figure>
 <h3 id="提取音频"><a href="#提取音频" class="headerlink" title="提取音频"></a>提取音频</h3><p>这里以提取bgm和live为例子，其它的可以举一反三自行去发掘。</p>
-<h4 id="获取资源表数据库文件"><a href="#获取资源表数据库文件" class="headerlink" title="获取资源表数据库文件"></a>获取资源表数据库文件</h4><p>可以从手机中直接复制到电脑上，也可以使用wget从游戏服务器下载。资源版本可访问 <a href="https://starlight.kirara.ca/api/v1/info" target="_blank" rel="external">https://starlight.kirara.ca/api/v1/info</a> 查询。在wget目录下运行cmd命令行，执行以下命令开始下载。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ wget -c -O &lt;保存路径和文件名&gt; http://storage.game.starlight-stage.jp/dl/&lt;资源版本&gt;/manifests/Android_AHigh_SHigh</div></pre></td></tr></table></figure></p>
+<h4 id="获取资源表数据库文件"><a href="#获取资源表数据库文件" class="headerlink" title="获取资源表数据库文件"></a>获取资源表数据库文件</h4><p>可以从手机中直接复制到电脑上，也可以使用wget从游戏服务器下载。资源版本可访问 <a href="https://starlight.kirara.ca/api/v1/info" target="_blank" rel="noopener">https://starlight.kirara.ca/api/v1/info</a> 查询。在wget目录下运行cmd命令行，执行以下命令开始下载。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget -c -O &lt;保存路径和文件名&gt; http://storage.game.starlight-stage.jp/dl/&lt;资源版本&gt;/manifests/Android_AHigh_SHigh</span><br></pre></td></tr></table></figure></p>
 <p>【说明】-c设置断点续传，-O设置路径和文件名。</p>
-<h4 id="查找数据库"><a href="#查找数据库" class="headerlink" title="查找数据库"></a>查找数据库</h4><p>使用DB Browser for SQLite打开资源表， 切换到Excute SQL选项卡，输入以下sql语句查找bgm和live。<br><figure class="highlight sql"><figcaption><span>查找bgm</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="string">"http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/b/"</span>||<span class="keyword">hash</span> <span class="keyword">AS</span> <span class="keyword">url</span> <span class="keyword">FROM</span> manifests <span class="keyword">WHERE</span> <span class="keyword">name</span> <span class="keyword">LIKE</span> <span class="string">"b/%acb"</span></div></pre></td></tr></table></figure></p>
-<figure class="highlight sql"><figcaption><span>查找live</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="string">"http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/l/"</span>||<span class="keyword">hash</span> <span class="keyword">AS</span> <span class="keyword">url</span> <span class="keyword">FROM</span> manifests <span class="keyword">WHERE</span> <span class="keyword">name</span> <span class="keyword">LIKE</span> <span class="string">"l/%acb"</span></div></pre></td></tr></table></figure>
+<h4 id="查找数据库"><a href="#查找数据库" class="headerlink" title="查找数据库"></a>查找数据库</h4><p>使用DB Browser for SQLite打开资源表， 切换到Excute SQL选项卡，输入以下sql语句查找bgm和live。<br><figure class="highlight sql"><figcaption><span>查找bgm</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">"http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/b/"</span>||<span class="keyword">hash</span> <span class="keyword">AS</span> <span class="keyword">url</span> <span class="keyword">FROM</span> manifests <span class="keyword">WHERE</span> <span class="keyword">name</span> <span class="keyword">LIKE</span> <span class="string">"b/%acb"</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight sql"><figcaption><span>查找live</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">"http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/l/"</span>||<span class="keyword">hash</span> <span class="keyword">AS</span> <span class="keyword">url</span> <span class="keyword">FROM</span> manifests <span class="keyword">WHERE</span> <span class="keyword">name</span> <span class="keyword">LIKE</span> <span class="string">"l/%acb"</span></span><br></pre></td></tr></table></figure>
 <h4 id="导出下载列表"><a href="#导出下载列表" class="headerlink" title="导出下载列表"></a>导出下载列表</h4><p>右下角选择导出CSV，取消勾选列名在首行，字段分隔符为其他（空），保存为txt文件，如图所示。</p>
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_export_01.png" alt="导出CSV" title="导出CSV">
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_export_02.png" alt="导出选项" title="导出选项">
-<img src="/2017/07/02/CGSS资源提取方法总结/sql_export_03.png" alt="保存为txt" title="保存为txt">
-<h4 id="使用wget批量下载"><a href="#使用wget批量下载" class="headerlink" title="使用wget批量下载"></a>使用wget批量下载</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ wget -c -P &lt;路径&gt; -i &lt;批量下载列表.txt&gt;</div></pre></td></tr></table></figure>
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_export_01.png" title="导出CSV">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_export_02.png" title="导出选项">
+<img src="/2017/07/02/CGSS资源提取方法总结/sql_export_03.png" title="保存为txt">
+<h4 id="使用wget批量下载"><a href="#使用wget批量下载" class="headerlink" title="使用wget批量下载"></a>使用wget批量下载</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget -c -P &lt;路径&gt; -i &lt;批量下载列表.txt&gt;</span><br></pre></td></tr></table></figure>
 <p>【说明】-i设置批量下载列表，-P设置保存目录</p>
-<h4 id="Deretore批处理"><a href="#Deretore批处理" class="headerlink" title="Deretore批处理"></a>Deretore批处理</h4><p>如果你使用vgmtoolbox和HCADecoder，请跳过这一步。在Deretore目录下创建一个.bat批处理文件，右键编辑输入以下我写好的批处理脚本保存并执行<br><figure class="highlight bat"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@<span class="built_in">echo</span> off</div><div class="line"><span class="built_in">setlocal</span> enabledelayedexpansion</div><div class="line"></div><div class="line"><span class="built_in">set</span> <span class="built_in">path</span>=你的下载目录</div><div class="line"></div><div class="line"><span class="built_in">set</span> /a num=<span class="number">0</span></div><div class="line"><span class="built_in">set</span> /a complete=<span class="number">0</span></div><div class="line"></div><div class="line"><span class="keyword">for</span> <span class="variable">%%i</span> <span class="keyword">in</span> (<span class="variable">%path%</span>\*.) <span class="keyword">do</span> (</div><div class="line">	AcbUnzip.exe <span class="variable">%%i</span></div><div class="line">	<span class="built_in">set</span> /a num+=<span class="number">1</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%f</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.hca') <span class="keyword">do</span> (</div><div class="line">	hca2wav.exe -i <span class="variable">%%f</span></div><div class="line">	<span class="built_in">set</span> /a complete+=<span class="number">1</span></div><div class="line">	<span class="built_in">echo</span> <span class="variable">!complete!</span> / <span class="variable">%num%</span></div><div class="line">)</div><div class="line"><span class="built_in">md</span> <span class="variable">%path%</span>\wav</div><div class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%w</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.wav') <span class="keyword">do</span> <span class="built_in">move</span> <span class="variable">%%w</span> <span class="variable">%path%</span>\wav\</div><div class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%d</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\_acb*') <span class="keyword">do</span> <span class="built_in">rd</span> <span class="variable">%%d</span> /s /q</div></pre></td></tr></table></figure></p>
+<h4 id="Deretore批处理"><a href="#Deretore批处理" class="headerlink" title="Deretore批处理"></a>Deretore批处理</h4><p>如果你使用vgmtoolbox和HCADecoder，请跳过这一步。在Deretore目录下创建一个.bat批处理文件，右键编辑输入以下我写好的批处理脚本保存并执行<br><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"><span class="built_in">setlocal</span> enabledelayedexpansion</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> <span class="built_in">path</span>=你的下载目录</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> /a num=<span class="number">0</span></span><br><span class="line"><span class="built_in">set</span> /a complete=<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="variable">%%i</span> <span class="keyword">in</span> (<span class="variable">%path%</span>\*.) <span class="keyword">do</span> (</span><br><span class="line">	AcbUnzip.exe <span class="variable">%%i</span></span><br><span class="line">	<span class="built_in">set</span> /a num+=<span class="number">1</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%f</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.hca') <span class="keyword">do</span> (</span><br><span class="line">	hca2wav.exe -i <span class="variable">%%f</span></span><br><span class="line">	<span class="built_in">set</span> /a complete+=<span class="number">1</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">!complete!</span> / <span class="variable">%num%</span></span><br><span class="line">)</span><br><span class="line"><span class="built_in">md</span> <span class="variable">%path%</span>\wav</span><br><span class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%w</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.wav') <span class="keyword">do</span> <span class="built_in">move</span> <span class="variable">%%w</span> <span class="variable">%path%</span>\wav\</span><br><span class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%d</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\_acb*') <span class="keyword">do</span> <span class="built_in">rd</span> <span class="variable">%%d</span> /s /q</span><br></pre></td></tr></table></figure></p>
 <p>【说明】把path替换为你的下载目录，该批处理会在下载目录下创建一个wav文件夹，把从acb文件中解包出来的.wav文件放在wav文件夹内。提取完毕。</p>
 <h4 id="解压acb，导出hca"><a href="#解压acb，导出hca" class="headerlink" title="解压acb，导出hca"></a>解压acb，导出hca</h4><p>打开vgmtoolbox，进入<br>VGMToolbox→Misc. Tools→Extraction Tools→Common Archives→CRI ACB/AWB Archive Extractor<br>把下载好的所有文件拖入右侧。</p>
-<h4 id="解码hca，导出wav"><a href="#解码hca，导出wav" class="headerlink" title="解码hca，导出wav"></a>解码hca，导出wav</h4><p>解压我编译好的HCADecoder，在该工具的目录下创建一个.bat批处理文件，右键编辑输入以下我写好的批处理脚本保存并执行<br><figure class="highlight bat"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@<span class="built_in">echo</span> off</div><div class="line"></div><div class="line"><span class="built_in">set</span> <span class="built_in">path</span>=你的下载目录</div><div class="line"></div><div class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%f</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.hca') <span class="keyword">do</span> hca.exe -v <span class="number">1</span>.<span class="number">0</span> -m <span class="number">16</span> -l <span class="number">0</span> -a F27E3B22 -b <span class="number">00003657</span> <span class="variable">%%f</span></div><div class="line"><span class="built_in">md</span> <span class="variable">%path%</span>\wav</div><div class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%w</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.wav') <span class="keyword">do</span> <span class="built_in">move</span> <span class="variable">%%w</span> <span class="variable">%path%</span>\wav\</div><div class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%d</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\_vgmt*') <span class="keyword">do</span> <span class="built_in">rd</span> <span class="variable">%%d</span> /s /q</div></pre></td></tr></table></figure></p>
+<h4 id="解码hca，导出wav"><a href="#解码hca，导出wav" class="headerlink" title="解码hca，导出wav"></a>解码hca，导出wav</h4><p>解压我编译好的HCADecoder，在该工具的目录下创建一个.bat批处理文件，右键编辑输入以下我写好的批处理脚本保存并执行<br><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> <span class="built_in">path</span>=你的下载目录</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%f</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.hca') <span class="keyword">do</span> hca.exe -v <span class="number">1</span>.<span class="number">0</span> -m <span class="number">16</span> -l <span class="number">0</span> -a F27E3B22 -b <span class="number">00003657</span> <span class="variable">%%f</span></span><br><span class="line"><span class="built_in">md</span> <span class="variable">%path%</span>\wav</span><br><span class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%w</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\*.wav') <span class="keyword">do</span> <span class="built_in">move</span> <span class="variable">%%w</span> <span class="variable">%path%</span>\wav\</span><br><span class="line"><span class="keyword">for</span> /f "delims=" <span class="variable">%%d</span> <span class="keyword">in</span> ('<span class="built_in">dir</span> /s /b <span class="variable">%path%</span>\_vgmt*') <span class="keyword">do</span> <span class="built_in">rd</span> <span class="variable">%%d</span> /s /q</span><br></pre></td></tr></table></figure></p>
 <p>【说明】-v设置音量1倍，-m设置16进制模式，-l设置循环次数0为不循环，-a和-b是CGSS的hca解码密钥，固定不可变。把path替换为你的下载目录，该批处理会在下载目录下创建一个wav文件夹，把从acb文件中解包出来的.wav文件放在wav文件夹内，并且把vgmtoolbox生成的文件夹删除掉。提取完毕。</p>
 <h3 id="提取图片"><a href="#提取图片" class="headerlink" title="提取图片"></a>提取图片</h3><p>这里以提取卡片背景为例子，其它的可以举一反三自行去发掘。</p>
-<h4 id="查找数据库和批量下载"><a href="#查找数据库和批量下载" class="headerlink" title="查找数据库和批量下载"></a>查找数据库和批量下载</h4><p>使用DB Browser for SQLite打开资源表， 切换到Excute SQL选项卡，输入以下sql语句查找卡片背景。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="string">"http://storage.game.starlight-stage.jp/dl/resources/High/AssetBundles/Android/"</span>||<span class="keyword">hash</span> <span class="keyword">AS</span> <span class="keyword">url</span> <span class="keyword">FROM</span> manifests <span class="keyword">WHERE</span> <span class="keyword">name</span> <span class="keyword">LIKE</span> <span class="string">"card_bg_______.unity3d"</span></div></pre></td></tr></table></figure></p>
+<h4 id="查找数据库和批量下载"><a href="#查找数据库和批量下载" class="headerlink" title="查找数据库和批量下载"></a>查找数据库和批量下载</h4><p>使用DB Browser for SQLite打开资源表， 切换到Excute SQL选项卡，输入以下sql语句查找卡片背景。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">"http://storage.game.starlight-stage.jp/dl/resources/High/AssetBundles/Android/"</span>||<span class="keyword">hash</span> <span class="keyword">AS</span> <span class="keyword">url</span> <span class="keyword">FROM</span> manifests <span class="keyword">WHERE</span> <span class="keyword">name</span> <span class="keyword">LIKE</span> <span class="string">"card_bg_______.unity3d"</span></span><br></pre></td></tr></table></figure></p>
 <p>下载的方法同提取音频。</p>
-<h4 id="lz4解压"><a href="#lz4解压" class="headerlink" title="lz4解压"></a>lz4解压</h4><p>在UnityLz4工具目录下创建一个.bat批处理文件，右键编辑输入以下我写好的批处理脚本保存并执行。<br><figure class="highlight bat"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">@<span class="built_in">echo</span> off</div><div class="line"></div><div class="line"><span class="built_in">set</span> <span class="built_in">path</span>=你的下载目录</div><div class="line"></div><div class="line"><span class="keyword">for</span> <span class="variable">%%i</span> <span class="keyword">in</span> (<span class="variable">%path%</span>\*.) <span class="keyword">do</span> UnityLz4.exe <span class="variable">%%i</span></div><div class="line"><span class="built_in">md</span> <span class="variable">%path%</span>\unity3d</div><div class="line"><span class="keyword">for</span> <span class="variable">%%i</span> <span class="keyword">in</span> (<span class="variable">%path%</span>\*.unity3d) <span class="keyword">do</span> <span class="built_in">move</span> <span class="variable">%%i</span> <span class="variable">%path%</span>\unity3d\</div></pre></td></tr></table></figure></p>
+<h4 id="lz4解压"><a href="#lz4解压" class="headerlink" title="lz4解压"></a>lz4解压</h4><p>在UnityLz4工具目录下创建一个.bat批处理文件，右键编辑输入以下我写好的批处理脚本保存并执行。<br><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> <span class="built_in">path</span>=你的下载目录</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="variable">%%i</span> <span class="keyword">in</span> (<span class="variable">%path%</span>\*.) <span class="keyword">do</span> UnityLz4.exe <span class="variable">%%i</span></span><br><span class="line"><span class="built_in">md</span> <span class="variable">%path%</span>\unity3d</span><br><span class="line"><span class="keyword">for</span> <span class="variable">%%i</span> <span class="keyword">in</span> (<span class="variable">%path%</span>\*.unity3d) <span class="keyword">do</span> <span class="built_in">move</span> <span class="variable">%%i</span> <span class="variable">%path%</span>\unity3d\</span><br></pre></td></tr></table></figure></p>
 <p>【说明】从游戏服务器下载下来的文件也就是a目录下的文件并不是真正的unity3d文件，而是经过lz4压缩的.unity3d.lz4文件，所以必须先解压出真正的unity3d文件来。把path替换为你的下载目录，该批处理会在下载目录下创建一个unity3d文件夹，把从解压出来的unity3d文件放在此文件夹内。</p>
 <h4 id="UABE批处理"><a href="#UABE批处理" class="headerlink" title="UABE批处理"></a>UABE批处理</h4><ol>
 <li><p>在Unity Assets Bundle Extractor工具目录下新建一个batch.txt</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">+DIR 你的unity3d文件存放目录</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+DIR 你的unity3d文件存放目录</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在Unity Assets Bundle Extractor工具目录下新建一个batch.bat，输入以下内容保存后执行</p>
-<figure class="highlight bat"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">AssetBundleExtractor -removetypetree batchexport batch.txt</div></pre></td></tr></table></figure>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AssetBundleExtractor -removetypetree batchexport batch.txt</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>打开Unity Assets Bundle Extractor，file→open打开所有解包出来的.assets文件，筛选type，选择所有类型为Texture2D的资源，点击Plugins批量导出png，如图所示</p>
 </li>
 </ol>
-<img src="/2017/07/02/CGSS资源提取方法总结/UABE_01.png" alt="筛选类型" title="筛选类型">
-<img src="/2017/07/02/CGSS资源提取方法总结/UABE_02.png" alt="导出png" title="导出png">
+<img src="/2017/07/02/CGSS资源提取方法总结/UABE_01.png" title="筛选类型">
+<img src="/2017/07/02/CGSS资源提取方法总结/UABE_02.png" title="导出png">
 <p>提取完毕。</p>
 <h3 id="傻瓜模式"><a href="#傻瓜模式" class="headerlink" title="傻瓜模式"></a>傻瓜模式</h3><p>不想看或者看不懂长篇大论又或者没有动手能力的，来这里</p>
 <ul>
-<li><a href="https://github.com/toyobayashi/CGSSAssetsDownloader" target="_blank" rel="external">CGSSAssetsDownloader · Github</a></li>
+<li><a href="https://github.com/toyobayashi/CGSSAssetsDownloader" target="_blank" rel="noopener">CGSSAssetsDownloader · Github</a></li>
 </ul>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
-<li><a href="http://weibo.com/ttarticle/p/show?id=2309403943455800842944" target="_blank" rel="external">http://weibo.com/ttarticle/p/show?id=2309403943455800842944</a></li>
-<li><a href="http://www.igiven.com/?p=612" target="_blank" rel="external">http://www.igiven.com/?p=612</a></li>
-<li><a href="https://www.reddit.com/r/StarlightStage/comments/4nkk8o/event_bgm_download/" target="_blank" rel="external">https://www.reddit.com/r/StarlightStage/comments/4nkk8o/event_bgm_download/</a></li>
-<li><a href="http://tamae.2ch.net/test/read.cgi/gameurawaza/1457257198/592-n" target="_blank" rel="external">http://tamae.2ch.net/test/read.cgi/gameurawaza/1457257198/592-n</a></li>
-<li><a href="http://nozomi.2ch.sc/test/read.cgi/gameurawaza/1492929151/101-200" target="_blank" rel="external">http://nozomi.2ch.sc/test/read.cgi/gameurawaza/1492929151/101-200</a></li>
+<li><a href="http://weibo.com/ttarticle/p/show?id=2309403943455800842944" target="_blank" rel="noopener">http://weibo.com/ttarticle/p/show?id=2309403943455800842944</a></li>
+<li><a href="http://www.igiven.com/?p=612" target="_blank" rel="noopener">http://www.igiven.com/?p=612</a></li>
+<li><a href="https://www.reddit.com/r/StarlightStage/comments/4nkk8o/event_bgm_download/" target="_blank" rel="noopener">https://www.reddit.com/r/StarlightStage/comments/4nkk8o/event_bgm_download/</a></li>
+<li><a href="http://tamae.2ch.net/test/read.cgi/gameurawaza/1457257198/592-n" target="_blank" rel="noopener">http://tamae.2ch.net/test/read.cgi/gameurawaza/1457257198/592-n</a></li>
+<li><a href="http://nozomi.2ch.sc/test/read.cgi/gameurawaza/1492929151/101-200" target="_blank" rel="noopener">http://nozomi.2ch.sc/test/read.cgi/gameurawaza/1492929151/101-200</a></li>
 </ul>
 
       
     </div>
+    
+    
+    
 
-    <div>
-      
-        
+    
 
-      
-    </div>
+    
 
-    <div>
-      
-        
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
+    
 
     <footer class="post-footer">
       
@@ -509,7 +501,7 @@ table th:first-of-type {
       
 
       
-        
+      
       
 
       
@@ -537,6 +529,10 @@ table th:first-of-type {
       
       
     </footer>
+  </div>
+  
+  
+  
   </article>
 
 
@@ -552,9 +548,9 @@ table th:first-of-type {
 
 
           
-  <div class="comments" id="comments">
-    
-  </div>
+
+  
+
 
 
         </div>
@@ -570,72 +566,71 @@ table th:first-of-type {
   </div>
 
   <aside id="sidebar" class="sidebar">
+    
     <div class="sidebar-inner">
 
       
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
             站点概览
           </li>
         </ul>
       
 
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.gif"
-               alt="Toyo" />
-          <p class="site-author-name" itemprop="name">Toyo</p>
-           
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Toyo</p>
               <p class="site-description motion-element" itemprop="description">天助自助者</p>
-          
-        </div>
-        <nav class="site-state motion-element">
+          </div>
 
-          
-            <div class="site-state-item site-state-posts">
-              <a href="/archives">
-                <span class="site-state-item-count">3</span>
-                <span class="site-state-item-name">日志</span>
-              </a>
-            </div>
-          
+          <nav class="site-state motion-element">
 
-          
-
-          
             
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
             
-            <div class="site-state-item site-state-tags">
-              <a href="/tags/index.html">
-                <span class="site-state-item-count">3</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
           
 
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
           
+
+          
+          
+
+          
+          
+
+          
+
         </div>
-
-        
-        
-
-        
-        
-
-        
-
-
       </section>
 
       
@@ -668,30 +663,36 @@ table th:first-of-type {
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
-  
-  &copy; 
-  <span itemprop="copyrightYear">2017</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Toyo</span>
+
+  
 </div>
 
 
-<div class="powered-by">
-  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
-</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
-<div class="theme-info">
-  主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Pisces
-  </a>
-</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
 
 
         
+
+
+
+
+
+
 
         
       </div>
@@ -702,6 +703,8 @@ table th:first-of-type {
         <i class="fa fa-arrow-up"></i>
         
       </div>
+    
+
     
 
   </div>
@@ -729,54 +732,65 @@ table th:first-of-type {
 
 
 
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 
 
-  
 
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
 
 
 
   
   
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
 
 
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+  
 
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
 
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
 
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -806,19 +820,26 @@ table th:first-of-type {
 
 
 
+
+
+
+
+
+
+
   
 
 
 
 
 
+  
 
   
 
+  
 
-
-
-
+  
   
 
   
