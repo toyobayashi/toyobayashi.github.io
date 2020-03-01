@@ -117,6 +117,13 @@ const { app, dialog } = require('electron')
 const crypto = require('crypto')
 const Module = require('module')
 
+const moduleParent = module.parent;
+if (module !== process.mainModule || (moduleParent !== Module && moduleParent !== undefined && moduleParent !== null)) {
+  // 如果该原生模块不是入口，就报错退出
+  dialog.showErrorBox('Error', 'This program has been changed by others.')
+  app.quit()
+}
+
 function getKey () {
   // 在这里内联由 JS 脚本生成的密钥
   // const unsigned char key[32] = {
