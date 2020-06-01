@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="一个菜鸟前端的自娱自乐。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CGSS桌面应用mishiro背后的故事">
+<meta property="og:url" content="https://toyobayashi.github.io/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="一个菜鸟前端的自娱自乐。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-04-01T06:11:22.000Z">
+<meta property="article:modified_time" content="2020-06-01T07:53:40.536Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="CGSS">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>CGSS桌面应用mishiro背后的故事 | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CGSS桌面应用mishiro背后的故事
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-04-01 14:11:22" itemprop="dateCreated datePublished" datetime="2018-04-01T14:11:22+08:00">2018-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-01 15:53:40" itemprop="dateModified" datetime="2020-06-01T15:53:40+08:00">2020-06-01</time>
+              </span>
+
+          
+            <span id="/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/" class="post-meta-item leancloud_visitors" data-flag-title="CGSS桌面应用mishiro背后的故事" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>一个菜鸟前端的自娱自乐。</p>
+<a id="more"></a>
+
+<h1 id="关于mishiro"><a href="#关于mishiro" class="headerlink" title="关于mishiro"></a>关于mishiro</h1><h2 id="mishiro是什么"><a href="#mishiro是什么" class="headerlink" title="mishiro是什么"></a>mishiro是什么</h2><p>mishiro是一个针对《偶像大师灰姑娘女孩星光舞台》这款音乐手游开发的Windows PC桌面端应用程序（或许以后可以跨平台）。它最大的用处是提取游戏里的各种资源，此外还提供游戏卡片数据的搜索、模拟游戏内的抽卡、估算玩家打活动的效率、模拟游戏LIVE的过程等功能。为什么取mishiro这个名字，是因为它在日语里写作汉字是「美城」，一说到灰姑娘，自然会联想到安徒生童话里的「美丽的城堡」。</p>
+<h2 id="为什么开发mishiro"><a href="#为什么开发mishiro" class="headerlink" title="为什么开发mishiro"></a>为什么开发mishiro</h2><p>去年大三实习，我正好在玩这个游戏，比较喜欢它里面的音乐，无奈在网上没有找到提取音乐资源的工具，就自己做一个得了，同时也正好可以拿来当作实习的成果。不过去年做的是网页版的CinderellaHelper（仓库已删除）和一个命令行工具CGSSAssetsDownloader。今年大四实习要搞毕设，正好可以把这两个东西结合起来改一下，做成更完善的一个东西。所以mishiro其实可以算是一年前就已经开始开发了。</p>
+<h2 id="用什么开发的"><a href="#用什么开发的" class="headerlink" title="用什么开发的"></a>用什么开发的</h2><p>由于我比较菜，不会C++和C#，只会写JS，所以没有什么选择。  </p>
+<p>壳应用框架Electron和NW.js二选一，我选Electron，看Electron更顺眼，Electron比NW.js更灵活，用VSCode也方便调试。  </p>
+<p>前端框架Angular、Vue、React三选一，我选Vue，另外两个写得不多。</p>
+<h2 id="核心"><a href="#核心" class="headerlink" title="核心"></a>核心</h2><ol>
+<li>我是一个假客户端，我要和游戏服务器通信，没法通信什么都别谈。</li>
+<li>我要拿到我想要的数据（资源表、卡片、卡池、活动等等）。</li>
+<li>我要拿到我想要的资源（图片、音频、谱面等等）。</li>
+</ol>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><h2 id="与服务器通信"><a href="#与服务器通信" class="headerlink" title="与服务器通信"></a>与服务器通信</h2><p>核心里的第一条就是个难点，毕竟不是我的服务器，不是谁敲门他都会开门，不过幸好有反编译游戏APK包看到了C#源码的老前辈们为后人铺好了路。</p>
+<ul>
+<li>服务器：<code>game.starlight-stage.jp</code></li>
+</ul>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>当我们启动游戏在入口按下屏幕的那一瞬间，游戏客户端就往这里发了个POST请求，具体发了什么可以抓包看。这里插一句，由于我的手机是Android 7.0的系统，7.0以上不能轻易抓到HTTPS的包，安装了根证书也不行，是因为谷歌加了什么东西来着，还需要在应用里改，太麻烦了所以我用模拟器配合Fiddler抓。过程就不写了，直接说结论。</p>
+<p><strong>发送请求需要三个必不可少的东西</strong></p>
+<ul>
+<li>UDID</li>
+<li>Viewer ID</li>
+<li>User ID</li>
+</ul>
+<p>其中UDID(Unique Device Identifier)是唯一设备标识。形如<br><code>/^[0-9]{9}:[0-9]{9}:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/</code><br>和GUID的格式一样。Viewer ID就是我们在游戏里可以看到的9位数的ID。User ID也是9位数的ID，但是和Viewer ID不一样。用户注册时Viewer ID和User ID由服务器生成。这三个东西就相当于是一个帐号。至于上哪儿找——抓包。</p>
+<p>UDID和User ID被加密放在请求头<code>UDID</code>和<code>USER_ID</code>中。加密的算法是这样的，前四位数是16进制，用来表示字符串的长度。例如长度为36的UDID，加密后的前四位就是<code>0024</code>。随后，分别在字符串中的每一个字符前加两位随机数，在后面加一位随机数，并把该字符变成ascii码中后十位的字符。最后加上32位的随机数。用JS实现加解密如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">encode</span> (<span class="params">s</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> arr = []</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; s.length; i++) &#123;</span><br><span class="line">    <span class="keyword">let</span> c = s[i]</span><br><span class="line">    arr.push(createRandomNumberString(<span class="number">2</span>) + chr(ord(c) + <span class="number">10</span>) + createRandomNumberString(<span class="number">1</span>))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> $<span class="number">04</span>x(s.length) + arr.join(<span class="string">''</span>) + createRandomNumberString(<span class="number">32</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">decode</span> (<span class="params">s</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> l = <span class="built_in">parseInt</span>(s.substr(<span class="number">0</span>, <span class="number">4</span>), <span class="number">16</span>)</span><br><span class="line">  <span class="keyword">let</span> e = <span class="string">''</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">6</span>; i &lt; s.length; i += <span class="number">4</span>) &#123;</span><br><span class="line">    e += s[i]</span><br><span class="line">  &#125;</span><br><span class="line">  e = e.substr(<span class="number">0</span>, l)</span><br><span class="line">  <span class="keyword">let</span> arr = []</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; e.length; i++) &#123;</span><br><span class="line">    arr.push(chr(ord(e[i]) - <span class="number">10</span>))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> arr.join(<span class="string">''</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">chr</span> (<span class="params">code</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">String</span>.fromCharCode(code)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ord</span> (<span class="params">str</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> str.charCodeAt()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createRandomNumberString</span> (<span class="params">l</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = <span class="string">''</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; l; i++) &#123;</span><br><span class="line">    s += <span class="built_in">Math</span>.floor(<span class="number">10</span> * <span class="built_in">Math</span>.random())</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$04x</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = n.toString(<span class="number">16</span>)</span><br><span class="line">  <span class="keyword">let</span> d = <span class="number">4</span> - s.length</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Array</span>.from(&#123; <span class="attr">length</span>: d &#125;, () =&gt; <span class="string">'0'</span>).join(<span class="string">''</span>) + s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>有了前面说的这三个东西，并且他们是正确的，剩下的就是拼接请求头和请求体了。注意每个接口需要的请求参数都不一样，但是请求参数中必须包含<code>timezone</code>和<code>viewer_id</code>字段。</p>
+<h3 id="请求头"><a href="#请求头" class="headerlink" title="请求头"></a>请求头</h3><p>需要下面这些请求头：</p>
+<table>
+<thead>
+<tr>
+<th align="center">头名</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">HOST</td>
+<td align="left">game.starlight-stage.jp</td>
+</tr>
+<tr>
+<td align="center">User-Agent</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">Content-Type</td>
+<td align="left">application/x-www-form-urlencoded</td>
+</tr>
+<tr>
+<td align="center">Content-Length</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">PARAM</td>
+<td align="left">被sha1加密的UDID、Viewer ID、请求路径、请求参数</td>
+</tr>
+<tr>
+<td align="center">KEYCHAIN</td>
+<td align="left">KEYCHAIN ID</td>
+</tr>
+<tr>
+<td align="center">CARRIER</td>
+<td align="left">运营商</td>
+</tr>
+<tr>
+<td align="center">APP_VER</td>
+<td align="left">游戏应用版本</td>
+</tr>
+<tr>
+<td align="center">RES_VER</td>
+<td align="left">资源版本号</td>
+</tr>
+<tr>
+<td align="center">IP_ADDRESS</td>
+<td align="left">IP地址</td>
+</tr>
+<tr>
+<td align="center">DEVICE_NAME</td>
+<td align="left">设备名</td>
+</tr>
+<tr>
+<td align="center">X-Unity-Version</td>
+<td align="left">Unity版本</td>
+</tr>
+<tr>
+<td align="center">GRAPHICS_DEVICE_NAME</td>
+<td align="left">GPU名</td>
+</tr>
+<tr>
+<td align="center">DEVICE_ID</td>
+<td align="left">设备固有ID</td>
+</tr>
+<tr>
+<td align="center">PLATFORM_OS_VERSION</td>
+<td align="left">系统版本信息</td>
+</tr>
+<tr>
+<td align="center">DEVICE</td>
+<td align="left">引继次数</td>
+</tr>
+<tr>
+<td align="center">USER_ID</td>
+<td align="left">被上述方法加密的User ID</td>
+</tr>
+<tr>
+<td align="center">UDID</td>
+<td align="left">被上述方法加密的UDID</td>
+</tr>
+<tr>
+<td align="center">SID</td>
+<td align="left">被md5加密的SESSION ID与SESSION ID KEY拼接的字符串，SESSION ID第一次为Viewer ID和UDID的拼接串，后使用由服务器返回的session串，SESSION ID KEY为<code>r!I@nt8e5i=</code></td>
+</tr>
+</tbody></table>
+<h3 id="请求体"><a href="#请求体" class="headerlink" title="请求体"></a>请求体</h3><p>前面说了不同的接口需要不同的请求参数，请求参数中必须存在<code>timezone</code>和<code>viewer_id</code>字段。<code>timezone</code>没什么好说的，就是日本时间与UTC时间的时间差<code>09:00:00</code>，<code>viewer_id</code>按以下步骤加密Viewer ID：</p>
+<ol>
+<li>生成一个32位的随机列（形如<code>/^[0-9]{32}$/</code>）</li>
+<li>使用Rijndael-256-cbc算法加密Viewer ID，向量为第1步生成的32位随机数，key为<code>s%5VNQ(H$&amp;Bqb6#3+78h29!Ft4wSg)ex</code></li>
+<li>使用base64编码加密后的数据</li>
+<li>把刚才的向量拼接在base64字符串的最前面，就得到了<code>viewer_id</code>字段里要填的数据。</li>
+</ol>
+<p>接下来按以下步骤生成请求体：</p>
+<ol>
+<li>使用MessagePack把请求参数转换成二进制数据</li>
+<li>使用base64编码第1步得到的二进制数据</li>
+<li>32次重复生成并自拼接4位以下的16进制随机列</li>
+<li>使用base64编码这个随机列，并取编码后的前32位</li>
+<li>使用Rijndael-256-cbc算法加密第2步得到的数据，向量为去掉所有<code>-</code>的UDID，key为第4步得到的数据</li>
+<li>把加密的key拼接在加密后数据的最后</li>
+<li>使用base64编码第6步得到的数据，就得到了请求体</li>
+</ol>
+<h3 id="响应体"><a href="#响应体" class="headerlink" title="响应体"></a>响应体</h3><p>按以下步骤解密：</p>
+<ol>
+<li>base64解码</li>
+<li>使用Rijndael-256-cbc算法解密解码后的第1位至倒数第33位，向量为去掉所有<code>-</code>的UDID，key为解码后的倒数第32位至倒数第1位</li>
+<li>使用base64解码第2步得到的数据</li>
+<li>使用MessagePack解码第3步得到的数据，就得到了JSON明文</li>
+</ol>
+<h3 id="JavaScript简单伪代码实现"><a href="#JavaScript简单伪代码实现" class="headerlink" title="JavaScript简单伪代码实现"></a>JavaScript简单伪代码实现</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> sid = <span class="string">''</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">post</span> (<span class="params">path, args</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> viewerIV = createRandomNumberString(<span class="number">32</span>)</span><br><span class="line">  args.timezone = <span class="string">'09:00:00'</span></span><br><span class="line">  args.viewer_id = viewerIV + b64encode(encryptRJ256(viewerID, viewerIV, VIEWER_ID_KEY))</span><br><span class="line">  <span class="keyword">let</span> plain = b64encode(msgpack.encode(args))</span><br><span class="line">  <span class="keyword">let</span> key = b64encode($xFFFF32()).substring(<span class="number">0</span>, <span class="number">32</span>)</span><br><span class="line">  <span class="keyword">let</span> bodyIV = UDID.replace(<span class="regexp">/-/g</span>, <span class="string">''</span>)</span><br><span class="line">  <span class="keyword">let</span> body = b64encode(encryptRJ256(plain, bodyIV, key) + key)</span><br><span class="line">  sid = sid ? sid : viewerID + UDID</span><br><span class="line">  <span class="keyword">let</span> headers = &#123;</span><br><span class="line">    <span class="string">'PARAM'</span>: sha1(UDID + viewerID + path + plain),</span><br><span class="line">    <span class="string">'KEYCHAIN'</span>: <span class="string">''</span>,</span><br><span class="line">    <span class="string">'USER_ID'</span>: encode(userID),</span><br><span class="line">    <span class="string">'CARRIER'</span>: <span class="string">'google'</span>,</span><br><span class="line">    <span class="string">'UDID'</span>: encode(UDID),</span><br><span class="line">    <span class="string">'APP_VER'</span>: <span class="string">'9.9.9'</span>,</span><br><span class="line">    <span class="string">'RES_VER'</span>: resVer,</span><br><span class="line">    <span class="string">'IP_ADDRESS'</span>: <span class="string">'127.0.0.1'</span>,</span><br><span class="line">    <span class="string">'DEVICE_NAME'</span>: <span class="string">'Nexus 42'</span>,</span><br><span class="line">    <span class="string">'X-Unity-Version'</span>: <span class="string">'5.1.2f1'</span>,</span><br><span class="line">    <span class="string">'SID'</span>: md5(sid + SID_KEY),</span><br><span class="line">    <span class="string">'GRAPHICS_DEVICE_NAME'</span>: <span class="string">'3dfx Voodoo2 (TM)'</span>,</span><br><span class="line">    <span class="string">'DEVICE_ID'</span>: md5(<span class="string">'Totally a real Android'</span>),</span><br><span class="line">    <span class="string">'PLATFORM_OS_VERSION'</span>: <span class="string">'Android OS 13.3.7 / API-42 (XYZZ1Y/74726f6c6c)'</span>,</span><br><span class="line">    <span class="string">'DEVICE'</span>: <span class="string">'2'</span>,</span><br><span class="line">    <span class="string">'Content-Type'</span>: <span class="string">'application/x-www-form-urlencoded'</span>,</span><br><span class="line">    <span class="string">'User-Agent'</span>: <span class="string">'Dalvik/2.1.0 (Linux; U; Android 13.3.7; Nexus 42 Build/XYZZ1Y)'</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    request(&#123;</span><br><span class="line">      url: <span class="string">`https://game.starlight-stage.jp<span class="subst">$&#123;path&#125;</span>`</span>,</span><br><span class="line">      timeout: <span class="number">10000</span>,</span><br><span class="line">      headers: headers,</span><br><span class="line">      body: body</span><br><span class="line">    &#125;, (err, res, body) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) reject(err)</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> bin = Buffer.from(body, <span class="string">'base64'</span>)</span><br><span class="line">        <span class="keyword">let</span> data = bin.slice(<span class="number">0</span>, bin.length - <span class="number">32</span>)</span><br><span class="line">        <span class="keyword">let</span> key = bin.slice(bin.length - <span class="number">32</span>).toString(<span class="string">'ascii'</span>)</span><br><span class="line">        <span class="keyword">let</span> plain = decryptRJ256(data, bodyIV, key)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> msg = msgpack.decode(Buffer.from(plain, <span class="string">'base64'</span>))</span><br><span class="line">        sid = <span class="keyword">typeof</span> msg === <span class="string">'object'</span> ? (msg.data_headers ? msg.data_headers.sid : <span class="keyword">void</span> <span class="number">0</span>) : <span class="keyword">void</span> <span class="number">0</span></span><br><span class="line">        resolve(msg)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$xFFFF32</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = <span class="string">''</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;</span><br><span class="line">    s += <span class="built_in">Math</span>.floor(<span class="number">65536</span> * <span class="built_in">Math</span>.random()).toString(<span class="number">16</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样一来，通过<code>/load/check</code>就很方便自动更新资源版本了，以前不懂原理的时候只有用暴力的方法，用一个一个版本号去请求服务器看是不是404。</p>
+<h2 id="提取资源"><a href="#提取资源" class="headerlink" title="提取资源"></a>提取资源</h2><ul>
+<li>资源存储服务器：<code>storage.game.starlight-stage.jp</code></li>
+<li>必需的请求头：<code>X-Unity-Version</code></li>
+</ul>
+<h3 id="资源版本号"><a href="#资源版本号" class="headerlink" title="资源版本号"></a>资源版本号</h3><p>每次卡池更新、活动更新、增加新曲等等数据变化的时候，资源版本号就会改变，进入游戏时会弹窗提示「有新的数据需要下载」。</p>
+<p>资源版本号是8位的数字（如10037050），99%是10的倍数（我曾遇到过个位是5的版本号）。每次更新两个版本号的差99%不会超过200（以前最多是190），大多数时候是更新10或更新百位数。</p>
+<h3 id="资源清单Manifest"><a href="#资源清单Manifest" class="headerlink" title="资源清单Manifest"></a>资源清单Manifest</h3><p>资源清单是一个SQLite3数据库，里面包含了所有（？）游戏要使用的资源。所有的资源清单列表地址为：<br><code>/dl/资源版本号/manifests/all_dbmanifest</code><br>获取地址为：<br><code>/dl/资源版本号/manifests/Android_AHigh_SHigh</code></p>
+<p>通过以上URL下载下来的文件是经过LZ4压缩的文件，LZ4解压后就是数据库了。另外，也可以在手机的游戏目录下找到这个文件。</p>
+<p>使用SQLite浏览工具打开数据库，可以看到有一个<code>manifests</code>表，这个表里面写的就是游戏需要使用的资源。主要是unity3d文件，acb文件和bdb(Blob Database)文件和mdb(Master Database)文件。以下三个字段为关键字段：</p>
+<ul>
+<li>name: 文件名</li>
+<li>hash: LZ4解压前的文件MD5</li>
+<li>attr: 是否使用LZ4压缩，1为压缩，0为未压缩</li>
+</ul>
+<p>获取地址：</p>
+<ul>
+<li>unity3d文件：<code>/dl/resources/High/AssetBundles/Android/${hash}</code>（部分404）</li>
+<li>acb文件：<code>/dl/resources/High/Sound/Common/${name.split(&#39;/&#39;)[0]}/${hash}</code></li>
+<li>bdb文件和mdb文件：<code>/dl/resources/Generic/${hash}</code></li>
+</ul>
+<h3 id="主数据库Master"><a href="#主数据库Master" class="headerlink" title="主数据库Master"></a>主数据库Master</h3><p>即资源清单中的<code>master.mdb</code>。主数据库内包含游戏内的各种数据，包括角色、卡片、活动等等。它同样也是SQLite3数据库，下载下来需要先LZ4解压。地址是：<br><code>/dl/resources/Generic/${hash}</code></p>
+<h3 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h3><p>可以使用Unity Assets Bundle Extractor来批量提取unity3d文件内的texture2d。我不懂Unity文件格式，所以没办法只有用工具提取UI贴图了，在mishiro中是直接从<code>starlight.kirara.ca</code>获取卡面和头像的图片。</p>
+<h3 id="ACB文件的格式"><a href="#ACB文件的格式" class="headerlink" title="ACB文件的格式"></a>ACB文件的格式</h3><p>CGSS的音频用的是CRI Middleware公司提供的格式。简单概括一下就是acb文件里有acb、awb文件，awb文件里有hca文件，acb文件里有utf表，根据表就能从awb文件中提取出hca文件。acb并没有压缩hca文件，只是把hca和其它的utf表和一些索引混在了一起。</p>
+<p>ACB文件的二进制数值采用的是<strong>大端序</strong>。</p>
+<h4 id="文件头"><a href="#文件头" class="headerlink" title="文件头"></a>文件头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 40 55 54 46 | 固定（&#39;@UTF&#39;）</span><br><span class="line">0x0004 | 00 39 02 78 | 除了文件头的文件大小（也就是总大小减8）</span><br></pre></td></tr></table></figure>
+
+<h4 id="表头"><a href="#表头" class="headerlink" title="表头"></a>表头</h4><p>8位以后开始就是表头，下面所有的偏移值都从这里开始计算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 00 01       | 不清楚</span><br><span class="line">0x0002 | 01 58       | 表数据的偏移值</span><br><span class="line">0x0004 | 00 00 02 8D | 字符串数据的偏移值</span><br><span class="line">0x0008 | 00 00 05 B8 | 二进制数据的偏移值</span><br><span class="line">0x000c | 00 00 00 00 | 字符串数据中表名字符串的偏移值</span><br><span class="line">0x0010 | 00 40       | 列数</span><br><span class="line">0x0012 | 01 35       | 各行总字节数（除了常数）</span><br><span class="line">0x0014 | 00 00 00 01 | 行数</span><br></pre></td></tr></table></figure>
+
+<h4 id="列字段数据"><a href="#列字段数据" class="headerlink" title="列字段数据"></a>列字段数据</h4><p>指定各列的类型和列名。列类型是 0x10 或 0x50 的情况就是5字节，0x30 或 0x70 的情况下在5字节后面有常数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x0018 | 54          | 类型 ID</span><br><span class="line">0x0019 | 00 00 00 07 | 字符串数据中列名字符串的偏移值</span><br><span class="line"></span><br><span class="line">0x001d | 54          | 类型 ID</span><br><span class="line">0x001e | 00 00 00 16 | 字符串数据中列名字符串的偏移值</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">0x0153 | 5B          | 类型 ID</span><br><span class="line">0x0154 | 00 00 02 D2 | 字符串数据中列名字符串的偏移值</span><br></pre></td></tr></table></figure>
+
+<p>类型 ID 是列类型和该列数据类型的逻辑或（|）。</p>
+<table>
+<thead>
+<tr>
+<th>列类型ID</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0x10</td>
+<td>固定0</td>
+</tr>
+<tr>
+<td>0x30</td>
+<td>常数</td>
+</tr>
+<tr>
+<td>0x50</td>
+<td>常规</td>
+</tr>
+<tr>
+<td>0x70</td>
+<td>常数</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>数据类型ID</th>
+<th>名称</th>
+<th>表数据上所占长度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0x00</td>
+<td>UInt8</td>
+<td>1</td>
+</tr>
+<tr>
+<td>0x01</td>
+<td>Int8</td>
+<td>1</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>UInt16</td>
+<td>2</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>Int16</td>
+<td>2</td>
+</tr>
+<tr>
+<td>0x04</td>
+<td>UInt32</td>
+<td>4</td>
+</tr>
+<tr>
+<td>0x05</td>
+<td>Int32</td>
+<td>4</td>
+</tr>
+<tr>
+<td>0x06</td>
+<td>UInt64</td>
+<td>8</td>
+</tr>
+<tr>
+<td>0x07</td>
+<td>Int64</td>
+<td>8</td>
+</tr>
+<tr>
+<td>0x08</td>
+<td>Float</td>
+<td>4</td>
+</tr>
+<tr>
+<td>0x09</td>
+<td>Double</td>
+<td>8</td>
+</tr>
+<tr>
+<td>0x0A</td>
+<td>String</td>
+<td>4（字符串数据内的偏移值）</td>
+</tr>
+<tr>
+<td>0x0B</td>
+<td>Binary</td>
+<td>8（前四位是二进制数据内的偏移值，后四位是长度）</td>
+</tr>
+</tbody></table>
+<h4 id="表数据"><a href="#表数据" class="headerlink" title="表数据"></a>表数据</h4><p>列字段数据接下来就是表数据，从表头里的「表数据的偏移值」的位置开始。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x0158 | 00 00 00 00             | 第一列的数据（Int32）</span><br><span class="line">0x015c | 00 00 00 00             | 第二列的数据（Int32）</span><br><span class="line">...</span><br><span class="line">0x0285 | 00 00 00 00 00 00 00 00 | 最后（第64列）一列的数据（Binary）</span><br></pre></td></tr></table></figure>
+
+<h4 id="字符串数据"><a href="#字符串数据" class="headerlink" title="字符串数据"></a>字符串数据</h4><p>接下来是字符串数据，每个单词以 00 （NULL）结尾。从表头里的「字符串数据的偏移值」的位置开始。第一个单词是表名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x028d | 48 65 61 64 65 72 00                         | Header（表名）</span><br><span class="line">0x0294 | 46 69 6C 65 49 64 65 6E 74 69 66 69 65 72 00 | FileIdentifier（第一列的列名）</span><br><span class="line">...</span><br><span class="line">0x0596 | 73 6F 6E 67 5F 33 30 32 39 00                | song_3029（第35列「Name」下的字符串）</span><br></pre></td></tr></table></figure>
+
+<h4 id="二进制数据"><a href="#二进制数据" class="headerlink" title="二进制数据"></a>二进制数据</h4><p>接下来是二进制数据，从表头里的「二进制数据的偏移值」的位置开始。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x05b8 | 0E F7 50 41 ... | 第6列「AcfMd5Hash」下的二进制</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="AWB文件的格式"><a href="#AWB文件的格式" class="headerlink" title="AWB文件的格式"></a>AWB文件的格式</h3><p>AWB文件的二进制数值采用的是<strong>小端序</strong>。</p>
+<h4 id="文件头-1"><a href="#文件头-1" class="headerlink" title="文件头"></a>文件头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 41 46 53 32 | 固定（&#39;AFS2&#39;）</span><br><span class="line">0x0004 | 01          | 不清楚</span><br><span class="line">0x0005 | 04          | 数据长度</span><br><span class="line">0x0006 | 02 00       | 不清楚</span><br><span class="line">0x0008 | 24 00 00 00 | 包含的文件数</span><br><span class="line">0x000c | 20 00 00 00 | 校准值</span><br></pre></td></tr></table></figure>
+
+<h4 id="文件索引"><a href="#文件索引" class="headerlink" title="文件索引"></a>文件索引</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x0010 | 00          | ID</span><br><span class="line">0x0011 | 00          | 不清楚</span><br><span class="line"></span><br><span class="line">0x0012 | 01          | ID</span><br><span class="line">0x0013 | 00          | 不清楚</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">0x0056 | 23          | ID</span><br><span class="line">0x0057 | 00          | 不清楚</span><br></pre></td></tr></table></figure>
+
+<h4 id="文件终点位置"><a href="#文件终点位置" class="headerlink" title="文件终点位置"></a>文件终点位置</h4><p>头里面的「数据长度」是多少字节这里就是多少字节，这个文件是4字节。总长度为包含的文件数＋1。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x0058 | EC 00 00 00 | 头终点（236）</span><br><span class="line">0x005c | 60 52 01 00 | 第一个文件的终点（86624）</span><br><span class="line">0x0060 | C0 12 02 00 | 第二个文件的终点（135872）</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>文件的起始点一定是校准值的倍数。所以，前一个文件的终点位置向上取到第一个校准值的倍数就是当前文件的起始点。比如上面的例子里，第一个文件是从 0x0100 开始 而不是 从 0x00EC 开始。</p>
+<h3 id="处理HCA"><a href="#处理HCA" class="headerlink" title="处理HCA"></a>处理HCA</h3><p>HCA完全搞不懂，mishiro直接用别人写的C++解码库，通过编译成Node.js的C++扩展模块，供JavaScript调用。HCA解码后就得到了WAV文件，再使用FFMPEG转成MP3，喂给HTML5 Audio。</p>
+<h2 id="附表"><a href="#附表" class="headerlink" title="附表"></a>附表</h2><h3 id="data-headers-result-code一览"><a href="#data-headers-result-code一览" class="headerlink" title="data_headers.result_code一览"></a><code>data_headers.result_code</code>一览</h3><table>
+<thead>
+<tr>
+<th align="right">result_code</th>
+<th>错误名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">1</td>
+<td></td>
+<td>成功</td>
+</tr>
+<tr>
+<td align="right">101</td>
+<td>RC_MAINTENANCE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">102</td>
+<td></td>
+<td>服务器错误</td>
+</tr>
+<tr>
+<td align="right">201</td>
+<td>RC_SESSION_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">202</td>
+<td></td>
+<td>用户不存在</td>
+</tr>
+<tr>
+<td align="right">203</td>
+<td></td>
+<td>帐号被封禁</td>
+</tr>
+<tr>
+<td align="right">204</td>
+<td>RC_VERSION_ERROR</td>
+<td>有新的应用版本</td>
+</tr>
+<tr>
+<td align="right">207</td>
+<td>RC_NG_WORD_ERROR</td>
+<td>含有被禁止的词语</td>
+</tr>
+<tr>
+<td align="right">209</td>
+<td></td>
+<td>请求体解析失败</td>
+</tr>
+<tr>
+<td align="right">213</td>
+<td></td>
+<td>数据处理失败</td>
+</tr>
+<tr>
+<td align="right">214</td>
+<td>RC_RESOURCE_VERSION_ERROR</td>
+<td>有新的资源版本</td>
+</tr>
+<tr>
+<td align="right">300</td>
+<td>RC_PAYMENT_HISTORY_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">301</td>
+<td>RC_PAYMENT_ALREADY_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">302</td>
+<td>RC_PRODUCT_DATA_CSV_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">303</td>
+<td>RC_PAYMENT_RECEIPT_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">304</td>
+<td>RC_PAYMENT_LIMIT_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">305</td>
+<td>RC_PAYMENT_TIMEOUT_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">306</td>
+<td>RC_PAYMENT_RESPONSE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">307</td>
+<td>RC_PAYMENT_AGE_GROUP_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">308</td>
+<td>RC_PAYMENT_VALIDATION_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">516</td>
+<td>RC_TRANSITION_OLD_ACCESS_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">900</td>
+<td>RC_PLATFORM_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1202</td>
+<td>RC_LIVE_PLAYING_STATE_MISMATCH_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1203</td>
+<td>RC_LIVE_PERIOD_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1219</td>
+<td>RC_PINYA_REQUEST_DISABLE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1220</td>
+<td>RC_PINYA_REQUEST_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1251</td>
+<td>RC_STORY_ITEM_OUT_PERIOD_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1252</td>
+<td>RC_STORY_ITEM_NOT_ENOUGH_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1253</td>
+<td>RC_STORY_ITEM_NUM_INVALID_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1254</td>
+<td>RC_STORY_ALREADY_OPEN_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1255</td>
+<td>RC_STORY_OPEN_OUT_PERIOD_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1302</td>
+<td>RC_ROOM_ITEM_BUY_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1303</td>
+<td>RC_ROOM_DATA_UNSERIALIZE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1304</td>
+<td>RC_ROOM_ITEM_SELL_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1305</td>
+<td>RC_ROOM_ITEM_LEVELUP_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1306</td>
+<td>RC_ROOM_ITEM_STOP_LEVELUP_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1307</td>
+<td>RC_ROOM_ALREADY_LIKE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1308</td>
+<td>RC_ROOM_ITEM_LEVELUP_SHORT</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1309</td>
+<td>RC_ROOM_ITEM_END_LEVELUP_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1310</td>
+<td>RC_ROOM_MUSIC_BUY_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1311</td>
+<td>RC_ROOM_NOT_SOUND_BOOTH_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1312</td>
+<td>RC_ROOM_ITEM_LEVELUP_ERROR_BY_CHARGE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1313</td>
+<td>RC_ROOM_USE_JEWEL_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1314</td>
+<td>RC_ROOM_ITEM_PRESENT_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1315</td>
+<td>RC_ROOM_NOW_LEVELUP_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1317</td>
+<td>RC_ROOM_TYPE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1318</td>
+<td>RC_ROOM_ITEM_NOT_LEVELUP_START_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1319</td>
+<td>RC_ROOM_ITEM_MAX_LEVEL_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1320</td>
+<td>RC_ROOM_EPISODE_PT_GET_PIRIODO_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1321</td>
+<td>RC_ROOM_RECEIVE_CHARGE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1322</td>
+<td>RC_ROOM_NOT_CHARGE_ITEM_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1327</td>
+<td>RC_ROOM_BULK_STORAGE_DISABLED</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1328</td>
+<td>RC_ROOM_BULK_BUY_DISABLED</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1329</td>
+<td>RC_ROOM_BULK_PRESENT_DISABLED</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1330</td>
+<td>ROOM_MYSET_DISABLED</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1351</td>
+<td>RC_GACHA_INVALID_PERIOD_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1353</td>
+<td>RC_GACHA_DAILY_FREE_STARTED_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1354</td>
+<td>RC_GACHA_DAILY_FREE_FINISHED_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1355</td>
+<td>RC_GACHA_DAILY_FREE_NOT_AVAILABLE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1356</td>
+<td>RC_GACHA_DAILY_FREE_AVAILABLE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1451</td>
+<td>RC_FRINED_COUNT_OVER_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1452</td>
+<td>RC_PARTNER_FRIEND_COUNT_OVER_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1453</td>
+<td>RC_IS_FRIEND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1454</td>
+<td>RC_REQUEST_MAX_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1455</td>
+<td>RC_IS_FRIEND_APPLY_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1456</td>
+<td>RC_GET_UNREAD_FRIEND_REQUEST</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1457</td>
+<td>RC_SEARCH_USER_NOT_FOUND</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1458</td>
+<td>RC_FRIEND_UNREAD_REQUEST_MAX_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1459</td>
+<td>RC_FRIEND_APPLY_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1460</td>
+<td>RC_FRIEND_DENY_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1461</td>
+<td>RC_FRIEND_CANSEL_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1462</td>
+<td>RC_FRIEND_ACCEPT_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1551</td>
+<td>RC_MESSAGE_COMMENT_LENGTH_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1901</td>
+<td>RC_EVOLUTION_ERROR_DUPLICATE_CARD_ID</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">1903</td>
+<td>RC_IDOL_POTENTIAL_DISABLE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2001</td>
+<td>RC_PRESENT_RECEIVE_ERROR_NO_PRESRNT</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2051</td>
+<td>RC_NOT_ENOUGH_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2053</td>
+<td>RC_ITEM_PERIOD_PASSED</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2102</td>
+<td>RC_STAMINA_MAX_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2103</td>
+<td>RC_USER_STATUS_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2201</td>
+<td>RC_MAINTENANCE_TASK_LOAD</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2202</td>
+<td>RC_MAINTENANCE_TASK_LIVE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2203</td>
+<td>RC_MAINTENANCE_TASK_ROOM</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2204</td>
+<td>RC_MAINTENANCE_TASK_STORY</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2205</td>
+<td>RC_MAINTENANCE_TASK_PRESENT</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2206</td>
+<td>RC_MAINTENANCE_TASK_SIGNUP</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2207</td>
+<td>RC_MAINTENANCE_TASK_PAYMENT_IOS</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2208</td>
+<td>RC_MAINTENANCE_TASK_PAYMENT_ANDROID</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2209</td>
+<td>RC_MAINTENANCE_TASK_SHOP</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2210</td>
+<td>RC_MAINTENANCE_TASK_GACHA_RARE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2211</td>
+<td>RC_MAINTENANCE_TASK_GACHA_FRIEND</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2212</td>
+<td>RC_MAINTENANCE_TASK_GACHA_TICKET</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2213</td>
+<td>RC_MAINTENANCE_TASK_CAMPAIGN</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2214</td>
+<td>RC_MAINTENANCE_TASK_CAMPAIGN_SERIAL</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2215</td>
+<td>RC_MAINTENANCE_TASK_CAMPAIGN_INVITE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2216</td>
+<td>RC_MAINTENANCE_TASK_FAVORITE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2217</td>
+<td>RC_MAINTENANCE_TASK_MEMBER</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2218</td>
+<td>RC_MAINTENANCE_TASK_TRAINING</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2219</td>
+<td>RC_MAINTENANCE_TASK_UNIT</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2220</td>
+<td>RC_MAINTENANCE_TASK_FRIEND</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2221</td>
+<td>RC_MAINTENANCE_TASK_MESSAGE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2222</td>
+<td>RC_MAINTENANCE_TASK_ALBUM</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2223</td>
+<td>RC_MAINTENANCE_TASK_ITEM</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2224</td>
+<td>RC_MAINTENANCE_TASK_PANEL_MISSION</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2225</td>
+<td>RC_MAINTENANCE_TASK_PROFILE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2226</td>
+<td>RC_MAINTENANCE_TASK_TIPS</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2227</td>
+<td>RC_MAINTENANCE_TASK_TUTORIAL</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2228</td>
+<td>RC_MAINTENANCE_TASK_MISSION</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2229</td>
+<td>RC_MAINTENANCE_TASK_SHOP_JEWEL_SHOP</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2230</td>
+<td>RC_MAINTENANCE_TASK_PARTY</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">2231</td>
+<td>RC_MAINTENANCE_TASK_MONEY_SHOP</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3001</td>
+<td>RC_JEWEL_SHOP_ERROR_TYPE_NO_PERIOD_CSV</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3002</td>
+<td>RC_JEWEL_SHOP_ERROR_TYPE_NO_PERIOD_USER</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3003</td>
+<td>RC_JEWEL_SHOP_ERROR_OVER_BUY_MAX</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3157</td>
+<td>RC_MISSION_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3204</td>
+<td>RC_GIFT_CL_BIRTHDAY</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3251</td>
+<td>RC_NAME_CARD_UNSERIALIZE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3252</td>
+<td>RC_NAME_CARD_APPLY_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3253</td>
+<td>RC_NAME_CARD_APPLY_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3254</td>
+<td>RC_NAME_CARD_HAS_BEEN_ALREADY_ACCEPTED_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3255</td>
+<td>RC_NAME_CARD_CANSEL_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3256</td>
+<td>RC_NAME_CARD_ACCEPT_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3257</td>
+<td>RC_NAME_CARD_DENY_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3258</td>
+<td>RC_NAME_CARD_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3259</td>
+<td>RC_NAME_CARD_LIST_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3260</td>
+<td>RC_NAME_CARD_DISTRIBUTION_INVALID_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3261</td>
+<td>RC_NAME_CARD_MAX_POSSESSION_OVER_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3262</td>
+<td>RC_NAME_CARD_DOUBLE_REQUEST_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3263</td>
+<td>RC_NAME_CARD_EXCHANGE_FINISHED_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3264</td>
+<td>RC_NAME_CARD_CHARA_ID_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3265</td>
+<td>RC_NAME_CARD_BG_ID_NOT_FOUND_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3266</td>
+<td>RC_NAME_CARD_NO_RELEASE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3268</td>
+<td>RC_NAME_CARD_OWN_EXCHANGE_REQUEST_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3269</td>
+<td>RC_NAME_CARD_DISABLE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3351</td>
+<td>RC_EXCHANGE_SHOP_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3352</td>
+<td>RC_EXCHANGE_SHOP_MAX_OVER_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3353</td>
+<td>RC_EXCHANGE_SHOP_DISCOUNT_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3354</td>
+<td>RC_EXCHANGE_SHOP_COST_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3355</td>
+<td>RC_EXCHANGE_SHOP_ITEM_NOT_ENOUGH_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3356</td>
+<td>RC_EXCHANGE_SHOP_ITEM_MAX_OVER_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">3357</td>
+<td>RC_EXCHANGE_SHOP_NO_RELEASE_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">10001</td>
+<td>RC_EVENT_CLOSE_PLAY_EVENT_LIVE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">11001</td>
+<td>RC_EVENT_ATAPON_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">11004</td>
+<td>RC_EVENT_ATAPON_LAST_TIME_OVER</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">12001</td>
+<td>RC_EVENT_CARAVAN_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">12005</td>
+<td>RC_EVENT_CARAVAN_EXCHANGE_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">12006</td>
+<td>RC_EVENT_CARAVAN_EXCHANGE_COST_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">13001</td>
+<td>RC_EVENT_MEDLEY_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">13003</td>
+<td>RC_EVENT_START_LIVE_AND_MEDLEY_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">13004</td>
+<td>RC_EVENT_MEDLEY_LAST_TIME_OVER</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">14001</td>
+<td>RC_EVENT_PARTY_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">14003</td>
+<td>RC_EVENT_PARTY_LAST_TIME_OVER</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">14011</td>
+<td>RC_EVENT_PARTY_EVENT_PLAY_LEVEL_OUT_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">14101</td>
+<td>RC_EVENT_PARTY_NON_HOST_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">14102</td>
+<td>RC_EVENT_PARTY_NON_SET_EVENT_UNIT_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">14103</td>
+<td>RC_EVENT_PARTY_NON_EVENT_START_ERROR</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">14104</td>
+<td>RC_EVENT_PARTY_ROOM_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">15001</td>
+<td>RC_EVENT_TOUR_CLOSE</td>
+<td></td>
+</tr>
+<tr>
+<td align="right">15003</td>
+<td>RC_EVENT_TOUR_LAST_TIME_OVER</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="接口一览"><a href="#接口一览" class="headerlink" title="接口一览"></a>接口一览</h3><table>
+<thead>
+<tr>
+<th align="right">ID</th>
+<th>ApiType.Type</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">0</td>
+<td>VersionCheck</td>
+<td>load/check</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td>SignUp</td>
+<td>tool/signup</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td>PaymentStart</td>
+<td>payment/start</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td>PaymentCancel</td>
+<td>payment/cancel</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td>PaymentFinish</td>
+<td>payment/finish</td>
+</tr>
+<tr>
+<td align="right">5</td>
+<td>PaymentItemList</td>
+<td>payment/item_list</td>
+</tr>
+<tr>
+<td align="right">6</td>
+<td>UpdateBirth</td>
+<td>payment/update_birth</td>
+</tr>
+<tr>
+<td align="right">7</td>
+<td>Load</td>
+<td>load/index</td>
+</tr>
+<tr>
+<td align="right">8</td>
+<td>Tutorial</td>
+<td>tutorial/update_step</td>
+</tr>
+<tr>
+<td align="right">9</td>
+<td>MemberUnitEdit</td>
+<td>unit/edit</td>
+</tr>
+<tr>
+<td align="right">10</td>
+<td>MemberUnitRename</td>
+<td>unit/rename</td>
+</tr>
+<tr>
+<td align="right">11</td>
+<td>MemberFavoriteEdit</td>
+<td>favorite/edit</td>
+</tr>
+<tr>
+<td align="right">12</td>
+<td>MemberFavoriteRename</td>
+<td>favorite/rename</td>
+</tr>
+<tr>
+<td align="right">13</td>
+<td>MemberTraining</td>
+<td>training/reinforce</td>
+</tr>
+<tr>
+<td align="right">14</td>
+<td>MemberTrainingTrainer</td>
+<td>training/reinforce_item</td>
+</tr>
+<tr>
+<td align="right">15</td>
+<td>MemberEvolve</td>
+<td>training/evolve</td>
+</tr>
+<tr>
+<td align="right">16</td>
+<td>MemberExceed</td>
+<td>training/exceed</td>
+</tr>
+<tr>
+<td align="right">17</td>
+<td>MemberSell</td>
+<td>member/sell</td>
+</tr>
+<tr>
+<td align="right">18</td>
+<td>MemberProtect</td>
+<td>member/protect_card</td>
+</tr>
+<tr>
+<td align="right">19</td>
+<td>MemberPotentialUp</td>
+<td>training/potential_up</td>
+</tr>
+<tr>
+<td align="right">20</td>
+<td>MemberPotentialInit</td>
+<td>training/potential_initialize</td>
+</tr>
+<tr>
+<td align="right">21</td>
+<td>MemberCardStorageList</td>
+<td>card_storage/storage_list</td>
+</tr>
+<tr>
+<td align="right">22</td>
+<td>MemberCardStorageChange</td>
+<td>card_storage/change_storage</td>
+</tr>
+<tr>
+<td align="right">23</td>
+<td>MemberCardStorageSetting</td>
+<td>card_storage/setting</td>
+</tr>
+<tr>
+<td align="right">24</td>
+<td>MemberCardStorageCardList</td>
+<td>card_storage/card_list</td>
+</tr>
+<tr>
+<td align="right">25</td>
+<td>StoryStart</td>
+<td>story/start</td>
+</tr>
+<tr>
+<td align="right">26</td>
+<td>StoryReleaseEventStory</td>
+<td>story/open_v2</td>
+</tr>
+<tr>
+<td align="right">27</td>
+<td>LiveList</td>
+<td>live/music_list</td>
+</tr>
+<tr>
+<td align="right">28</td>
+<td>LiveRanking</td>
+<td>live/get_live_detail_ranking</td>
+</tr>
+<tr>
+<td align="right">29</td>
+<td>LiveFriendList</td>
+<td>live/supporter</td>
+</tr>
+<tr>
+<td align="right">30</td>
+<td>LiveStart</td>
+<td>live/start</td>
+</tr>
+<tr>
+<td align="right">31</td>
+<td>LiveEnd</td>
+<td>live/end</td>
+</tr>
+<tr>
+<td align="right">32</td>
+<td>LiveContinue</td>
+<td>live/continue_game</td>
+</tr>
+<tr>
+<td align="right">33</td>
+<td>LivePreContinueProcess</td>
+<td>live/continue_pre_process</td>
+</tr>
+<tr>
+<td align="right">34</td>
+<td>LiveInterrupt</td>
+<td>live/interrupt</td>
+</tr>
+<tr>
+<td align="right">35</td>
+<td>LiveSendLog</td>
+<td>live/send_log</td>
+</tr>
+<tr>
+<td align="right">36</td>
+<td>LiveStartView</td>
+<td>live/start_view</td>
+</tr>
+<tr>
+<td align="right">37</td>
+<td>LiveDiscardStart</td>
+<td>live/discard_start</td>
+</tr>
+<tr>
+<td align="right">38</td>
+<td>LiveDiscardEnd</td>
+<td>live/discard_end</td>
+</tr>
+<tr>
+<td align="right">39</td>
+<td>LiveStartRehearsal</td>
+<td>live/start_rehearsal</td>
+</tr>
+<tr>
+<td align="right">40</td>
+<td>LiveEndRehearsal</td>
+<td>live/end_rehearsal</td>
+</tr>
+<tr>
+<td align="right">41</td>
+<td>LiveLiveLot</td>
+<td>live/live_lot</td>
+</tr>
+<tr>
+<td align="right">42</td>
+<td>RoomLoad</td>
+<td>room/index</td>
+</tr>
+<tr>
+<td align="right">43</td>
+<td>RoomChangeLoad</td>
+<td>room/change_room</td>
+</tr>
+<tr>
+<td align="right">44</td>
+<td>RoomBuy</td>
+<td>room/buy</td>
+</tr>
+<tr>
+<td align="right">45</td>
+<td>RoomBuyStorage</td>
+<td>room/buy_to_storage</td>
+</tr>
+<tr>
+<td align="right">46</td>
+<td>RoomBuyMusic</td>
+<td>room/buy_music</td>
+</tr>
+<tr>
+<td align="right">47</td>
+<td>RoomSell</td>
+<td>room/sell</td>
+</tr>
+<tr>
+<td align="right">48</td>
+<td>RoomUpdate</td>
+<td>room/update</td>
+</tr>
+<tr>
+<td align="right">49</td>
+<td>RoomLevelUpStart</td>
+<td>room/levelup</td>
+</tr>
+<tr>
+<td align="right">50</td>
+<td>RoomLevelUpComplete</td>
+<td>room/levelup</td>
+</tr>
+<tr>
+<td align="right">51</td>
+<td>RoomLevelUpStop</td>
+<td>room/levelup</td>
+</tr>
+<tr>
+<td align="right">52</td>
+<td>RoomLevelUpCutTime</td>
+<td>room/levelup</td>
+</tr>
+<tr>
+<td align="right">53</td>
+<td>RoomLike</td>
+<td>room/add_like</td>
+</tr>
+<tr>
+<td align="right">54</td>
+<td>RoomLikeHistory</td>
+<td>room/get_liked_history_list</td>
+</tr>
+<tr>
+<td align="right">55</td>
+<td>RoomOther</td>
+<td>room/other</td>
+</tr>
+<tr>
+<td align="right">56</td>
+<td>RoomDeliveryBoxReceive</td>
+<td>room/receive_parcel</td>
+</tr>
+<tr>
+<td align="right">57</td>
+<td>RoomDeliveryBoxUpdate</td>
+<td>room/update_delivery_box</td>
+</tr>
+<tr>
+<td align="right">58</td>
+<td>RoomTicketBoardReceive</td>
+<td>room/receive_ticket</td>
+</tr>
+<tr>
+<td align="right">59</td>
+<td>RoomTicketBoardUpdate</td>
+<td>room/update_ticket_board</td>
+</tr>
+<tr>
+<td align="right">60</td>
+<td>RoomVisitRandom</td>
+<td>room/random_visit</td>
+</tr>
+<tr>
+<td align="right">61</td>
+<td>RoomExtendBox</td>
+<td>room/extend_box</td>
+</tr>
+<tr>
+<td align="right">62</td>
+<td>RoomGiftUpdate</td>
+<td>room/update_gift</td>
+</tr>
+<tr>
+<td align="right">63</td>
+<td>RoomGiftReceive</td>
+<td>room/receive_gift</td>
+</tr>
+<tr>
+<td align="right">64</td>
+<td>RoomGivePresent</td>
+<td>gift/give_present</td>
+</tr>
+<tr>
+<td align="right">65</td>
+<td>RoomMoveItem</td>
+<td>room/move_room_item</td>
+</tr>
+<tr>
+<td align="right">66</td>
+<td>RoomUpdateSetting</td>
+<td>room/update_room_setting</td>
+</tr>
+<tr>
+<td align="right">67</td>
+<td>RoomFavoriteEdit</td>
+<td>room/edit</td>
+</tr>
+<tr>
+<td align="right">68</td>
+<td>RoomReceiveAll</td>
+<td>room/receive_all_charge_item</td>
+</tr>
+<tr>
+<td align="right">69</td>
+<td>RoomIdolPresent</td>
+<td>room/receive_idol_present</td>
+</tr>
+<tr>
+<td align="right">70</td>
+<td>RoomMySetLoad</td>
+<td>room/get_layout</td>
+</tr>
+<tr>
+<td align="right">71</td>
+<td>RoomMySetSave</td>
+<td>room/update_layout</td>
+</tr>
+<tr>
+<td align="right">72</td>
+<td>RoomMySetDelete</td>
+<td>room/clear_layout</td>
+</tr>
+<tr>
+<td align="right">73</td>
+<td>RoomMySetRename</td>
+<td>room/rename_layout</td>
+</tr>
+<tr>
+<td align="right">74</td>
+<td>RoomMySetUpdate</td>
+<td>room/update_with_charge_items</td>
+</tr>
+<tr>
+<td align="right">75</td>
+<td>GachaLoad</td>
+<td>gacha/index</td>
+</tr>
+<tr>
+<td align="right">76</td>
+<td>GachaExe</td>
+<td>gacha/exec</td>
+</tr>
+<tr>
+<td align="right">77</td>
+<td>FriendTop</td>
+<td>friend/top</td>
+</tr>
+<tr>
+<td align="right">78</td>
+<td>FriendList</td>
+<td>friend/friend_list</td>
+</tr>
+<tr>
+<td align="right">79</td>
+<td>FriendApplyingList</td>
+<td>friend/request_list</td>
+</tr>
+<tr>
+<td align="right">80</td>
+<td>FriendApprovalList</td>
+<td>friend/approval_pending_list</td>
+</tr>
+<tr>
+<td align="right">81</td>
+<td>FriendSearch</td>
+<td>friend/searching_list</td>
+</tr>
+<tr>
+<td align="right">82</td>
+<td>FriendSearchFromId</td>
+<td>friend/search_by_id</td>
+</tr>
+<tr>
+<td align="right">83</td>
+<td>FriendRequest</td>
+<td>friend/request</td>
+</tr>
+<tr>
+<td align="right">84</td>
+<td>FriendRequestCancel</td>
+<td>friend/cancel_request</td>
+</tr>
+<tr>
+<td align="right">85</td>
+<td>FriendApproval</td>
+<td>friend/accept</td>
+</tr>
+<tr>
+<td align="right">86</td>
+<td>FriendApprovalCancel</td>
+<td>friend/deny</td>
+</tr>
+<tr>
+<td align="right">87</td>
+<td>FriendDelete</td>
+<td>friend/delete</td>
+</tr>
+<tr>
+<td align="right">88</td>
+<td>FriendCommentList</td>
+<td>message/index</td>
+</tr>
+<tr>
+<td align="right">89</td>
+<td>FriendCommentSend</td>
+<td>message/send</td>
+</tr>
+<tr>
+<td align="right">90</td>
+<td>ItemUseRecovery</td>
+<td>item/use_item</td>
+</tr>
+<tr>
+<td align="right">91</td>
+<td>AlbumLoad</td>
+<td>album/index</td>
+</tr>
+<tr>
+<td align="right">92</td>
+<td>ProfileLoad</td>
+<td>profile/get_profile</td>
+</tr>
+<tr>
+<td align="right">93</td>
+<td>ProfileRename</td>
+<td>profile/rename</td>
+</tr>
+<tr>
+<td align="right">94</td>
+<td>ProfileComment</td>
+<td>profile/update_comment</td>
+</tr>
+<tr>
+<td align="right">95</td>
+<td>ProfileUpdateSupporters</td>
+<td>profile/update_supporters</td>
+</tr>
+<tr>
+<td align="right">96</td>
+<td>PresentLoad</td>
+<td>present/index2</td>
+</tr>
+<tr>
+<td align="right">97</td>
+<td>PresentReceive</td>
+<td>present/receive</td>
+</tr>
+<tr>
+<td align="right">98</td>
+<td>PresentReceiveAll</td>
+<td>present/receive_all</td>
+</tr>
+<tr>
+<td align="right">99</td>
+<td>PresentHistory</td>
+<td>present/history</td>
+</tr>
+<tr>
+<td align="right">100</td>
+<td>ShopRecoverStamina</td>
+<td>shop/recover_stamina</td>
+</tr>
+<tr>
+<td align="right">101</td>
+<td>ShopExpandBox</td>
+<td>shop/extend_box</td>
+</tr>
+<tr>
+<td align="right">102</td>
+<td>ShopJewel</td>
+<td>shop/buy_jewel_shop</td>
+</tr>
+<tr>
+<td align="right">103</td>
+<td>ShopExtendCardStorage</td>
+<td>shop/extend_card_storage</td>
+</tr>
+<tr>
+<td align="right">104</td>
+<td>ExchangeShopList</td>
+<td>exchange_shop/exchange_list</td>
+</tr>
+<tr>
+<td align="right">105</td>
+<td>ExchangeShopItem</td>
+<td>exchange_shop/exchange_item</td>
+</tr>
+<tr>
+<td align="right">106</td>
+<td>DressShopList</td>
+<td>exchange_shop/exchange_list</td>
+</tr>
+<tr>
+<td align="right">107</td>
+<td>DressShopBuy</td>
+<td>exchange_shop/exchange_item</td>
+</tr>
+<tr>
+<td align="right">108</td>
+<td>PanelMissionGetReward</td>
+<td>panel_mission/get_reward</td>
+</tr>
+<tr>
+<td align="right">109</td>
+<td>MissionLoad</td>
+<td>mission_v2/index</td>
+</tr>
+<tr>
+<td align="right">110</td>
+<td>MissionRewardExe</td>
+<td>mission_v2/get_reward</td>
+</tr>
+<tr>
+<td align="right">111</td>
+<td>EmblemEdit</td>
+<td>emblem/edit</td>
+</tr>
+<tr>
+<td align="right">112</td>
+<td>ProducerRankTop</td>
+<td>producer_rank/index</td>
+</tr>
+<tr>
+<td align="right">113</td>
+<td>ProducerRankRanking</td>
+<td>producer_rank/mo_p_ranking_list</td>
+</tr>
+<tr>
+<td align="right">114</td>
+<td>ProducerRankRankingInfo</td>
+<td>producer_rank/mo_p_rank_data</td>
+</tr>
+<tr>
+<td align="right">115</td>
+<td>AtaponTop</td>
+<td>event/atapon/load</td>
+</tr>
+<tr>
+<td align="right">116</td>
+<td>AtaponRanking</td>
+<td>event/atapon/ranking_list</td>
+</tr>
+<tr>
+<td align="right">117</td>
+<td>AtaponResult</td>
+<td>event/atapon/result_info</td>
+</tr>
+<tr>
+<td align="right">118</td>
+<td>CaravanTop</td>
+<td>event/caravan/load</td>
+</tr>
+<tr>
+<td align="right">119</td>
+<td>CaravanExchange</td>
+<td>event/caravan/exchange</td>
+</tr>
+<tr>
+<td align="right">120</td>
+<td>MedleyTop</td>
+<td>event/medley/load</td>
+</tr>
+<tr>
+<td align="right">121</td>
+<td>MedleyRanking</td>
+<td>event/medley/ranking_list</td>
+</tr>
+<tr>
+<td align="right">122</td>
+<td>MedleyLiveLot</td>
+<td>event/medley/live_lot</td>
+</tr>
+<tr>
+<td align="right">123</td>
+<td>MedleyStart</td>
+<td>event/medley/start</td>
+</tr>
+<tr>
+<td align="right">124</td>
+<td>MedleySetUnit</td>
+<td>event/medley/set_unit</td>
+</tr>
+<tr>
+<td align="right">125</td>
+<td>MedleyNext</td>
+<td>event/medley/next</td>
+</tr>
+<tr>
+<td align="right">126</td>
+<td>MedleyLifeRecover</td>
+<td>event/medley/recover_life</td>
+</tr>
+<tr>
+<td align="right">127</td>
+<td>MedleyLiveBreak</td>
+<td>event/medley/live_break</td>
+</tr>
+<tr>
+<td align="right">128</td>
+<td>MedleyEnd</td>
+<td>event/medley/end</td>
+</tr>
+<tr>
+<td align="right">129</td>
+<td>PartyTop</td>
+<td>event/party/load</td>
+</tr>
+<tr>
+<td align="right">130</td>
+<td>PartyStart</td>
+<td>event/party/start</td>
+</tr>
+<tr>
+<td align="right">131</td>
+<td>PartyMatchingExec</td>
+<td>event/party/matching_exec</td>
+</tr>
+<tr>
+<td align="right">132</td>
+<td>PartyResult</td>
+<td>event/party/result</td>
+</tr>
+<tr>
+<td align="right">133</td>
+<td>PartyEnd</td>
+<td>event/party/end</td>
+</tr>
+<tr>
+<td align="right">134</td>
+<td>TourTop</td>
+<td>event/tour/load</td>
+</tr>
+<tr>
+<td align="right">135</td>
+<td>TourRanking</td>
+<td>event/tour/ranking_list</td>
+</tr>
+<tr>
+<td align="right">136</td>
+<td>TourStart</td>
+<td>event/tour/start</td>
+</tr>
+<tr>
+<td align="right">137</td>
+<td>TourNext</td>
+<td>event/tour/load</td>
+</tr>
+<tr>
+<td align="right">138</td>
+<td>TourLiveBreak</td>
+<td>event/tour/load</td>
+</tr>
+<tr>
+<td align="right">139</td>
+<td>TourEnd</td>
+<td>event/tour/end</td>
+</tr>
+<tr>
+<td align="right">140</td>
+<td>TourTitleRename</td>
+<td>event/tour/rename_tour</td>
+</tr>
+<tr>
+<td align="right">141</td>
+<td>EventDeck</td>
+<td>event/party/unit_edit</td>
+</tr>
+<tr>
+<td align="right">142</td>
+<td>GossipAddUserTips</td>
+<td>tips/add_user_tips</td>
+</tr>
+<tr>
+<td align="right">143</td>
+<td>MigrationUpdate</td>
+<td>migration/index</td>
+</tr>
+<tr>
+<td align="right">144</td>
+<td>OptionUpdate</td>
+<td>option/update_guerrilla_notification</td>
+</tr>
+<tr>
+<td align="right">145</td>
+<td>ScEx</td>
+<td>premium_sc/ex_exec</td>
+</tr>
+<tr>
+<td align="right">146</td>
+<td>NameCardLoad</td>
+<td>name_card/index</td>
+</tr>
+<tr>
+<td align="right">147</td>
+<td>NameCardUpdate</td>
+<td>name_card/update</td>
+</tr>
+<tr>
+<td align="right">148</td>
+<td>NameCardOther</td>
+<td>name_card/other</td>
+</tr>
+<tr>
+<td align="right">149</td>
+<td>NameCardOtherList</td>
+<td>name_card/other_list</td>
+</tr>
+<tr>
+<td align="right">150</td>
+<td>NameCardApply</td>
+<td>name_card/apply</td>
+</tr>
+<tr>
+<td align="right">151</td>
+<td>NameCardRequestList</td>
+<td>name_card/request_list</td>
+</tr>
+<tr>
+<td align="right">152</td>
+<td>NameCardAccept</td>
+<td>name_card/accept</td>
+</tr>
+<tr>
+<td align="right">153</td>
+<td>NameCardDeny</td>
+<td>name_card/deny</td>
+</tr>
+<tr>
+<td align="right">154</td>
+<td>NameCardFavorite</td>
+<td>name_card/set_favorite</td>
+</tr>
+<tr>
+<td align="right">155</td>
+<td>NameCardDistribute</td>
+<td>name_card/distribute</td>
+</tr>
+<tr>
+<td align="right">156</td>
+<td>NameCardDelete</td>
+<td>name_card/other_delete</td>
+</tr>
+<tr>
+<td align="right">157</td>
+<td>NameCardSetting</td>
+<td>name_card/setting</td>
+</tr>
+<tr>
+<td align="right">158</td>
+<td>NameCardFavoriteCancel</td>
+<td>name_card/set_favorite_cancel</td>
+</tr>
+<tr>
+<td align="right">159</td>
+<td>NameCardAllApply</td>
+<td>name_card/all_apply</td>
+</tr>
+<tr>
+<td align="right">160</td>
+<td>LotteryTopLoad</td>
+<td>lottery/load</td>
+</tr>
+<tr>
+<td align="right">161</td>
+<td>LotteryGetReward</td>
+<td>lottery/receive</td>
+</tr>
+<tr>
+<td align="right">162</td>
+<td>MemoryCacheClear</td>
+<td>test/memcache_flush</td>
+</tr>
+<tr>
+<td align="right">163</td>
+<td>ManageUserInfo</td>
+<td>debug/manage_user_info</td>
+</tr>
+<tr>
+<td align="right">164</td>
+<td>DeleteAllPresent</td>
+<td>debug/delete_all_present</td>
+</tr>
+<tr>
+<td align="right">165</td>
+<td>UpdateItemList</td>
+<td>debug/update_item_list</td>
+</tr>
+<tr>
+<td align="right">166</td>
+<td>AddCardList</td>
+<td>debug/add_card_list</td>
+</tr>
+<tr>
+<td align="right">167</td>
+<td>DeleteAllAlbum</td>
+<td>debug/delete_all_album</td>
+</tr>
+<tr>
+<td align="right">168</td>
+<td>AddAllAlbum</td>
+<td>debug/add_all_album</td>
+</tr>
+<tr>
+<td align="right">169</td>
+<td>DebugUserReset</td>
+<td>debug/reset_all_data</td>
+</tr>
+<tr>
+<td align="right">170</td>
+<td>DebugIdolUpdate</td>
+<td>debug/update_card_list</td>
+</tr>
+<tr>
+<td align="right">171</td>
+<td>DebugAddPresent</td>
+<td>debug/send_present_random</td>
+</tr>
+</tbody></table>
+<h1 id="参考文献和引用"><a href="#参考文献和引用" class="headerlink" title="参考文献和引用"></a>参考文献和引用</h1><p><a href="https://subdiox.github.io/deresute/" target="_blank" rel="noopener">デレステ解析ノート</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CGSS/" rel="tag"># CGSS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/07/%E5%9C%A8Windows%E5%B9%B3%E5%8F%B0%E4%B8%8B%E6%90%AD%E5%BB%BAElectron-Vue%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" rel="prev" title="在Windows平台下搭建Electron-Vue开发环境">
+      <i class="fa fa-chevron-left"></i> 在Windows平台下搭建Electron-Vue开发环境
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/10/19/VSCodeMixDebug/" rel="next" title="使用VSCode混合调试C++与Node.js">
+      使用VSCode混合调试C++与Node.js <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于mishiro"><span class="nav-number">1.</span> <span class="nav-text">关于mishiro</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mishiro是什么"><span class="nav-number">1.1.</span> <span class="nav-text">mishiro是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么开发mishiro"><span class="nav-number">1.2.</span> <span class="nav-text">为什么开发mishiro</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用什么开发的"><span class="nav-number">1.3.</span> <span class="nav-text">用什么开发的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心"><span class="nav-number">1.4.</span> <span class="nav-text">核心</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#与服务器通信"><span class="nav-number">2.1.</span> <span class="nav-text">与服务器通信</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备"><span class="nav-number">2.1.1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求头"><span class="nav-number">2.1.2.</span> <span class="nav-text">请求头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求体"><span class="nav-number">2.1.3.</span> <span class="nav-text">请求体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应体"><span class="nav-number">2.1.4.</span> <span class="nav-text">响应体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript简单伪代码实现"><span class="nav-number">2.1.5.</span> <span class="nav-text">JavaScript简单伪代码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提取资源"><span class="nav-number">2.2.</span> <span class="nav-text">提取资源</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#资源版本号"><span class="nav-number">2.2.1.</span> <span class="nav-text">资源版本号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#资源清单Manifest"><span class="nav-number">2.2.2.</span> <span class="nav-text">资源清单Manifest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主数据库Master"><span class="nav-number">2.2.3.</span> <span class="nav-text">主数据库Master</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图片"><span class="nav-number">2.2.4.</span> <span class="nav-text">图片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ACB文件的格式"><span class="nav-number">2.2.5.</span> <span class="nav-text">ACB文件的格式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#文件头"><span class="nav-number">2.2.5.1.</span> <span class="nav-text">文件头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表头"><span class="nav-number">2.2.5.2.</span> <span class="nav-text">表头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#列字段数据"><span class="nav-number">2.2.5.3.</span> <span class="nav-text">列字段数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表数据"><span class="nav-number">2.2.5.4.</span> <span class="nav-text">表数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串数据"><span class="nav-number">2.2.5.5.</span> <span class="nav-text">字符串数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二进制数据"><span class="nav-number">2.2.5.6.</span> <span class="nav-text">二进制数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AWB文件的格式"><span class="nav-number">2.2.6.</span> <span class="nav-text">AWB文件的格式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#文件头-1"><span class="nav-number">2.2.6.1.</span> <span class="nav-text">文件头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件索引"><span class="nav-number">2.2.6.2.</span> <span class="nav-text">文件索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件终点位置"><span class="nav-number">2.2.6.3.</span> <span class="nav-text">文件终点位置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理HCA"><span class="nav-number">2.2.7.</span> <span class="nav-text">处理HCA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附表"><span class="nav-number">2.3.</span> <span class="nav-text">附表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#data-headers-result-code一览"><span class="nav-number">2.3.1.</span> <span class="nav-text">data_headers.result_code一览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接口一览"><span class="nav-number">2.3.2.</span> <span class="nav-text">接口一览</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文献和引用"><span class="nav-number">3.</span> <span class="nav-text">参考文献和引用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

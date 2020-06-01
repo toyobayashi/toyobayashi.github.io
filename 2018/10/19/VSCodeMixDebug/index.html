@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="VSCode中C++和JS的混合调试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用VSCode混合调试C++与Node.js">
+<meta property="og:url" content="https://toyobayashi.github.io/2018/10/19/VSCodeMixDebug/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="VSCode中C++和JS的混合调试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://toyobayashi.github.io/2018/10/19/VSCodeMixDebug/demo.gif">
+<meta property="article:published_time" content="2018-10-19T11:20:44.000Z">
+<meta property="article:modified_time" content="2020-06-01T07:53:40.549Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://toyobayashi.github.io/2018/10/19/VSCodeMixDebug/demo.gif">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2018/10/19/VSCodeMixDebug/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>使用VSCode混合调试C++与Node.js | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2018/10/19/VSCodeMixDebug/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用VSCode混合调试C++与Node.js
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-10-19 19:20:44" itemprop="dateCreated datePublished" datetime="2018-10-19T19:20:44+08:00">2018-10-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-01 15:53:40" itemprop="dateModified" datetime="2020-06-01T15:53:40+08:00">2020-06-01</time>
+              </span>
+
+          
+            <span id="/2018/10/19/VSCodeMixDebug/" class="post-meta-item leancloud_visitors" data-flag-title="使用VSCode混合调试C++与Node.js" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/10/19/VSCodeMixDebug/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/10/19/VSCodeMixDebug/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>VSCode中C++和JS的混合调试。</p>
+<a id="more"></a>
+
+<h1 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h1><p>二话不说先上图。</p>
+<p><img src="demo.gif" alt="混合调试"></p>
+<h1 id="VSCode"><a href="#VSCode" class="headerlink" title="VSCode"></a>VSCode</h1><p>必须先吹一波VSCode，巨硬少有的良心作，用来写前端代码速度快，有弹性，体位好，手感棒，谁用谁知道，尤其是对JS和TS的支持非常棒。</p>
+<p>其本身也是巨硬用自家TS写的Electron跨平台编辑器，没有Visual Studio的笨重，虽然它不是IDE，但是耍起来堪比IDE。</p>
+<p>下面进入正题。</p>
+<h1 id="Node-js-C-原生模块"><a href="#Node-js-C-原生模块" class="headerlink" title="Node.js C++ 原生模块"></a>Node.js C++ 原生模块</h1><p>Node.js允许我们用C++来开发原生模块。理论上来说C++能做的事大部分JS都能做，为什么还要用C++来写Node.js，我认为有以下几点：</p>
+<ol>
+<li>可以使用C++中JS所没有的特性，比如类的私有成员、多继承，大数运算等等</li>
+<li>可以提高性能，编码解码、加密解密等运算量大的工作C++做起来的效率要比JS快得多</li>
+<li>可以使用现有的C++轮子，没有必要用JS再造一遍</li>
+<li>需要做的东西的的确确用JS不好写，用C++反而好写，又必须用上Node.js</li>
+<li>瞎鸡脖玩</li>
+</ol>
+<p>而我就是出于第5种原因。</p>
+<p>其实让Node.js和C++搞起基来是非常容易的，我们先来点前戏。</p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>具体可以参考<a href="https://www.npmjs.com/package/node-gyp" target="_blank" rel="noopener">node-gyp文档</a></p>
+<ul>
+<li>Visual Studio Code 1.22+</li>
+<li>Visual Studio Code C/C++ 扩展（Microsoft官方的，打开VSCode扩展页搜一下第一个应该就是）</li>
+<li>Node.js 8+ （这里我使用8版本以上才有的NAPI来写）</li>
+<li>node-gyp （原生模块跨平台构建工具，通过npm安装）</li>
+<li>Python 2.7 （node-gyp需要，Python 3不行）</li>
+<li>.NET 4.5.1 (非Win7忽略这一项)</li>
+<li>Visual Studio 2015/2017，或单独安装MSBuild和VC++工具集140/141（非Windows系统忽略这一项）</li>
+<li>gcc （非Linux系统忽略这一项）</li>
+<li>Xcode （非Mac系统忽略这一项）</li>
+</ul>
+<p>准备好了就开始搞起。拿Windows平台做个示范，全平台通用。</p>
+<h1 id="正片"><a href="#正片" class="headerlink" title="正片"></a>正片</h1><h2 id="package-json"><a href="#package-json" class="headerlink" title="package.json"></a>package.json</h2><p>新建个目录，创建<code>package.json</code>，<code>npm install</code>走起</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">    <span class="attr">"build:debug"</span>: <span class="string">"node-gyp configure &amp;&amp; node-gyp build --debug"</span>,</span><br><span class="line">    <span class="attr">"build:release"</span>: <span class="string">"node-gyp configure &amp;&amp; node-gyp build"</span>,</span><br><span class="line">    <span class="attr">"clean"</span>: <span class="string">"node-gyp clean"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"devDependencies"</span>: &#123;</span><br><span class="line">    <span class="attr">"node-gyp"</span>: <span class="string">"^3.8.0"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"dependencies"</span>: &#123;</span><br><span class="line">    <span class="attr">"node-addon-api"</span>: <span class="string">"*"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>build</code>脚本执行构建完会在根目录生成build目录，<code>clean</code>用于清理生成，<code>node-addon-api</code>这个库用C++封装了C风格的NAPI，写起来容易点。</p>
+<h2 id="binding-gyp"><a href="#binding-gyp" class="headerlink" title="binding.gyp"></a>binding.gyp</h2><p><code>node-gyp</code>会根据根目录下的<code>binding.gyp</code>配置来生成项目，<code>binding.gyp</code>看起来是json格式，其实是Python的字典和列表。</p>
+<figure class="highlight gyp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="comment"># 构建目标集合</span></span><br><span class="line">  <span class="string">"targets"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment"># 模块最终生成的二进制文件名</span></span><br><span class="line">      <span class="string">"target_name"</span>: <span class="string">"VscodeCppJsDebugDemo"</span>,</span><br><span class="line">      <span class="comment"># 要编译的源文件</span></span><br><span class="line">      <span class="string">"sources"</span>: [</span><br><span class="line">        <span class="string">"./src/main.cpp"</span>,</span><br><span class="line">        <span class="string">"./src/DemoAsyncWorker.cpp"</span></span><br><span class="line">      ],</span><br><span class="line">      <span class="comment"># 头文件包含目录，!是执行shell命令取输出值，@是在列表中展开输出的每一项</span></span><br><span class="line">      <span class="string">"include_dirs"</span>: [<span class="string">"&lt;!@(node -p \"require('node-addon-api').include\")"</span>],</span><br><span class="line">      <span class="comment"># 外部依赖项</span></span><br><span class="line">      <span class="string">"dependencies"</span>: [<span class="string">"&lt;!(node -p \"require('node-addon-api').gyp\")"</span>],</span><br><span class="line">      <span class="comment"># 以下是编译器选项，启用node-addon-api的集成C++和JavaScript的异常处理</span></span><br><span class="line">      <span class="string">"cflags!"</span>: [ <span class="string">"-fno-exceptions"</span> ],</span><br><span class="line">      <span class="string">"cflags_cc!"</span>: [ <span class="string">"-fno-exceptions"</span> ],</span><br><span class="line">      <span class="string">"xcode_settings"</span>: &#123;</span><br><span class="line">        <span class="string">"GCC_ENABLE_CPP_EXCEPTIONS"</span>: <span class="string">"YES"</span>,</span><br><span class="line">        <span class="string">"CLANG_CXX_LIBRARY"</span>: <span class="string">"libc++"</span>,</span><br><span class="line">        <span class="string">"MACOSX_DEPLOYMENT_TARGET"</span>: <span class="string">"10.7"</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">"msvs_settings"</span>: &#123;</span><br><span class="line">        <span class="string">"VCCLCompilerTool"</span>: &#123;</span><br><span class="line">          <span class="string">"ExceptionHandling"</span>: <span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="comment"># 预定义宏，禁用NAPI的C++异常处理和node-addon-api废弃的API</span></span><br><span class="line">      <span class="string">"defines"</span>: [<span class="string">"NAPI_DISABLE_CPP_EXCEPTIONS"</span>, <span class="string">"NODE_ADDON_API_DISABLE_DEPRECATED"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>简单说，有了这个配置文件，<code>node-gyp</code>就会分别对不同操作系统下的编译器做不需要我们关心的跨平台配置，编译<code>src</code>目录下的两个源文件，最终生成<code>VscodeCppJsDebugDemo.node</code>二进制文件，其实就是个动态链接库。</p>
+<h2 id="index-js"><a href="#index-js" class="headerlink" title="index.js"></a>index.js</h2><p>既然都要用到C++了，那么在大多数情况需求都应该是耗时的异步操作，如数据库的读写，音频流的处理等等，JS调用的时候应该是异步的，那就用C++写个异步函数吧，模仿耗时操作。</p>
+<p>根目录下新建<code>index.js</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> asyncDemo = <span class="built_in">require</span>(<span class="string">'./build/Debug/VscodeCppJsDebugDemo.node'</span>) <span class="comment">// 打断点</span></span><br><span class="line"></span><br><span class="line">asyncDemo(<span class="function">(<span class="params">str</span>) =&gt;</span> &#123; <span class="comment">// 打断点</span></span><br><span class="line">  <span class="keyword">const</span> msg = <span class="string">'asyncDemo() '</span> + str <span class="comment">// 打断点</span></span><br><span class="line">  <span class="built_in">console</span>.log(msg) <span class="comment">// 打断点</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'[JavaScript] Call console.log()'</span>) <span class="comment">// 打断点</span></span><br></pre></td></tr></table></figure>
+
+<p>引入原生模块，原生模块暴露的是一个异步函数，执行它后回调函数将在1秒后执行并且不阻塞JS线程，回调函数的参数是一个字符串。为了更直观的调试效果，在这5行都打上断点。</p>
+<h2 id="src-main-cpp"><a href="#src-main-cpp" class="headerlink" title="src/main.cpp"></a>src/main.cpp</h2><p>在<code>src</code>目录下新建<code>main.cpp</code>，看注释。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 包含DemoAsyncWorker类的头文件，实现将在后面给出</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"./DemoAsyncWorker.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> Napi;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 要暴露给JS的函数</span></span><br><span class="line"><span class="keyword">static</span> Value _asyncDemo(<span class="keyword">const</span> CallbackInfo&amp; info) &#123;</span><br><span class="line">  Env env = info.Env(); <span class="comment">// 类似V8中的Isolate</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (info.Length() != <span class="number">1</span>) &#123; <span class="comment">// 检查是否只传入一个参数</span></span><br><span class="line">    Error::New(env, <span class="string">"arguments.length !== 1"</span>).ThrowAsJavaScriptException();</span><br><span class="line">    <span class="keyword">return</span> env.Undefined();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!info[<span class="number">0</span>].IsFunction()) &#123; <span class="comment">// 检查第一个参数是否为函数</span></span><br><span class="line">    Error::New(env, <span class="string">"typeof arguments[0] !== 'function'"</span>).ThrowAsJavaScriptException();</span><br><span class="line">    <span class="keyword">return</span> env.Undefined();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Function callback = info[<span class="number">0</span>].As&lt;Function&gt;(); <span class="comment">// 把Napi::Value强转成Napi::Function类型</span></span><br><span class="line">  DemoAsyncWorker *w = <span class="keyword">new</span> DemoAsyncWorker(callback); <span class="comment">// 把回调传给另外写好的DemoAsyncWorker类</span></span><br><span class="line">  w-&gt;Queue(); <span class="comment">// 入队执行，这里打个断点</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> env.Undefined();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块入口，被require或者被当作Node.js入口文件执行的时候首先进入这里</span></span><br><span class="line"><span class="function">Object <span class="title">init</span><span class="params">(Env env, Object exports)</span> </span>&#123;</span><br><span class="line">  Object global = env.Global(); <span class="comment">// 获取JS的global对象</span></span><br><span class="line">  Object console = global.Get(<span class="string">"console"</span>).As&lt;Object&gt;(); <span class="comment">// 获取global对象下的console对象</span></span><br><span class="line">  Function <span class="built_in">log</span> = console.Get(<span class="string">"log"</span>).As&lt;Function&gt;(); <span class="comment">// 获取console对象下的log函数</span></span><br><span class="line">  <span class="built_in">log</span>.Call(console, &#123; String::New(env, <span class="string">"[C++] Call console.log()"</span>) &#125;); <span class="comment">// 执行log函数，console为this，参数为'[C++] Call console.log()'，这里打个断点</span></span><br><span class="line">  Function <span class="keyword">module</span> = Function::New(env, _asyncDemo); <span class="comment">// 把C++函数包装成JS函数</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">module</span>; <span class="comment">// 暴露JS函数。Napi::Function继承自Napi::Object，所以可以直接返回</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NODE_API_MODULE是个宏，用于注册原生模块</span></span><br><span class="line"><span class="comment">// NODE_GYP_MODULE_NAME宏由node-gyp预定义，就是binding.gyp里的target_name</span></span><br><span class="line"><span class="comment">// 把模块入口函数传进去，注意没有分号</span></span><br><span class="line">NODE_API_MODULE(NODE_GYP_MODULE_NAME, init)</span><br></pre></td></tr></table></figure>
+
+<p>注意到21行，为什么在堆内存上new了一个Worker对象，在<code>w-&gt;Queue()</code>完了以后不用<code>delete w</code>，点进源码里面去看会发现，这个Worker对象在执行完异步操作后会自杀，即使不自杀，我们也不可以直接把它delete掉，因为排队等待是异步的，直接delete后回调根本不能执行，甚至由于指针操作不当程序会崩溃。附上对象自杀代码：</p>
+<figure class="highlight cpp"><figcaption><span>napi-inl.h</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">inline</span> <span class="keyword">void</span> AsyncWorker::OnWorkComplete(napi_env <span class="comment">/*env*/</span>, napi_status status, <span class="keyword">void</span>* this_pointer) &#123;</span><br><span class="line">  AsyncWorker* self = <span class="keyword">static_cast</span>&lt;AsyncWorker*&gt;(this_pointer);</span><br><span class="line">  <span class="keyword">if</span> (status != napi_cancelled) &#123;</span><br><span class="line">    <span class="function">HandleScope <span class="title">scope</span><span class="params">(self-&gt;_env)</span></span>;</span><br><span class="line">    details::WrapCallback([&amp;] &#123;</span><br><span class="line">      <span class="keyword">if</span> (self-&gt;_error.size() == <span class="number">0</span>) &#123;</span><br><span class="line">        self-&gt;OnOK();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        self-&gt;OnError(Error::New(self-&gt;_env, self-&gt;_error));</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">delete</span> self;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="src-DemoAsyncWorker-h"><a href="#src-DemoAsyncWorker-h" class="headerlink" title="src/DemoAsyncWorker.h"></a>src/DemoAsyncWorker.h</h2><p>在<code>src</code>目录下新建<code>DemoAsyncWorker.h</code>，声明DemoAsyncWorker类，看注释。</p>
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __DEMO_ASYNC_WORKER_H__</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __DEMO_ASYNC_WORKER_H__</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 包含node-addon-api的头文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;napi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 要实现异步必须继承Napi::AsyncWorker类，该类的内部会调用NAPI开启子线程</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoAsyncWorker</span> :</span> <span class="keyword">public</span> Napi::AsyncWorker &#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 构造函数传入JS的回调函数</span></span><br><span class="line">    DemoAsyncWorker(Napi::Function&amp;);</span><br><span class="line">    <span class="comment">// 析构函数</span></span><br><span class="line">    ~DemoAsyncWorker();</span><br><span class="line">    <span class="comment">// 子线程下执行异步操作</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Execute</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">// 异步操作执行完成的回调</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnOK</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// ! __DEMO_ASYNC_WORKER_H__</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="src-DemoAsyncWorker-cpp"><a href="#src-DemoAsyncWorker-cpp" class="headerlink" title="src/DemoAsyncWorker.cpp"></a>src/DemoAsyncWorker.cpp</h2><p>在<code>src</code>目录下新建<code>DemoAsyncWorker.cpp</code>，实现DemoAsyncWorker类，看注释。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"./DemoAsyncWorker.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;chrono&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> Napi;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 构造函数中把JS回调传给基类构造函数</span></span><br><span class="line">DemoAsyncWorker::DemoAsyncWorker(Function&amp; callback): AsyncWorker(callback) &#123;&#125;</span><br><span class="line"><span class="comment">// 析构函数啥也不干</span></span><br><span class="line">DemoAsyncWorker::~DemoAsyncWorker() &#123;&#125;</span><br><span class="line"><span class="comment">// 子线程中等待1秒</span></span><br><span class="line"><span class="keyword">void</span> DemoAsyncWorker::Execute() &#123;</span><br><span class="line">  <span class="built_in">std</span>::this_thread::sleep_for(<span class="built_in">std</span>::chrono::milliseconds(<span class="number">1000</span>)); <span class="comment">// 打断点</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 异步操作完成，执行JS回调，传入'callback.'字符串，JS中将接收到这个字符串</span></span><br><span class="line"><span class="keyword">void</span> DemoAsyncWorker::OnOK() &#123;</span><br><span class="line">  Callback().Call(&#123; String::New(Env(), <span class="string">"callback."</span>) &#125;); <span class="comment">// 打断点</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="vscode-launch-json"><a href="#vscode-launch-json" class="headerlink" title=".vscode/launch.json"></a>.vscode/launch.json</h2><p>万事预备，只差靓妹。接着就要配置VSCode的Debugger了。</p>
+<p>在<code>.vscode</code>目录下新建<code>launch.json</code>，这个json文件就是VSCode Debugger的配置文件。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"version"</span>: <span class="string">"0.2.0"</span>,</span><br><span class="line">  <span class="attr">"configurations"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"type"</span>: <span class="string">"node"</span>,</span><br><span class="line">      <span class="attr">"request"</span>: <span class="string">"launch"</span>,</span><br><span class="line">      <span class="attr">"name"</span>: <span class="string">"JS Debug Build"</span>,</span><br><span class="line">      <span class="attr">"console"</span>: <span class="string">"integratedTerminal"</span>,</span><br><span class="line">      <span class="attr">"program"</span>: <span class="string">"$&#123;workspaceFolder&#125;/index.js"</span>,</span><br><span class="line">      <span class="attr">"preLaunchTask"</span>: <span class="string">"npm: build:debug"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"name"</span>: <span class="string">"Windows Attach"</span>,</span><br><span class="line">      <span class="attr">"type"</span>: <span class="string">"cppvsdbg"</span>,</span><br><span class="line">      <span class="attr">"request"</span>: <span class="string">"attach"</span>,</span><br><span class="line">      <span class="attr">"processId"</span>: <span class="string">"$&#123;command:pickProcess&#125;"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重点看<code>configurations</code>数组，这里面的每一项，都是一个启动项。<code>request</code>可以是<code>launch</code>（启动）或<code>attach</code>（附加），<code>console</code>是终端选项，设置为<code>integratedTerminal</code>则使用VSCode的内部集成终端显示调试结果，<code>preLaunchTask</code>是启动前执行的任务，就是<code>package.json</code>中的<code>scripts[&#39;build:debug&#39;]</code>。先编译生成项目，再启动node调试进程，入口是根目录的<code>index.js</code>。</p>
+<p>启动起来以后，调试器会断在第一行，这时先不要急，切换到第二个启动项再点一下启动。关键就在这里，第二项配置的是Windows的C++调试器，其它平台也差不多，设置为附加到另一个调试进程，启动它后会弹出一个列表，输入<code>node</code>就会出现刚刚启动的调试进程，选择它后就可以让C++代码也进入调试，可以看到调试器下拉菜单中多了一项，我们可以随时切换调试。<a href="#效果图">效果演示GIF图</a>在本文最开始。</p>
+<p>到此为止，就实现了用VSCode混合调试C++和JS代码。</p>
+<h2 id="vscode-tasks-json"><a href="#vscode-tasks-json" class="headerlink" title=".vscode/tasks.json"></a>.vscode/tasks.json</h2><p>设置快捷键<code>Ctrl + Shift + B</code>为Release生成，只要在<code>.vscode/tasks.json</code>做如下配置：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"version"</span>: <span class="string">"2.0.0"</span>,</span><br><span class="line">  <span class="attr">"tasks"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"type"</span>: <span class="string">"npm"</span>,</span><br><span class="line">      <span class="attr">"script"</span>: <span class="string">"build:release"</span>,</span><br><span class="line">      <span class="attr">"problemMatcher"</span>: [],</span><br><span class="line">      <span class="attr">"group"</span>: &#123;</span><br><span class="line">        <span class="attr">"kind"</span>: <span class="string">"build"</span>,</span><br><span class="line">        <span class="attr">"isDefault"</span>: <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Git仓库"><a href="#Git仓库" class="headerlink" title="Git仓库"></a>Git仓库</h1><p>本文只讲解了JS的调试法，还有TS、Electron的调试配置，具体可以来看<a href="https://github.com/toyobayashi/vscode-cpp-js-debug-demo" target="_blank" rel="noopener">这个仓库</a>。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://github.com/nodejs/node-addon-api" target="_blank" rel="noopener">node-addon-api</a></li>
+<li><a href="https://itbilu.com/nodejs/npm/By7L5p3ff.html" target="_blank" rel="noopener">gyp文件输入格式参考</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/" rel="prev" title="CGSS桌面应用mishiro背后的故事">
+      <i class="fa fa-chevron-left"></i> CGSS桌面应用mishiro背后的故事
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/11/07/ElectronAsarUpdater/" rel="next" title="Electron应用自动更新实现思路">
+      Electron应用自动更新实现思路 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#效果图"><span class="nav-number">1.</span> <span class="nav-text">效果图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VSCode"><span class="nav-number">2.</span> <span class="nav-text">VSCode</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Node-js-C-原生模块"><span class="nav-number">3.</span> <span class="nav-text">Node.js C++ 原生模块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">4.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正片"><span class="nav-number">5.</span> <span class="nav-text">正片</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#package-json"><span class="nav-number">5.1.</span> <span class="nav-text">package.json</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#binding-gyp"><span class="nav-number">5.2.</span> <span class="nav-text">binding.gyp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#index-js"><span class="nav-number">5.3.</span> <span class="nav-text">index.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#src-main-cpp"><span class="nav-number">5.4.</span> <span class="nav-text">src&#x2F;main.cpp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#src-DemoAsyncWorker-h"><span class="nav-number">5.5.</span> <span class="nav-text">src&#x2F;DemoAsyncWorker.h</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#src-DemoAsyncWorker-cpp"><span class="nav-number">5.6.</span> <span class="nav-text">src&#x2F;DemoAsyncWorker.cpp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vscode-launch-json"><span class="nav-number">5.7.</span> <span class="nav-text">.vscode&#x2F;launch.json</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vscode-tasks-json"><span class="nav-number">5.8.</span> <span class="nav-text">.vscode&#x2F;tasks.json</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Git仓库"><span class="nav-number">6.</span> <span class="nav-text">Git仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="记录一次 Electron 开发的坑，在使用 Webpack 打包主进程代码后如何在渲染进程中正常使用 remote.require()。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Electron使用Webpack后remote.require的痛点">
+<meta property="og:url" content="https://toyobayashi.github.io/2019/07/11/ElectronRemoteRequire/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="记录一次 Electron 开发的坑，在使用 Webpack 打包主进程代码后如何在渲染进程中正常使用 remote.require()。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-11T02:19:23.000Z">
+<meta property="article:modified_time" content="2020-06-01T07:53:40.548Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2019/07/11/ElectronRemoteRequire/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Electron使用Webpack后remote.require的痛点 | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2019/07/11/ElectronRemoteRequire/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Electron使用Webpack后remote.require的痛点
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-11 10:19:23" itemprop="dateCreated datePublished" datetime="2019-07-11T10:19:23+08:00">2019-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-01 15:53:40" itemprop="dateModified" datetime="2020-06-01T15:53:40+08:00">2020-06-01</time>
+              </span>
+
+          
+            <span id="/2019/07/11/ElectronRemoteRequire/" class="post-meta-item leancloud_visitors" data-flag-title="Electron使用Webpack后remote.require的痛点" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/07/11/ElectronRemoteRequire/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/07/11/ElectronRemoteRequire/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>记录一次 Electron 开发的坑，在使用 Webpack 打包主进程代码后如何在渲染进程中正常使用 <code>remote.require()</code>。</p>
+<a id="more"></a>
+
+<h1 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h1><p>Electron 5 出来也不短时间了，5.x 版本最明显的大改动就是出于安全性考虑渲染进程默认禁用 Node.js 集成，这意味着在渲染进程中不能像 5.x 以下的版本中那样直接使用 Node.js 的 API，没有 require，除非手动指定 <code>webPreferences.nodeIntegration = true</code>。Webpack 在最近的版本发布中也指出，5.x 的 Electron 渲染进程构建目标应该设置成 <code>web</code> 而不是 <code>electron-renderer</code>，同时还新增了一个 <code>electron-preload</code> 的构建目标（看源码其实就是 <code>electron-renderer</code> 的别名）。</p>
+<p>按照官方的意思，简单说就是渲染进程和浏览器没什么区别了，就是个破网页，想用 Node？，你得先写个 preload 脚本，preload 的运行环境还是渲染进程，但是是在渲染进程加载之前跑的代码，里面还是可以使用所有 Node API，借助 preload 脚本把一些涉及 node 的东西暴露到全局可访问的地方，渲染进程内就照样可以正常用。这个不展开说。</p>
+<p>现在思考这样一个场景，假如某块业务涉及的计算量很大，又要用到 Node API，就不适合把它放到渲染进程内处理，这样会导致页面卡顿假死，体验不好，所以必须把这部分业务代码挪到主进程内跑。这其中可能就会涉及到要实时在渲染进程的页面上反映处理的进度。</p>
+<p>举个例子来说，假如有个需求要弄音频解码，渲染进程里要做一个进度条，实时反映解码的进度。解码是个计算量超大又很耗时的活，无论是用 JS 做还是 C++ 做都不应该放在渲染进程里。好，那就放在主进程里嘛，常规的做法就是用 Electron 内置的 IPC 模块，渲染进程发个消息给主进程，主进程就开始解码，解码的过程中不断给渲染进程发消息告诉渲染进程进度，渲染进程收到消息更新进度条。</p>
+<p>这样做是可以做，但是渲染进程内的代码会被分成两部分，一部分是获取配置以及让主进程解码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipcRenderer.send(<span class="string">'你给我解码'</span>, 音频信息和一些配置)</span><br></pre></td></tr></table></figure>
+
+<p>另一部分是监听解码进度的消息更新进度条：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipcRenderer.on(<span class="string">'告诉我解码进度'</span>, (e, 进度信息) =&gt; &#123; <span class="comment">/* 更新进度条逻辑及其它逻辑 */</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>搞不好这两块代码还在不同的文件里，难维护，这还只是解码一个的音频的情况，如果要同时解码多个，这解码进度的更新就需要更多的实现才能把不同音频的状态分开。有没有更好的处理方法？当然有，<strong>传回调</strong>！想当然的话，可能会这样写：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipcRenderer.send(<span class="string">'你给我解码'</span>, 音频信息和一些配置, (进度信息) =&gt; &#123; <span class="comment">/* 更新进度条逻辑及其它逻辑 */</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>看起来没什么问题，解码的过程中不断地调用渲染进程传过去的回调函数，更新进度条。这里致命的问题在于，<strong>跨进程不能传函数</strong>，主进程接收不到这个回调函数！<strong>跨进程只能传递原始值</strong>，如果传对象或数组，Electron 会帮忙拷贝一份，而不是原对象或原数组的引用，而且挂在数组上的自定义属性也会丢失。</p>
+<p>怎么办呢？Electron 为开发者铺好了路，两个办法（必须要在 preload 里用，因为渲染进程拿不到 Electron 的 <code>remote</code> 对象）：</p>
+<ol>
+<li><code>remote.getGlobal</code>：主进程中把解码的函数挂在 <code>global</code> 上，通过这个 API 获取主进程 <code>global</code> 上的解码函数，在渲染进程中可以得到这个函数得“假引用”，这样可以从渲染进程传回调。</li>
+<li><code>remote.require</code>：把解码的函数单独写在一个 JS 里并导出，在渲染进程中调用主进程的 <code>require</code> 函数，得到主进程中解码模块的“假引用”，这样也可以传回调。</li>
+</ol>
+<p>痛点又来了。</p>
+<p>第一种方法超级方便，但是会污染主进程的 <code>global</code> 对象，有洁癖的人比如我就很抗拒这样写。</p>
+<p>第二种方法，如果主进程的代码不用 Webpack 打包，也很方便，没有什么障碍。接下来要讲的，就是用 Webpack 打包主进程代码的前提下，这个方法要怎么用。</p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>为什么说用了 Webpack 这个方法就很麻烦呢？就拿 Electron 官方文档的例子来说，我稍微改一改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">project&#x2F;</span><br><span class="line">├── main</span><br><span class="line">│   ├── decode.js</span><br><span class="line">│   └── index.js</span><br><span class="line">├── package.json</span><br><span class="line">└── renderer</span><br><span class="line">    └── index.js</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main process: main/index.js</span></span><br><span class="line"><span class="keyword">const</span> &#123; app &#125; = <span class="built_in">require</span>(<span class="string">'electron'</span>)</span><br><span class="line"><span class="keyword">const</span> decode = <span class="built_in">require</span>(<span class="string">'./decode'</span>)</span><br><span class="line">app.on(<span class="string">'ready'</span>, () =&gt; &#123; <span class="comment">/* 这里要用到解码 decode(input, (progress) =&gt; &#123;&#125;) */</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// some relative module: main/decode.js</span></span><br><span class="line"><span class="comment">// 导出解码功能</span></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> <span class="title">decode</span> (<span class="params">input, callback</span>) </span>&#123;</span><br><span class="line">  <span class="comment">/* 这里做解码 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// renderer process: renderer/index.js</span></span><br><span class="line"><span class="keyword">const</span> decode = <span class="built_in">require</span>(<span class="string">'electron'</span>).remote.require(<span class="string">'./decode'</span>) <span class="comment">// 相对主进程入口的路径</span></span><br><span class="line">decode(<span class="string">'文件路径'</span>, (progress) =&gt; &#123;</span><br><span class="line">  <span class="comment">/* 这里更新进度条 */</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>不用 Webpack 打包 <code>main/index.js</code>，一点问题都没有。但是一旦打包，<code>main/index.js</code> 和 <code>main/decode.js</code> 里面的代码都会被打进 bundle，渲染进程就不能 require 到原始的 <code>main/decode.js</code>，<code>main/decode.js</code>不能独立存在，因为主进程的其它代码里要用到它，它被打进了包里。</p>
+<h1 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h1><p>既然不能把 <code>main/decode.js</code> 分出来，那就不分，我们可以给主进程和渲染进程建立新的桥梁，就好像 <code>global</code> 对象一样。</p>
+<p>具体的做法是，新弄一个 webpack config，这个配置单独打出一个 JS 来，作为要被 remote.require 的模块。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack.config</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="comment">/* ... */</span></span><br><span class="line">  entry: &#123;</span><br><span class="line">    <span class="keyword">export</span>: [toAbsolute(<span class="string">'./main/export.js'</span>)]</span><br><span class="line">  &#125;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    <span class="comment">/* path */</span></span><br><span class="line">    filename: <span class="string">'[name].js'</span>,</span><br><span class="line">    libraryTarget: <span class="string">'commonjs2'</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">/* ... */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>libraryTarget: &#39;commonjs2&#39;</code> 的意思是这个包会被打成一个遵循 CommonJS 2 模块规范的库，可以被 require。</p>
+<p>这个模块中实现一个超级简单的缓存。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main process: main/export.js</span></span><br><span class="line"><span class="keyword">let</span> cache = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">getCache</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> cache[name]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">setCache</span> (<span class="params">name, value</span>) </span>&#123;</span><br><span class="line">  cache[name] = value</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">clearCache</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  cache = &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">removeCache</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (cache.hasOwnProperty(name)) &#123;</span><br><span class="line">    <span class="keyword">delete</span> cache[name]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主进程利用 <code>__non_webpack_require__</code> 把 decode 函数塞进这个模块缓存里：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main process: main/index.js</span></span><br><span class="line"><span class="keyword">const</span> &#123; app &#125; = <span class="built_in">require</span>(<span class="string">'electron'</span>)</span><br><span class="line"><span class="keyword">const</span> decode = <span class="built_in">require</span>(<span class="string">'./decode'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这个特殊的 require 是 webpack 内置的，会被转码成 Node.js 原生的 require 函数，而不会被打进包里</span></span><br><span class="line"><span class="keyword">const</span> &#123; setCache &#125; = __non_webpack_require__(<span class="string">'./export'</span>)</span><br><span class="line"><span class="comment">// =&gt; var 某个名字 = require(export.js的模块id).setCache</span></span><br><span class="line"></span><br><span class="line">app.on(<span class="string">'ready'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="comment">/* 这里要用到解码 decode(input, (progress) =&gt; &#123;&#125;) */</span></span><br><span class="line">  setCache(<span class="string">'decode'</span>, decode)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>渲染进程 preload 中通过 <code>remote.require</code> 拿到缓存，挂在 window 对象上</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// renderer process: renderer/preload.js</span></span><br><span class="line"><span class="keyword">const</span> &#123; remote &#125; = <span class="built_in">require</span>(<span class="string">'electron'</span>)</span><br><span class="line"></span><br><span class="line">process.once(<span class="string">'loaded'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 这里 process 对象已经可用</span></span><br><span class="line">  <span class="built_in">window</span>.preload = &#123;</span><br><span class="line">    decode: remote.require(<span class="string">'./export.js'</span>).getCache(<span class="string">'decode'</span>) <span class="comment">// 相对主进程入口包的路径</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>渲染进程加载以后禁用包括 require 在内的 Node API</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// renderer process: renderer/index.js</span></span><br><span class="line"><span class="keyword">const</span> decode = <span class="built_in">window</span>.preload.decode</span><br><span class="line">decode(<span class="string">'文件路径'</span>, (progress) =&gt; &#123;</span><br><span class="line">  <span class="comment">/* 这里更新进度条 */</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+<p>完。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/04/04/NodeGypAndVS2019/" rel="prev" title="node-gyp 与 Visual Studio 2019 的坑">
+      <i class="fa fa-chevron-left"></i> node-gyp 与 Visual Studio 2019 的坑
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/02/NapiAsyncWorker/" rel="next" title="重写 node-addon-api 的 AsyncWorker 类">
+      重写 node-addon-api 的 AsyncWorker 类 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题背景"><span class="nav-number">1.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题分析"><span class="nav-number">2.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题解决"><span class="nav-number">3.</span> <span class="nav-text">问题解决</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

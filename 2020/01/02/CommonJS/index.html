@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="搞清 require 的原理，自己动手在浏览器中实现 require。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零开始实现 CommonJS">
+<meta property="og:url" content="https://toyobayashi.github.io/2020/01/02/CommonJS/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="搞清 require 的原理，自己动手在浏览器中实现 require。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-02T08:36:51.000Z">
+<meta property="article:modified_time" content="2020-06-01T07:53:40.548Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2020/01/02/CommonJS/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>从零开始实现 CommonJS | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2020/01/02/CommonJS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从零开始实现 CommonJS
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-02 16:36:51" itemprop="dateCreated datePublished" datetime="2020-01-02T16:36:51+08:00">2020-01-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-01 15:53:40" itemprop="dateModified" datetime="2020-06-01T15:53:40+08:00">2020-06-01</time>
+              </span>
+
+          
+            <span id="/2020/01/02/CommonJS/" class="post-meta-item leancloud_visitors" data-flag-title="从零开始实现 CommonJS" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/01/02/CommonJS/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/01/02/CommonJS/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>搞清 <code>require</code> 的原理，自己动手在浏览器中实现 <code>require</code>。</p>
+<a id="more"></a>
+
+<p>开始实现之前，先来看一下 Node.js 中的 CommonJS。</p>
+<h1 id="Node-js-中的-CommonJS-规范"><a href="#Node-js-中的-CommonJS-规范" class="headerlink" title="Node.js 中的 CommonJS 规范"></a>Node.js 中的 CommonJS 规范</h1><p>在 Node.js 中，一个文件就是一个模块。</p>
+<h2 id="模块的导出与导入"><a href="#模块的导出与导入" class="headerlink" title="模块的导出与导入"></a>模块的导出与导入</h2><p>使用 <code>exports</code> 导出。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a.js</span></span><br><span class="line"></span><br><span class="line">exports.add = <span class="function"><span class="keyword">function</span> <span class="title">add</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>module.exports</code> 导出。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// b.js</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> <span class="title">mult</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a * b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>区别：</p>
+<p>模块初始化时 <code>exports</code> 和 <code>module.exports</code> 引用同一个对象，相当于是 <code>let exports = module.exports = {}</code>，最后导出的是 <code>module.exports</code>。</p>
+<p>如果把 <code>exports</code> 的引用改掉，那就有问题了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// c.js</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// let exports = module.exports = &#123;&#125;</span></span><br><span class="line"><span class="keyword">const</span> c = &#123; <span class="attr">key</span>: <span class="string">'value'</span> &#125;</span><br><span class="line">exports = c</span><br><span class="line">exports.neverExport = <span class="number">0</span></span><br><span class="line"><span class="comment">// 导出 module.exports，即 &#123;&#125;，不是 a</span></span><br><span class="line"><span class="comment">// 由于 exports 与 module.exports 不再引用同一个对象</span></span><br><span class="line"><span class="comment">// neverExport 也不会被导出</span></span><br></pre></td></tr></table></figure>
+
+<p>把 <code>module.exports</code> 的引用改掉，<code>exports</code> 也会没用。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// d.js</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// let exports = module.exports = &#123;&#125;</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123; <span class="attr">key</span>: <span class="string">'value'</span> &#125;</span><br><span class="line">exports.neverExport = <span class="number">0</span></span><br><span class="line"><span class="comment">// 导出 module.exports，即 &#123; key: 'value' &#125;</span></span><br><span class="line"><span class="comment">// 由于 exports 与 module.exports 不再引用同一个对象</span></span><br><span class="line"><span class="comment">// neverExport 不会被导出</span></span><br></pre></td></tr></table></figure>
+
+<p>导入模块。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">const</span> add = <span class="built_in">require</span>(<span class="string">'./a.js'</span>).add</span><br><span class="line">add(<span class="number">1</span>, <span class="number">2</span>) <span class="comment">// =&gt; 3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> mult = <span class="built_in">require</span>(<span class="string">'./b.js'</span>)</span><br><span class="line">mult(<span class="number">3</span>, <span class="number">4</span>) <span class="comment">// =&gt; 12</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> c = <span class="built_in">require</span>(<span class="string">'./c.js'</span>) <span class="comment">// =&gt; &#123;&#125;</span></span><br><span class="line">c.key <span class="comment">// =&gt; undefined</span></span><br><span class="line">c.neverExport <span class="comment">// =&gt; undefined</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> d = <span class="built_in">require</span>(<span class="string">'./d.js'</span>) <span class="comment">// =&gt; &#123; key: 'value' &#125;</span></span><br><span class="line">d.key <span class="comment">// =&gt; 'value'</span></span><br><span class="line">d.neverExport <span class="comment">// =&gt; undefined</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="module-exports-require-的秘密"><a href="#module-exports-require-的秘密" class="headerlink" title="module exports require 的秘密"></a>module exports require 的秘密</h2><p><code>module</code>，<code>exports</code>，<code>require</code> 这三个东西为什么在文件最开头就可以使用？它们是从哪来的？</p>
+<p>全局变量上？试试输出 <code>global.module</code>，你会发现是 <code>undefined</code></p>
+<p>实际上每个 JS 文件里的代码都会被包在一个函数里面：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">exports, require, module, __filename, __dirname</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// JS 文件里的代码在这里</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Node.js 在加载一个 JS 文件时，会先读取文件内容，再把内容用这个函数模板包一层，然后由内部的实现来调用这个函数，传入这些参数，所以我们才能够使用 <code>module</code>，<code>exports</code>，<code>require</code>。</p>
+<p>在开头输出一下这三个对象：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="built_in">console</span>.log(exports)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">require</span>)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">module</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#125;</span><br><span class="line">[Function require]</span><br><span class="line">Module &#123;</span><br><span class="line">  id: &#39;.&#39;,</span><br><span class="line">  loaded: false,</span><br><span class="line">  filename: &#39;&#x2F;path&#x2F;to&#x2F;index.js&#39;,</span><br><span class="line">  exports: &#123;&#125;,</span><br><span class="line">  parent: undefined,</span><br><span class="line">  children: [],</span><br><span class="line">  paths: [</span><br><span class="line">    &#39;&#x2F;path&#x2F;to&#x2F;node_modules&#39;,</span><br><span class="line">    &#39;&#x2F;path&#x2F;node_modules&#39;,</span><br><span class="line">    &#39;&#x2F;node_modules&#39;,</span><br><span class="line">    ...</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>可以看到 Node.js 中实现了一个 <code>Module</code> 类，里面存了一些模块的信息，<code>module</code> 就是 <code>Module</code> 类的实例。这里我们就不搞那么多花里胡哨的东西了，来一个最简单的实现。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">window</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 把注册的模块存起来，键是模块 ID，值是包裹层函数</span></span><br><span class="line">  <span class="keyword">var</span> registeredModules = &#123;&#125;;</span><br><span class="line">  <span class="comment">// 把加载过的模块存起来，键是模块 ID，值是 module 对象</span></span><br><span class="line">  <span class="keyword">var</span> installedModules = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">require</span> (<span class="params">moduleId</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 先看有没有加载过，加载过就直接拿导出的对象，防止模块多次加载</span></span><br><span class="line">    <span class="keyword">if</span> (installedModules[moduleId]) &#123;</span><br><span class="line">      <span class="keyword">return</span> installedModules[moduleId].exports;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先看有没有注册过这个模块，没有注册就报错</span></span><br><span class="line">    <span class="keyword">if</span> (!registeredModules[moduleId]) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'Cannot find module "'</span> + moduleId + <span class="string">'".'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造一个 module 对象，并预先存起来，防止模块加载死循环</span></span><br><span class="line">    <span class="keyword">var</span> <span class="built_in">module</span> = installedModules[moduleId] = &#123;</span><br><span class="line">      id: moduleId,</span><br><span class="line">      loaded: <span class="literal">false</span>,</span><br><span class="line">      exports: &#123;&#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用模块包裹层函数，传入 module exports require</span></span><br><span class="line">    registeredModules[moduleId].call(<span class="built_in">module</span>.exports, <span class="built_in">module</span>.exports, <span class="built_in">require</span>, <span class="built_in">module</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 改成已加载状态</span></span><br><span class="line">    <span class="built_in">module</span>.loaded = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回 module.exports 对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">module</span>.exports;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 注册一个模块</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">register</span> (<span class="params">moduleId, fn</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 第二个参数必须是函数</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> fn !== <span class="string">'function'</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'Module body must be a function.'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果已经存在这个模块，就不要动了</span></span><br><span class="line">    <span class="keyword">if</span> (registeredModules[moduleId]) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    registeredModules[moduleId] = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 运行入口模块</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">runAsMain</span> (<span class="params">moduleId</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">require</span>(moduleId);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.cjs = &#123;</span><br><span class="line">    register: register,</span><br><span class="line">    runAsMain: runAsMain</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;)(<span class="built_in">window</span>)</span><br></pre></td></tr></table></figure>
+
+<p>引用这段 JS 后，就可以和 Node 里一样用了。注册模块可以不考虑顺序，但是 runAsMain 必须在所有模块都注册了以后调用，还有 require 的不是文件路径。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">cjs.register(<span class="string">'entry'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">exports, require, module</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> add = <span class="built_in">require</span>(<span class="string">'a'</span>).add;</span><br><span class="line">  <span class="built_in">console</span>.log(add(<span class="number">1</span>, <span class="number">2</span>)); <span class="comment">// 3</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> mult = <span class="built_in">require</span>(<span class="string">'b'</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(mult(<span class="number">3</span>, <span class="number">4</span>)); <span class="comment">// 12</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> c = <span class="built_in">require</span>(<span class="string">'c'</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(c); <span class="comment">// &#123;&#125;</span></span><br><span class="line">  <span class="built_in">console</span>.log(c.key); <span class="comment">// undefined</span></span><br><span class="line">  <span class="built_in">console</span>.log(c.neverExport); <span class="comment">// undefined</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> d = <span class="built_in">require</span>(<span class="string">'d'</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(d); <span class="comment">// &#123; key: 'value' &#125;</span></span><br><span class="line">  <span class="built_in">console</span>.log(d.key); <span class="comment">// 'value'</span></span><br><span class="line">  <span class="built_in">console</span>.log(d.neverExport); <span class="comment">// undefined</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">cjs.register(<span class="string">'a'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">exports, require, module</span>) </span>&#123;</span><br><span class="line">  exports.add = <span class="function"><span class="keyword">function</span> <span class="title">add</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">cjs.register(<span class="string">'b'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">exports, require, module</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> <span class="title">mult</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a * b;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">cjs.register(<span class="string">'c'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">exports, require, module</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> c = &#123; <span class="attr">key</span>: <span class="string">'value'</span> &#125;;</span><br><span class="line">  exports = c;</span><br><span class="line">  exports.neverExport = <span class="number">0</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">cjs.register(<span class="string">'d'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">exports, require, module</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">module</span>.exports = &#123; <span class="attr">key</span>: <span class="string">'value'</span> &#125;</span><br><span class="line">  exports.neverExport = <span class="number">0</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">cjs.runAsMain(<span class="string">'entry'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>更完善的实现： <a href="https://github.com/toyobayashi/bommon-ts" target="_blank" rel="noopener">bommon-ts</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JS/" rel="tag"># JS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/23/RemoteGit/" rel="prev" title="在 WSL Ubuntu 下搭建 Git 远程仓库">
+      <i class="fa fa-chevron-left"></i> 在 WSL Ubuntu 下搭建 Git 远程仓库
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/06/ElectronAsarEncrypt/" rel="next" title="给 Electron 应用加密源码">
+      给 Electron 应用加密源码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Node-js-中的-CommonJS-规范"><span class="nav-number">1.</span> <span class="nav-text">Node.js 中的 CommonJS 规范</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#模块的导出与导入"><span class="nav-number">1.1.</span> <span class="nav-text">模块的导出与导入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-exports-require-的秘密"><span class="nav-number">1.2.</span> <span class="nav-text">module exports require 的秘密</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
