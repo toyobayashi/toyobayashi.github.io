@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="简要记录如何使用 Emscripten 把 C++ 编译成 WebAssembly。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 Emscripten 把 C++ 编译成 WebAssembly">
+<meta property="og:url" content="https://toyobayashi.github.io/2020/06/08/WebAssembly/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="简要记录如何使用 Emscripten 把 C++ 编译成 WebAssembly。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-08T07:49:01.000Z">
+<meta property="article:modified_time" content="2020-06-08T09:17:53.029Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2020/06/08/WebAssembly/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>用 Emscripten 把 C++ 编译成 WebAssembly | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2020/06/08/WebAssembly/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用 Emscripten 把 C++ 编译成 WebAssembly
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-08 15:49:01 / 修改时间：17:17:53" itemprop="dateCreated datePublished" datetime="2020-06-08T15:49:01+08:00">2020-06-08</time>
+            </span>
+
+          
+            <span id="/2020/06/08/WebAssembly/" class="post-meta-item leancloud_visitors" data-flag-title="用 Emscripten 把 C++ 编译成 WebAssembly" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/06/08/WebAssembly/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/08/WebAssembly/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>简要记录如何使用 Emscripten 把 C++ 编译成 WebAssembly。</p>
+<a id="more"></a>
+
+<p>虽然 WebAssembly 还处在发展中阶段，但是已经可以提前玩起来了。把 C++ 编译成 WASM 需要 <a href="https://emscripten.org/" target="_blank" rel="noopener">Emscripten</a> 编译器。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>需要 Git 和<strong>良好的网络环境</strong>。</p>
+<p>非 Windows：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/emscripten-core/emsdk.git</span><br><span class="line">$ <span class="built_in">cd</span> emsdk</span><br><span class="line">$ ./emsdk install latest</span><br><span class="line">$ ./emsdk activate latest</span><br><span class="line">$ <span class="built_in">source</span> ./emsdk_env.sh</span><br></pre></td></tr></table></figure>
+
+<p>Windows：</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; git clone https://github.com/emscripten-core/emsdk.git</span><br><span class="line">&gt; <span class="built_in">cd</span> emsdk</span><br><span class="line">&gt; emsdk install latest</span><br><span class="line">&gt; emsdk activate latest</span><br><span class="line">&gt; emsdk_env</span><br></pre></td></tr></table></figure>
+
+<p>为了方便也可以顺带配一下 PATH 环境变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C:\path\to\emsdk</span><br><span class="line">C:\path\to\emsdk\upstream\emscripten</span><br></pre></td></tr></table></figure>
+
+<p>如果不用 emsdk_env 初始化环境变量而是手动配置，Python 所在的目录也需要在 PATH 变量中。</p>
+<h1 id="C-胶水"><a href="#C-胶水" class="headerlink" title="C++ 胶水"></a>C++ 胶水</h1><h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>Emscripten 提供了 <a href="https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#embind" target="_blank" rel="noopener">Embind</a> 来绑定 C++ 的函数和类到 JavaScript 对象，写起来更自然，类似 Node.js 的 NAPI。</p>
+<p>使用这个特性时必须加上链接器选项 <code>--bind</code>。</p>
+<p>原生代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// add.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;emscripten/bind.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">EMSCRIPTEN_BINDINGS(my_module) &#123;</span><br><span class="line">  emscripten::function(<span class="string">"add"</span>, add);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译链接生成 js 和 wasm 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ em++ -std=c++11 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 -O3 --<span class="built_in">bind</span> -o add.js add.cpp</span><br></pre></td></tr></table></figure>
+
+<p>gcc 的参数基本都可以用，这里的 <code>-s</code> 是 Emscripten 额外的选项，<code>DISABLE_EXCEPTION_CATCHING=0</code> 可以正常 catch 到 C++ 异常，<code>ALLOW_MEMORY_GROWTH=1</code> 可以让 WebAssembly 内存超出初始化的大小时自动开辟新内存。</p>
+<p>文档在<a href="https://emscripten.org/docs/tools_reference/emcc.html" target="_blank" rel="noopener">这里</a>。</p>
+<p>JS 调用：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line">/**</span><br><span class="line"> * JS 胶水会取全局的 Module 对象，</span><br><span class="line"> * 在原生代码初始化完成以后把暴露的接口挂在 Module 上，</span><br><span class="line"> * 并调用 onRuntimeInitialized 回调</span><br><span class="line"> */</span><br><span class="line"><span class="actionscript"><span class="keyword">var</span> Module = &#123;</span></span><br><span class="line"><span class="actionscript">  onRuntimeInitialized: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(Module.add(<span class="number">1</span>, <span class="number">2</span>)); <span class="comment">// =&gt; 3</span></span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"add.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript"><span class="comment">// 同步直接调用是不行的，此时 add 并不是 Module 的属性</span></span></span><br><span class="line"><span class="actionscript"><span class="comment">// console.log(Module.add(1, 2));</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>默认输出的 JS 也支持 Node.js 运行环境，但是最好不要直接用在 Webpack 里，因为它里面用到了很多 Node.js 变量，Webpack 会自动导入 Node Polyfill 导致生成的包体积超大。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Module = <span class="built_in">require</span>(<span class="string">'./add.js'</span>)</span><br><span class="line"></span><br><span class="line">Module.onRuntimeInitialized = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(Module.add(<span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果需要输出 ES6 模块格式的 JS，需要指定 <code>-o add.mjs</code>，然后这样用</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> main <span class="keyword">from</span> <span class="string">'./add.mjs'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Module = &#123;</span><br><span class="line">  onRuntimeInitialized () &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(Module.add(<span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main(Module)</span><br></pre></td></tr></table></figure>
+
+<p>ES6 模块可以用在 Webpack 里，但是要注意 <code>import.meta.url</code> 的处理。</p>
+<h2 id="类型映射"><a href="#类型映射" class="headerlink" title="类型映射"></a>类型映射</h2><p>上面 <code>add</code> 函数用到的类型 <code>int</code>，Embind 可以自动映射成 JS 的 <code>number</code> 类型，用 TypeScript 声明来描述的话相当于：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">declare</span> <span class="function"><span class="keyword">function</span> <span class="title">add</span> (<span class="params">a: <span class="built_in">number</span>, b: <span class="built_in">number</span></span>): <span class="title">number</span></span></span><br></pre></td></tr></table></figure>
+
+<p>也就是说 JS 调用的时候可以传 <code>number</code> 类型进来，如果传别的类型就会抛错。</p>
+<p>下表是 Embind 支持的类型映射：</p>
+<table>
+<thead>
+<tr>
+<th align="left">C++ 类型</th>
+<th>JavaScript 类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>void</code></td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td align="left"><code>bool</code></td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td align="left"><code>char</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>signed char</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned char</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>short</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned short</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>int</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned int</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>long</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned long</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>float</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>double</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>std::string</code></td>
+<td><code>string | ArrayBuffer | Uint8Array | Uint8ClampedArray | Int8Array</code></td>
+</tr>
+<tr>
+<td align="left"><code>std::wstring</code></td>
+<td><code>string (utf-16)</code></td>
+</tr>
+<tr>
+<td align="left"><code>emscripten::val</code></td>
+<td><code>any</code></td>
+</tr>
+</tbody></table>
+<p>值得注意的是 <code>emscripten::val</code> 这个类，定义在 <code>&lt;emscripten/val.h&gt;</code> 里面，它可以映射成任意 JS 类型，相当于是 NAPI 的 <code>Napi::Value</code>，很好用，可以用它来直接操作 JS 对象。</p>
+<p>比如这样用：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;emscripten/val.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">stringify</span><span class="params">(<span class="keyword">const</span> emscripten::val&amp; jsobj)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (jsobj.isString()) &#123;</span><br><span class="line">    <span class="keyword">return</span> jsobj.as&lt;<span class="built_in">std</span>::<span class="built_in">string</span>&gt;();</span><br><span class="line">  &#125;</span><br><span class="line">  emscripten::val result = emscripten::val::global(<span class="string">"JSON"</span>).call&lt;emscripten::val&gt;(<span class="string">"stringify"</span>, jsobj);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (result.isUndefined()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result.as&lt;<span class="built_in">std</span>::<span class="built_in">string</span>&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>等价于：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">stringify</span> (<span class="params">jsobj: <span class="built_in">any</span></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> jsobj === <span class="string">'string'</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> jsobj</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> result = <span class="built_in">JSON</span>.stringify(jsobj)</span><br><span class="line">  <span class="keyword">if</span> (result === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="用-CMake-构建"><a href="#用-CMake-构建" class="headerlink" title="用 CMake 构建"></a>用 CMake 构建</h1><p>非 Windows：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p ./build</span><br><span class="line">$ <span class="built_in">cd</span> ./build</span><br><span class="line">$ cmake -DCMAKE_TOOLCHAIN_FILE=&lt;EmscriptenRoot&gt;/cmake/Modules/Platform/Emscripten.cmake</span><br><span class="line">        -DCMAKE_BUILD_TYPE=&lt;Debug|RelWithDebInfo|Release|MinSizeRel&gt;</span><br><span class="line">        -G <span class="string">"Unix Makefiles"</span></span><br><span class="line">$ cmake --build .</span><br></pre></td></tr></table></figure>
+
+<p>Windows:</p>
+<p>需要安装 <a href="http://gnuwin32.sourceforge.net/packages/make.htm" target="_blank" rel="noopener">Make for Windows</a> 跑 CMake 生成的 Makefile。</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="built_in">mkdir</span> build</span><br><span class="line">&gt; <span class="built_in">cd</span> build</span><br><span class="line">&gt; cmake -DCMAKE_TOOLCHAIN_FILE=&lt;EmscriptenRoot&gt;\cmake\Modules\Platform\Emscripten.cmake</span><br><span class="line">        -DCMAKE_BUILD_TYPE=&lt;Debug|RelWithDebInfo|Release|MinSizeRel&gt;</span><br><span class="line">        -G "MinGW Makefiles" -DCMAKE_MAKE_PROGRAM=make ..</span><br><span class="line">&gt; cmake --build .</span><br></pre></td></tr></table></figure>
+
+<h1 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h1><p>不要用 <code>-O</code> 参数，加上 <code>-g4 --source-map-base http://&lt;host&gt;:&lt;port&gt;/</code>，host 和 port 自己填。把 map 放在正确的位置即可在浏览器开发者工具中给 C++ 代码打断点调试。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/01/GitHubActionsReference/" rel="prev" title="GitHub Actions 参考">
+      <i class="fa fa-chevron-left"></i> GitHub Actions 参考
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-胶水"><span class="nav-number">2.</span> <span class="nav-text">C++ 胶水</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">2.1.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型映射"><span class="nav-number">2.2.</span> <span class="nav-text">类型映射</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用-CMake-构建"><span class="nav-number">3.</span> <span class="nav-text">用 CMake 构建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调试"><span class="nav-number">4.</span> <span class="nav-text">调试</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
