@@ -36,7 +36,7 @@ Vue 3 的核心响应式实现都在这个库里。
 
 ## effect
 
-重头戏。`effect(fn, options)` 返回一个包装 fn 后的 runner 函数，如果设置 `options.lazy` 为 true，fn 立即执行，如果不设置或设置为 false，可以自行手动调用 runner 执行 fn。fn 里的 ref / reactive 如果被访问过值就会被依赖收集，被收集过的响应式对象如果值变了，`options.scheduler` 就会执行，如果没有设置 `options.scheduler`，那么 fn 本身就是 scheduler。
+重头戏。`effect(fn, options)` 返回一个包装 fn 后的 runner 函数，如果设置 `options.lazy` 为 false 或不设置，fn 立即执行，如果设置为 true，可以自行手动调用 runner 执行 fn。fn 里的 ref / reactive 如果被访问过值就会被依赖收集，被收集过的响应式对象如果值变了，`options.scheduler` 就会执行，如果没有设置 `options.scheduler`，那么 fn 本身就是 scheduler。
 
 ## stop
 
