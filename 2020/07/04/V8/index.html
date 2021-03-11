@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="V8 编译步骤及踩坑记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows 编译 V8 静态库踩坑记录">
+<meta property="og:url" content="https://toyobayashi.github.io/2020/07/04/V8/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="V8 编译步骤及踩坑记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-04T04:35:30.000Z">
+<meta property="article:modified_time" content="2021-03-08T06:50:09.382Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2020/07/04/V8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Windows 编译 V8 静态库踩坑记录 | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2020/07/04/V8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Windows 编译 V8 静态库踩坑记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-04 12:35:30" itemprop="dateCreated datePublished" datetime="2020-07-04T12:35:30+08:00">2020-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-08 14:50:09" itemprop="dateModified" datetime="2021-03-08T14:50:09+08:00">2021-03-08</time>
+              </span>
+
+          
+            <span id="/2020/07/04/V8/" class="post-meta-item leancloud_visitors" data-flag-title="Windows 编译 V8 静态库踩坑记录" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/07/04/V8/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/04/V8/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>V8 编译步骤及踩坑记录。</p>
+<a id="more"></a>
+
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
+<li><p>科学的网络环境</p>
+</li>
+<li><p>Visual Studio 2019 使用 C++ 的桌面开发</p>
+<ul>
+<li><p>Windows 10 SDK 10.0.19041.0 以上</p>
+</li>
+<li><p>Windows SDK Debugging Tools （到设置中修改安装）</p>
+</li>
+</ul>
+</li>
+<li><p>Git</p>
+</li>
+<li><p>Python</p>
+</li>
+</ul>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="获取-depot-tools"><a href="#获取-depot-tools" class="headerlink" title="获取 depot_tools"></a>获取 depot_tools</h2><p>如果有代理：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="built_in">set</span> HTTP_PROXY=代理地址</span><br><span class="line">&gt; git config --global http.proxy=代理地址</span><br></pre></td></tr></table></figure>
+
+<p>拉代码：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git</span><br></pre></td></tr></table></figure>
+
+<p>并把 <code>depot_tools</code> 目录添加到 <code>PATH</code> 环境变量。</p>
+<p>设置 <code>DEPOT_TOOLS_WIN_TOOLCHAIN</code> 环境变量值为 <code>0</code>。</p>
+<p>设置 <code>vs2019_install</code> 环境变量值为 VS 安装路径如 <code>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community</code>。</p>
+<h2 id="更新-depot-tools-依赖"><a href="#更新-depot-tools-依赖" class="headerlink" title="更新 depot_tools 依赖"></a>更新 depot_tools 依赖</h2><p>然后：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; gclient</span><br></pre></td></tr></table></figure>
+
+<p>坑 1：需要科学的网络环境，而且不会有任何输出，网速慢会耗时很久，静默下载的东西会出现在 <code>depot_tools</code> 根目录下，耐心等吧。</p>
+<h2 id="获取-V8-源码"><a href="#获取-V8-源码" class="headerlink" title="获取 V8 源码"></a>获取 V8 源码</h2><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="built_in">mkdir</span> C:\v8</span><br><span class="line">&gt; <span class="built_in">cd</span> C:\v8</span><br><span class="line">&gt; fetch --nohooks v8</span><br><span class="line">&gt; <span class="built_in">cd</span> .\v8</span><br></pre></td></tr></table></figure>
+
+<p>坑 2：同样需要科学的网络环境，网速慢会耗时很久，而且仓库七百八 M 很大，这一步很容易中断，中断后重新拉：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">v8</span>&gt; <span class="title">gclient</span> <span class="title">sync</span> --<span class="title">nohooks</span></span></span><br></pre></td></tr></table></figure>
+
+<p>拉完代码以后检出到想构建的分支或标签后还要再跑 <code>gclient sync</code>，这一次同步应该不会太久。</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">v8</span>\<span class="title">v8</span>&gt; <span class="title">git</span> <span class="title">checkout</span> 8.6.51</span></span><br><span class="line"><span class="function"><span class="title">C</span>:\<span class="title">v8</span>\<span class="title">v8</span>&gt; <span class="title">gclient</span> <span class="title">sync</span> --<span class="title">nohooks</span></span></span><br></pre></td></tr></table></figure>
+
+<p>坑 2.1：如果加了 <code>--nohooks</code> 选项，同步以后不会跑 hooks，导致有些东西缺失：</p>
+<p>缺少最后更新信息：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">v8</span>\<span class="title">v8</span>&gt; <span class="title">python</span> .\<span class="title">build</span>\<span class="title">util</span>\<span class="title">lastchange.py</span> .\<span class="title">build</span>\<span class="title">util</span>\<span class="title">LASTCHANGE</span></span></span><br></pre></td></tr></table></figure>
+
+<p>不存在 <code>third_party\llvm-build\Release+Asserts\bin\clang-cl.exe</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">v8</span>\<span class="title">v8</span>&gt; <span class="title">python</span> .\<span class="title">tools</span>\<span class="title">clang</span>\<span class="title">scripts</span>\<span class="title">update.py</span></span></span><br></pre></td></tr></table></figure>
+
+<p>坑 2.1.1：同样需要科学的网络环境，可以用其他手段把输出的压缩包地址下载下来，手动解压到 <code>third_party\llvm-build\Release+Asserts</code></p>
+<h2 id="编译静态库"><a href="#编译静态库" class="headerlink" title="编译静态库"></a>编译静态库</h2><p>到这里就不用科学的网络环境了，所有工具链已经准备完毕。</p>
+<p>生成 ninja 配置：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">v8</span>\<span class="title">v8</span>&gt; <span class="title">python</span> .\<span class="title">tools</span>\<span class="title">dev</span>\<span class="title">v8gen.py</span> <span class="title">x64.release</span> -- <span class="title">v8_monolithic</span>=<span class="title">true</span> <span class="title">v8_use_external_startup_data</span>=<span class="title">false</span> <span class="title">use_custom_libcxx</span>=<span class="title">false</span> <span class="title">is_component_build</span>=<span class="title">false</span> <span class="title">treat_warnings_as_errors</span>=<span class="title">false</span> <span class="title">v8_symbol_level</span>=0</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以手动把参数写进 <code>out.gn\x64.release\args.gn</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">is_debug &#x3D; false</span><br><span class="line">target_cpu &#x3D; &quot;x64&quot;</span><br><span class="line">is_component_build &#x3D; false</span><br><span class="line">use_custom_libcxx &#x3D; false</span><br><span class="line">v8_monolithic &#x3D; true</span><br><span class="line">v8_use_external_startup_data &#x3D; false</span><br><span class="line">treat_warnings_as_errors &#x3D; false</span><br><span class="line">v8_symbol_level &#x3D; 0</span><br></pre></td></tr></table></figure>
+
+<p>编译：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">v8</span>\<span class="title">v8</span>&gt; <span class="title">ninja</span> -<span class="title">C</span> .\<span class="title">out.gn</span>\<span class="title">x64.release</span> <span class="title">v8_monolith</span> -<span class="title">j</span> 14</span></span><br></pre></td></tr></table></figure>
+
+<p>坑 3：不加 <code>treat_warnings_as_errors=false</code> 会报错编译失败，不加 <code>v8_symbol_level=0</code> 编译出来的静态库差不多 800M 的大小。</p>
+<p>等个十分钟左右，输出 <code>out.gn\x64.release\obj\v8_monolith.lib</code></p>
+<h1 id="构建-Hello-World-示例"><a href="#构建-Hello-World-示例" class="headerlink" title="构建 Hello World 示例"></a>构建 Hello World 示例</h1><p>把 <code>v8_monolith.lib</code> 和 <code>v8\include</code> 复制出来</p>
+<p>包含目录要把复制出来的 <code>v8\include</code> 加进去，预定义好 <code>V8_COMPRESS_POINTERS</code>，库要包含 <code>Dbghelp.lib</code> 和 <code>winmm.lib</code>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/29/ESModule/" rel="prev" title="__esModule 的作用">
+      <i class="fa fa-chevron-left"></i> __esModule 的作用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/13/ReactVue/" rel="next" title="用 Vue 3 的写法写 React">
+      用 Vue 3 的写法写 React <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96-depot-tools"><span class="nav-number">2.1.</span> <span class="nav-text">获取 depot_tools</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0-depot-tools-%E4%BE%9D%E8%B5%96"><span class="nav-number">2.2.</span> <span class="nav-text">更新 depot_tools 依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96-V8-%E6%BA%90%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">获取 V8 源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%9D%99%E6%80%81%E5%BA%93"><span class="nav-number">2.4.</span> <span class="nav-text">编译静态库</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA-Hello-World-%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">构建 Hello World 示例</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

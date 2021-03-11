@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.0">
+<meta name="generator" content="Hexo 5.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -301,7 +301,10 @@
     <a href="/2020/06/08/WebAssembly/" rel="prev" title="用 Emscripten 把 C++ 编译成 WebAssembly">
       <i class="fa fa-chevron-left"></i> 用 Emscripten 把 C++ 编译成 WebAssembly
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/04/V8/" rel="next" title="Windows 编译 V8 静态库踩坑记录">
+      Windows 编译 V8 静态库踩坑记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -362,7 +365,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JS-模块化的历史包袱"><span class="nav-number">1.</span> <span class="nav-text">JS 模块化的历史包袱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CJS-与-ESM-混用的问题"><span class="nav-number">2.</span> <span class="nav-text">CJS 与 ESM 混用的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#esModule-标识"><span class="nav-number">3.</span> <span class="nav-text">__esModule 标识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Webpack-的处理方法"><span class="nav-number">3.1.</span> <span class="nav-text">Webpack 的处理方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TypeScript-的处理方法"><span class="nav-number">3.2.</span> <span class="nav-text">TypeScript 的处理方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JS-%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E5%8E%86%E5%8F%B2%E5%8C%85%E8%A2%B1"><span class="nav-number">1.</span> <span class="nav-text">JS 模块化的历史包袱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CJS-%E4%B8%8E-ESM-%E6%B7%B7%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">CJS 与 ESM 混用的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#esModule-%E6%A0%87%E8%AF%86"><span class="nav-number">3.</span> <span class="nav-text">__esModule 标识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Webpack-%E7%9A%84%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">Webpack 的处理方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TypeScript-%E7%9A%84%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">TypeScript 的处理方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -376,13 +379,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -407,13 +410,13 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Toyo</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.2.0
   </div>
   <span class="post-meta-divider">|</span>
   <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0

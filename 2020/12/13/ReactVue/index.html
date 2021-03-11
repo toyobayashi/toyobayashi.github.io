@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="react + @vue&#x2F;reactivity &#x3D; reactivuety">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 Vue 3 的写法写 React">
+<meta property="og:url" content="https://toyobayashi.github.io/2020/12/13/ReactVue/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="react + @vue&#x2F;reactivity &#x3D; reactivuety">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-13T08:21:05.000Z">
+<meta property="article:modified_time" content="2021-03-08T06:50:09.381Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2020/12/13/ReactVue/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>用 Vue 3 的写法写 React | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2020/12/13/ReactVue/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用 Vue 3 的写法写 React
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-13 16:21:05" itemprop="dateCreated datePublished" datetime="2020-12-13T16:21:05+08:00">2020-12-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-08 14:50:09" itemprop="dateModified" datetime="2021-03-08T14:50:09+08:00">2021-03-08</time>
+              </span>
+
+          
+            <span id="/2020/12/13/ReactVue/" class="post-meta-item leancloud_visitors" data-flag-title="用 Vue 3 的写法写 React" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/13/ReactVue/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/13/ReactVue/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>react + @vue/reactivity = reactivuety</p>
+<a id="more"></a>
+
+<h1 id="关于-vue-reactivity"><a href="#关于-vue-reactivity" class="headerlink" title="关于 @vue/reactivity"></a>关于 @vue/reactivity</h1><p>Vue 3 的核心响应式实现都在这个库里。</p>
+<h2 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h2><p><code>ref()</code> / <code>shallowRef()</code> 返回一个 <code>RefImpl</code>。</p>
+<h3 id="RefImpl-类"><a href="#RefImpl-类" class="headerlink" title="RefImpl 类"></a>RefImpl 类</h3><ul>
+<li><p><code>_rawValue</code>：原始值</p>
+</li>
+<li><p><code>_value</code>：如果创建的是 shallow ref 那么就是原始值，如果不是 shallow 且原始值为对象，这个成员保存 <code>reactive()</code> 转换后的原始对象 <code>Proxy</code>，否则也是原始值</p>
+</li>
+<li><p><code>getter value()</code>：依赖收集后返回 <code>_value</code></p>
+</li>
+<li><p><code>setter value(newValue)</code>：对比 <code>newValue</code> 和 <code>_rawValue</code> 是否浅相等，不等则按上述规则改变 <code>_rawValue</code> 和 <code>value</code></p>
+</li>
+</ul>
+<h2 id="reactive"><a href="#reactive" class="headerlink" title="reactive"></a>reactive</h2><p><code>reactive()</code> / <code>shallowReactive()</code> / <code>readonly()</code> / <code>shallowReadonly()</code> 返回一个 <code>Proxy</code>。</p>
+<h2 id="computed"><a href="#computed" class="headerlink" title="computed"></a>computed</h2><p><code>computed()</code> 返回一个 <code>ComputedRefImpl</code>，和 <code>RefImpl</code> 差不多，如果不传 setter，则不可以更改值。</p>
+<h2 id="effect"><a href="#effect" class="headerlink" title="effect"></a>effect</h2><p>重头戏。<code>effect(fn, options)</code> 返回一个包装 fn 后的 runner 函数，如果设置 <code>options.lazy</code> 为 false 或不设置，fn 立即执行，如果设置为 true，可以自行手动调用 runner 执行 fn。fn 里的 ref / reactive 如果被访问过值就会被依赖收集，被收集过的响应式对象如果值变了，<code>options.scheduler</code> 就会执行，如果没有设置 <code>options.scheduler</code>，那么 fn 本身就是 scheduler。</p>
+<h2 id="stop"><a href="#stop" class="headerlink" title="stop"></a>stop</h2><p><code>stop()</code> 传入 <code>effect</code> 返回的 runner，停止监听变化，当响应式对象的值变了后 scheduler 不会再执行。</p>
+<h1 id="集成到-react"><a href="#集成到-react" class="headerlink" title="集成到 react"></a>集成到 react</h1><p>先看一个 Vue 3 计数器例子：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123;count&#125;&#125; * 2 = &#123;&#123;doubleCount&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> @<span class="attr">click</span>=<span class="string">"add"</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, computed, defineComponent &#125; <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> defineComponent(&#123;</span><br><span class="line">  setup () &#123;</span><br><span class="line">    <span class="keyword">const</span> count = ref(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">const</span> doubleCount = computed(<span class="function"><span class="params">()</span> =&gt;</span> count.value * <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">const</span> add = <span class="function"><span class="params">()</span> =&gt;</span> &#123; count.value++ &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; count, doubleCount, add &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>实现用 react 来这样写：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> (props) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; count, doubleCount, add &#125; = useSetup(<span class="function">(<span class="params">propsProxy</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> count = ref(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">const</span> doubleCount = computed(<span class="function"><span class="params">()</span> =&gt;</span> count.value * <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">const</span> add = <span class="function"><span class="params">()</span> =&gt;</span> &#123; count.value++ &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; count, doubleCount, add &#125;</span><br><span class="line">  &#125;, props)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;div&gt;&#123;count.value&#125; * <span class="number">2</span> = &#123;doubleCount.value&#125;&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">      &lt;button onClick=&#123;add&#125;&gt;&lt;/</span>button&gt;</span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">  )</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>useSetup hook 传入 setup 函数，返回响应式对象，直接写在 JSX 上。</p>
+<h2 id="第一步：forceUpdate"><a href="#第一步：forceUpdate" class="headerlink" title="第一步：forceUpdate"></a>第一步：forceUpdate</h2><p>这样写意味着组件的状态更新全部交给 vue 的响应式系统来处理，自然要使用 forceUpdate 强制更新组件。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useForceUpdate</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> setState = useState(<span class="built_in">Object</span>.create(<span class="literal">null</span>))[<span class="number">1</span>]</span><br><span class="line">  <span class="keyword">return</span> useCallback(<span class="function"><span class="params">()</span> =&gt;</span> &#123; setState(<span class="built_in">Object</span>.create(<span class="literal">null</span>)) &#125;, [setState])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="第二步：依赖收集"><a href="#第二步：依赖收集" class="headerlink" title="第二步：依赖收集"></a>第二步：依赖收集</h2><p>setup 函数返回的响应式对象都要被依赖收集，所以要把收集的过程丢进 effect 里执行，并且只执行一次，大概是这样</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useRef, useCallback &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> &#123; effect, reactive, readonly &#125; <span class="keyword">from</span> <span class="string">'@vue/reactivity'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useSetup</span> (<span class="params">setup, props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">const</span> forceUpdate = useForceUpdate()</span><br><span class="line">  <span class="keyword">const</span> instanceRef = useRef()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> updateProps = useCallback(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (instanceRef.current) &#123;</span><br><span class="line">      <span class="keyword">const</span> keys = <span class="built_in">Object</span>.keys(props)</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; keys.length; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> key = keys[i]</span><br><span class="line">        instanceRef.current.props[key] = props[key]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [props])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!updateProps.__called) &#123;</span><br><span class="line">    updateProps()</span><br><span class="line">    updateProps.__called = <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> updateCallback = useCallback(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 生命周期 onBeforeUpdate</span></span><br><span class="line">    forceUpdate()</span><br><span class="line">    <span class="comment">// 生命周期 onUpdated</span></span><br><span class="line">  &#125;, [])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!instanceRef.current) &#123;</span><br><span class="line">    <span class="keyword">const</span> reactiveProps = reactive(&#123; ...props &#125;)</span><br><span class="line">    <span class="keyword">const</span> readonlyProps = readonly(reactiveProps)</span><br><span class="line">    instanceRef.current = &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">let</span> runner = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">let</span> ret</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      ret = setup(readonlyProps)</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="comment">// 其它错误处理</span></span><br><span class="line">      <span class="keyword">throw</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    runner = effect(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      traverse(ret)</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      lazy: <span class="literal">true</span>,</span><br><span class="line">      scheduler: <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        queueJob(updateCallback) <span class="comment">// 入队，本轮同步代码全部执行完后在下一个 tick 更新组件</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125;)</span><br><span class="line">    runner()</span><br><span class="line">    <span class="comment">// 生命周期 onBeforeMount</span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  useEffect(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 生命周期 onMounted</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// 生命周期 onUnmounted</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>收集过程就是递归遍历访问值。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">traverse</span> (<span class="params">value, seen = new Set(</span>)) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!isObject(value) || seen.has(value)) &#123;</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line">  &#125;</span><br><span class="line">  seen.add(value)</span><br><span class="line">  <span class="keyword">if</span> (isRef(value)) &#123;</span><br><span class="line">    traverse(value.value, seen)</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isArray(value)) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; value.length; i++) &#123;</span><br><span class="line">      traverse(value[i], seen)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isSet(value) || isMap(value)) &#123;</span><br><span class="line">    value.forEach(<span class="function">(<span class="params">v</span>) =&gt;</span> &#123;</span><br><span class="line">      traverse(v, seen)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> value) &#123;</span><br><span class="line">      traverse(value[key], seen)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>完整实现请移步 <a href="https://github.com/toyobayashi/reactivuety" target="_blank" rel="noopener">toyobayashi/reactivuety</a>。</p>
+<p>Feature：</p>
+<ul>
+<li><p><code>useSetup(setup, reactProps)</code> react hook, setup 函数可返回对象或 render 函数。</p>
+</li>
+<li><p><code>defineComponent(setup, reactRender?)</code> </p>
+</li>
+<li><p><code>&lt;Input&gt;</code> <code>&lt;Select&gt;</code> <code>&lt;Textarea&gt;</code> 的 vModel 双向绑定</p>
+</li>
+<li><p><code>watch</code> 和 <code>watchEffect</code></p>
+</li>
+<li><p>八个生命周期钩子</p>
+</li>
+<li><p><code>ref</code> 兼容 react 的 ref</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/04/V8/" rel="prev" title="Windows 编译 V8 静态库踩坑记录">
+      <i class="fa fa-chevron-left"></i> Windows 编译 V8 静态库踩坑记录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/07/RustSetup/" rel="next" title="Rust 初始化">
+      Rust 初始化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-vue-reactivity"><span class="nav-number">1.</span> <span class="nav-text">关于 @vue&#x2F;reactivity</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ref"><span class="nav-number">1.1.</span> <span class="nav-text">ref</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RefImpl-%E7%B1%BB"><span class="nav-number">1.1.1.</span> <span class="nav-text">RefImpl 类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reactive"><span class="nav-number">1.2.</span> <span class="nav-text">reactive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#computed"><span class="nav-number">1.3.</span> <span class="nav-text">computed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#effect"><span class="nav-number">1.4.</span> <span class="nav-text">effect</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stop"><span class="nav-number">1.5.</span> <span class="nav-text">stop</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E5%88%B0-react"><span class="nav-number">2.</span> <span class="nav-text">集成到 react</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9AforceUpdate"><span class="nav-number">2.1.</span> <span class="nav-text">第一步：forceUpdate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E4%BE%9D%E8%B5%96%E6%94%B6%E9%9B%86"><span class="nav-number">2.2.</span> <span class="nav-text">第二步：依赖收集</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
