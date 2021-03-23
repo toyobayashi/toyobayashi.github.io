@@ -104,3 +104,12 @@ $ git clone ssh://git@<ip>[:<port>]/home/git/repo/test.git
 ``` bash
 $ git remote add myremote ssh://git@<ip>[:<port>]/home/git/repo/test.git
 ```
+
+## Git for windows 汉化
+
+```sh
+curl -o zh_CN.po https://raw.githubusercontent.com/git-for-windows/git/v2.31.0.windows.1/po/zh_CN.po
+msgfmt --check -o git.mo ./zh_CN.po
+mkdirp <git_install_dir>/mingw64/share/locale/zh_CN/LC_MESSAGES
+mv ./git.mo <git_install_dir>/mingw64/share/locale/zh_CN/LC_MESSAGES/
+```
