@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本文介绍如何把 Node.js 编译成安卓平台的动态链接库以及如何通过 JNI 调用 Node.js 的 C++ 接口。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Android 应用中嵌入 Node.js">
+<meta property="og:url" content="https://toyobayashi.github.io/2021/03/29/NodeEmbedding/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="本文介绍如何把 Node.js 编译成安卓平台的动态链接库以及如何通过 JNI 调用 Node.js 的 C++ 接口。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-29T09:12:23.000Z">
+<meta property="article:modified_time" content="2021-03-29T10:45:25.826Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2021/03/29/NodeEmbedding/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>在 Android 应用中嵌入 Node.js | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2021/03/29/NodeEmbedding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在 Android 应用中嵌入 Node.js
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-29 17:12:23 / 修改时间：18:45:25" itemprop="dateCreated datePublished" datetime="2021-03-29T17:12:23+08:00">2021-03-29</time>
+            </span>
+
+          
+            <span id="/2021/03/29/NodeEmbedding/" class="post-meta-item leancloud_visitors" data-flag-title="在 Android 应用中嵌入 Node.js" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/29/NodeEmbedding/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/29/NodeEmbedding/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍如何把 Node.js 编译成安卓平台的动态链接库以及如何通过 JNI 调用 Node.js 的 C++ 接口。</p>
+<a id="more"></a>
+
+<h1 id="编译成动态库"><a href="#编译成动态库" class="headerlink" title="编译成动态库"></a>编译成动态库</h1><ul>
+<li>编译环境：Ubuntu 20.04</li>
+<li>Node.js 版本：目前最新的 LTS v14.16.0</li>
+<li>NDK 版本：21.0.6113669</li>
+<li>Python 版本：3.8.5</li>
+</ul>
+<p>去 Github 上把这个版本的源码下载下来解压，打开 <code>android-configure</code> 文件，在倒数第三行加一个反斜杠 <code>\</code>，倒数第二行加上 <code>--shared</code> 参数：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -f <span class="string">&quot;configure&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    ./configure \</span><br><span class="line">        --dest-cpu=<span class="variable">$DEST_CPU</span> \</span><br><span class="line">        --dest-os=android \</span><br><span class="line">        --without-snapshot \</span><br><span class="line">        --openssl-no-asm \</span><br><span class="line">        --cross-compiling \</span><br><span class="line">        --shared</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>在终端 cd 进源码目录，运行编译脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ./android-configure &lt;NDK目录&gt; &lt;目标架构&gt; &lt;安卓SDK版本&gt;</span></span><br><span class="line">./android-configure ~/ndk/path arm64 23</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<p>编译要花点时间，耐心点等编译完了会输出 <code>out/Release/libnode.so</code>。</p>
+<p>在源码根目录运行以下命令，会把头文件生成输出在 <code>headers</code> 目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEADERS_ONLY=1 python3 ./tools/install.py install headers /</span><br></pre></td></tr></table></figure>
+
+<h1 id="Android-工程以及-CMake-配置"><a href="#Android-工程以及-CMake-配置" class="headerlink" title="Android 工程以及 CMake 配置"></a>Android 工程以及 CMake 配置</h1><p>创建工程选 <code>Native C++</code> 模板。</p>
+<p>App 模块的 Gradle 配置加上 <code>externalNativeBuild</code>：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        externalNativeBuild &#123;</span><br><span class="line">            cmake &#123;</span><br><span class="line">                cppFlags <span class="string">&quot;&quot;</span></span><br><span class="line">                <span class="comment">// 必须要选 c++_shared，才会把 libc++_shared.so 打包进 apk里</span></span><br><span class="line">                arguments <span class="string">&quot;-DANDROID_STL=c++_shared&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">            path <span class="string">&quot;src/main/cpp/CMakeLists.txt&quot;</span></span><br><span class="line">            version <span class="string">&quot;3.10.2&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>把编译好的动态库和生成的头文件丢进安卓项目里，比如</p>
+<p>把动态库放在 <code>src/main/cpp/lib/libnode.so</code></p>
+<p>把头文件放在 <code>src/main/cpp/include/node</code></p>
+<p>CMakeLists.txt 就这样写：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建动态库编译目标 native-lib</span></span><br><span class="line"><span class="keyword">add_library</span>(native-lib SHARED</span><br><span class="line">    <span class="comment"># 下面是源文件列表，空格回车都可以分割</span></span><br><span class="line">    xxx.cpp</span><br><span class="line">    yyy.cpp</span><br><span class="line">    zzz.cpp)</span><br><span class="line"></span><br><span class="line"><span class="comment"># native-lib 目标的私有包含目录</span></span><br><span class="line"><span class="keyword">target_include_directories</span>(native-lib PRIVATE</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/<span class="keyword">include</span>/node)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安卓的 logcat 库，保存在 log-lib 变量中</span></span><br><span class="line"><span class="keyword">find_library</span>(log-lib log)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建预编译动态库目标，名字是 imported-node-lib</span></span><br><span class="line"><span class="keyword">add_library</span>(imported-node-lib</span><br><span class="line">    SHARED</span><br><span class="line">    IMPORTED)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置这个预编译库的路径</span></span><br><span class="line"><span class="keyword">set_target_properties</span>(imported-node-lib</span><br><span class="line">    PROPERTIES IMPORTED_LOCATION <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/lib/libnode.so)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把要用的库链接到 native-lib</span></span><br><span class="line"><span class="keyword">target_link_libraries</span>(native-lib</span><br><span class="line">    imported-node-lib</span><br><span class="line">    <span class="variable">$&#123;log-lib&#125;</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="Node-js-C-API"><a href="#Node-js-C-API" class="headerlink" title="Node.js C++ API"></a>Node.js C++ API</h1><p>头文件和库都有了，可以开始写代码了。</p>
+<p>嵌入 C++ 代码可以参考<a target="_blank" rel="noopener" href="https://github.com/nodejs/node/blob/v14.16.0/doc/api/embedding.md">官方文档</a>。</p>
+<h2 id="进程初始化"><a href="#进程初始化" class="headerlink" title="进程初始化"></a>进程初始化</h2><p>要使用 Node.js，首先要初始化 libuv &amp; Node.js &amp; v8 引擎，每个<strong>进程</strong>只能初始化一次。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 全局假的命令行参数和 v8 platform 单例</span></span><br><span class="line"><span class="keyword">namespace</span> &#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>&gt; args = &#123; <span class="string">&quot;node&quot;</span> &#125;;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>&gt; exec_args;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>&gt; errors;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;node::MultiIsolatePlatform&gt; platform;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// std::vector&lt;std::string&gt; 转 char**，这里不给出实现</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Args</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  Args() <span class="keyword">noexcept</span>;</span><br><span class="line">  ~Args();</span><br><span class="line"></span><br><span class="line">  Args(<span class="keyword">const</span> Args&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">  Args&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Args&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">parse</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>&gt;&amp; arr)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">char</span>** <span class="title">data</span><span class="params">()</span> <span class="keyword">const</span> <span class="keyword">noexcept</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">size_t</span> <span class="title">size</span><span class="params">()</span> <span class="keyword">const</span> <span class="keyword">noexcept</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">char</span>** p;</span><br><span class="line">  <span class="keyword">size_t</span> len;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">initializeNode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Args cliArgs;</span><br><span class="line">  cliArgs.parse(args);</span><br><span class="line">  uv_setup_args(cliArgs.size(), cliArgs.data());</span><br><span class="line">  <span class="keyword">int</span> exit_code = node::InitializeNodeWithArgs(&amp;args, &amp;exec_args, &amp;errors);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; error : errors)</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s: %s\n&quot;</span>, args[<span class="number">0</span>].c_str(), error.c_str());</span><br><span class="line">  <span class="keyword">if</span> (exit_code != <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> exit_code;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  platform = node::MultiIsolatePlatform::Create(<span class="number">4</span>);</span><br><span class="line">  v8::V8::InitializePlatform(platform.get());</span><br><span class="line">  v8::V8::Initialize();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JNI 胶水：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> JNIEXPORT jint JNICALL</span><br><span class="line">Java_com_github_toyobayashi_nodeexample_NodeJs_setupNode(JNIEnv *env, jclass clazz) &#123;</span><br><span class="line">  <span class="keyword">return</span> initializeNode();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NodeJs</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> &#123;</span><br><span class="line">    System.loadLibrary(<span class="string">&quot;native-lib&quot;</span>);</span><br><span class="line">    setupNode();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">setupNode</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行-Node-js-实例"><a href="#运行-Node-js-实例" class="headerlink" title="运行 Node.js 实例"></a>运行 Node.js 实例</h2><p>初始化完了以后，就可以创建 Node.js 实例，执行 JavaScript 代码，实现差不多是下面这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> EvalCallback =</span><br><span class="line">  <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>(<span class="keyword">const</span> v8::Local&lt;v8::Context&gt;&amp;, <span class="keyword">const</span> v8::Local&lt;v8::Value&gt;&amp;, <span class="keyword">void</span>*)&gt;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// JNI 环境，方便传到 JS 的原生函数里要用</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">JNIContext</span> &#123;</span></span><br><span class="line">  JNIEnv* env;</span><br><span class="line">  jobject thiz;</span><br><span class="line">  jclass clazz;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">runNodeInstance</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  JNIEnv* jniEnv,</span></span></span><br><span class="line"><span class="function"><span class="params">  jobject javaContext,</span></span></span><br><span class="line"><span class="function"><span class="params">  jclass javaClass,</span></span></span><br><span class="line"><span class="function"><span class="params">  <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; script,</span></span></span><br><span class="line"><span class="function"><span class="params">  EvalCallback callback,</span></span></span><br><span class="line"><span class="function"><span class="params">  <span class="keyword">void</span>* data,</span></span></span><br><span class="line"><span class="function"><span class="params">  <span class="built_in">std</span>::<span class="built_in">string</span>* errout</span></span></span><br><span class="line"><span class="function"><span class="params">)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 初始化事件循环</span></span><br><span class="line">  <span class="keyword">int</span> exit_code = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">uv_loop_t</span> loop;</span><br><span class="line">  <span class="keyword">int</span> ret = uv_loop_init(&amp;loop);</span><br><span class="line">  <span class="keyword">if</span> (ret != <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s: Failed to initialize loop: %s\n&quot;</span>,</span><br><span class="line">            args[<span class="number">0</span>].c_str(),</span><br><span class="line">            uv_err_name(ret));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 创建 v8 虚拟机</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;node::ArrayBufferAllocator&gt; allocator = node::ArrayBufferAllocator::Create();</span><br><span class="line">  v8::Isolate* isolate = node::NewIsolate(allocator, &amp;loop, platform.get());</span><br><span class="line">  <span class="keyword">if</span> (isolate == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s: Failed to initialize V8 Isolate\n&quot;</span>, args[<span class="number">0</span>].c_str());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  JNIContext jnictx;</span><br><span class="line">  jnictx.env = jniEnv;</span><br><span class="line">  jnictx.thiz = javaContext;</span><br><span class="line">  jnictx.clazz = javaClass;</span><br><span class="line"></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="function">v8::Locker <span class="title">locker</span><span class="params">(isolate)</span></span>;</span><br><span class="line">    v8::<span class="function">Isolate::Scope <span class="title">isolate_scope</span><span class="params">(isolate)</span></span>;</span><br><span class="line"></span><br><span class="line">    std::unique_ptr&lt;node::IsolateData, decltype(&amp;node::FreeIsolateData)&gt; isolate_data(</span><br><span class="line">        node::CreateIsolateData(isolate, &amp;loop, platform.get(), allocator.get()),</span><br><span class="line">        node::FreeIsolateData);</span><br><span class="line"></span><br><span class="line">    <span class="function">v8::HandleScope <span class="title">handle_scope</span><span class="params">(isolate)</span></span>;</span><br><span class="line">    v8::Local&lt;v8::Context&gt; context = node::NewContext(isolate);</span><br><span class="line">    <span class="keyword">if</span> (context.IsEmpty()) &#123;</span><br><span class="line">      <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s: Failed to initialize V8 Context\n&quot;</span>, args[<span class="number">0</span>].c_str());</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加自己的全局变量，实现在后文给出</span></span><br><span class="line">    addGlobals(context, &amp;jnictx);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 要先进入 v8 上下文作用域</span></span><br><span class="line">    v8::<span class="function">Context::Scope <span class="title">context_scope</span><span class="params">(context)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建 Node.js 环境实例</span></span><br><span class="line">    std::unique_ptr&lt;node::Environment, decltype(&amp;node::FreeEnvironment)&gt; env(</span><br><span class="line">        node::CreateEnvironment(isolate_data.get(), context, args, exec_args),</span><br><span class="line">        node::FreeEnvironment);</span><br><span class="line"></span><br><span class="line">    <span class="function">v8::TryCatch <span class="title">trycatch</span><span class="params">(isolate)</span></span>; <span class="comment">// 捕获 JS 异常</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置 Node.js 环境实例</span></span><br><span class="line">    <span class="comment">// 重写 console.log 方法，打印到 logcat，并把 require 函数挂到 global 上</span></span><br><span class="line">    <span class="comment">// androidLogd 是 addGlobals 加进去的</span></span><br><span class="line">    v8::MaybeLocal&lt;v8::Value&gt; loadenv_ret = node::LoadEnvironment(env.get(), </span><br><span class="line">      <span class="string">&quot;(function () &#123;&quot;</span></span><br><span class="line">        <span class="string">&quot;const androidLogd = globalThis.androidLogd;&quot;</span></span><br><span class="line">        <span class="string">&quot;delete globalThis.androidLogd;&quot;</span></span><br><span class="line">        <span class="string">&quot;console.log = function log (...args) &#123; androidLogd(require(&#x27;util&#x27;).format(...args)) &#125;;&quot;</span></span><br><span class="line">        <span class="string">&quot;console.info = function info (...args) &#123; androidLogd(require(&#x27;util&#x27;).format(...args)) &#125;;&quot;</span></span><br><span class="line">        <span class="string">&quot;console.debug = function debug (...args) &#123; androidLogd(require(&#x27;util&#x27;).format(...args)) &#125;;&quot;</span></span><br><span class="line">        <span class="string">&quot;console.warn = function warn (...args) &#123; androidLogd(require(&#x27;util&#x27;).format(...args)) &#125;;&quot;</span></span><br><span class="line">        <span class="string">&quot;console.error = function error (...args) &#123; androidLogd(require(&#x27;util&#x27;).format(...args)) &#125;;&quot;</span></span><br><span class="line">      <span class="string">&quot;&#125;)();&quot;</span></span><br><span class="line">      <span class="string">&quot;globalThis.require = require(&#x27;module&#x27;).createRequire(process.cwd() + &#x27;/&#x27;);&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (loadenv_ret.IsEmpty()) &#123;</span><br><span class="line">      <span class="comment">// JS 抛错了</span></span><br><span class="line">      <span class="keyword">if</span> (trycatch.HasCaught()) &#123;</span><br><span class="line">        v8::<span class="function">String::Utf8Value <span class="title">err</span><span class="params">(isolate, trycatch.Exception())</span></span>;</span><br><span class="line">        <span class="keyword">if</span> (errout) *errout = ToCString(err);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用 v8 引擎编译运行传进来的 JS 脚本字符串</span></span><br><span class="line">    v8::Local&lt;v8::String&gt; runScript = v8::String::NewFromUtf8(isolate, script.c_str()).ToLocalChecked();</span><br><span class="line">    <span class="keyword">auto</span> maybe_script = v8::Script::Compile(context, runScript);</span><br><span class="line">    <span class="keyword">if</span> (maybe_script.IsEmpty()) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> script_result = maybe_script.ToLocalChecked()-&gt;Run(context);</span><br><span class="line">    <span class="keyword">if</span> (script_result.IsEmpty()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (trycatch.HasCaught()) &#123;</span><br><span class="line">        v8::<span class="function">String::Utf8Value <span class="title">err</span><span class="params">(isolate, trycatch.Exception())</span></span>;</span><br><span class="line">        <span class="keyword">if</span> (errout) *errout = ToCString(err);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    callback(context, script_result.ToLocalChecked(), data);</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">// 开启事件循环，处理 JS 的异步任务</span></span><br><span class="line">      <span class="function">v8::SealHandleScope <span class="title">seal</span><span class="params">(isolate)</span></span>;</span><br><span class="line">      <span class="keyword">bool</span> more;</span><br><span class="line">      <span class="keyword">do</span> &#123;</span><br><span class="line">        uv_run(&amp;loop, UV_RUN_DEFAULT);</span><br><span class="line"></span><br><span class="line">        platform-&gt;DrainTasks(isolate);</span><br><span class="line">        more = uv_loop_alive(&amp;loop);</span><br><span class="line">        <span class="keyword">if</span> (more) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">        node::EmitBeforeExit(env.get());</span><br><span class="line">        more = uv_loop_alive(&amp;loop);</span><br><span class="line">      &#125; <span class="keyword">while</span> (more == <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    exit_code = node::EmitExit(env.get());</span><br><span class="line"></span><br><span class="line">    node::Stop(env.get());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 代码跑完了，销毁 v8 虚拟机，关闭事件循环</span></span><br><span class="line">  <span class="keyword">bool</span> platform_finished = <span class="literal">false</span>;</span><br><span class="line">  platform-&gt;AddIsolateFinishedCallback(isolate, [](<span class="keyword">void</span>* data) &#123;</span><br><span class="line">    *<span class="keyword">static_cast</span>&lt;<span class="keyword">bool</span>*&gt;(data) = <span class="literal">true</span>;</span><br><span class="line">  &#125;, &amp;platform_finished);</span><br><span class="line">  platform-&gt;UnregisterIsolate(isolate);</span><br><span class="line">  isolate-&gt;Dispose();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Wait until the platform has cleaned up all relevant resources.</span></span><br><span class="line">  <span class="keyword">while</span> (!platform_finished)</span><br><span class="line">    uv_run(&amp;loop, UV_RUN_ONCE);</span><br><span class="line">  <span class="keyword">int</span> err = uv_loop_close(&amp;loop);</span><br><span class="line">  assert(err == <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> exit_code;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="JNI-胶水示例"><a href="#JNI-胶水示例" class="headerlink" title="JNI 胶水示例"></a>JNI 胶水示例</h2><p>运行 Java 传过来的 JS 脚本字符串，得到一个 double 值：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">string</span> <span class="title">runInThisContext</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; script)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;(function()&#123; return require(&#x27;vm&#x27;).runInThisContext(&#x27;&quot;</span> + <span class="built_in">std</span>::regex_replace(script, <span class="built_in">std</span>::regex(<span class="string">&quot;&#x27;&quot;</span>), <span class="string">&quot;\\&#x27;&quot;</span>) + <span class="string">&quot;&#x27;) &#125;)()&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span></span><br><span class="line">JNIEXPORT jdouble JNICALL</span><br><span class="line">Java_com_github_toyobayashi_nodeexample_NodeJs_evalDouble(JNIEnv *env, jobject instance, jstring script) &#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> errmsg;</span><br><span class="line">  <span class="keyword">double</span> result = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span>* scriptString = env-&gt;GetStringUTFChars(script, JNI_FALSE);</span><br><span class="line">  jclass NodeJs = env-&gt;GetObjectClass(instance);</span><br><span class="line">  jfieldID contextId = env-&gt;GetFieldID(NodeJs, <span class="string">&quot;context&quot;</span>, <span class="string">&quot;Landroid/content/Context;&quot;</span>);</span><br><span class="line">  jobject context = env-&gt;GetObjectField(instance, contextId);</span><br><span class="line">  <span class="keyword">int</span> r = runNodeInstance(</span><br><span class="line">    env,</span><br><span class="line">    context,</span><br><span class="line">    <span class="literal">nullptr</span>,</span><br><span class="line">    runInThisContext(scriptString),</span><br><span class="line">    [](<span class="keyword">const</span> v8::Local&lt;v8::Context&gt;&amp; context, <span class="keyword">const</span> v8::Local&lt;v8::Value&gt;&amp; value, <span class="keyword">void</span>* data) &#123;</span><br><span class="line">      <span class="keyword">if</span> (data != <span class="literal">nullptr</span> &amp;&amp; value-&gt;IsNumber()) &#123;</span><br><span class="line">        *<span class="keyword">static_cast</span>&lt;<span class="keyword">double</span>*&gt;(data) = value-&gt;NumberValue(context).ToChecked();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, &amp;result, &amp;errmsg);</span><br><span class="line">  env-&gt;ReleaseStringUTFChars(script, scriptString);</span><br><span class="line">  <span class="keyword">if</span> (r != <span class="number">0</span>) &#123;</span><br><span class="line">      env-&gt;ThrowNew(env-&gt;FindClass(<span class="string">&quot;java/lang/Exception&quot;</span>), errmsg.c_str());</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NodeJs</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> &#123;</span><br><span class="line">    System.loadLibrary(<span class="string">&quot;native-lib&quot;</span>);</span><br><span class="line">    setupNode();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">setupNode</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">double</span> <span class="title">evalDouble</span><span class="params">(String script)</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> Context context;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">NodeJs</span><span class="params">(Context ctx)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.context = ctx;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行 Java 传过来的 JS 脚本文件路径：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">string</span> <span class="title">moduleLoadEntry</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; path)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;(function()&#123; const require = globalThis.require; delete globalThis.require; return require(&#x27;module&#x27;)._load(&#x27;&quot;</span> + <span class="built_in">std</span>::regex_replace(path, <span class="built_in">std</span>::regex(<span class="string">&quot;&#x27;&quot;</span>), <span class="string">&quot;\\&#x27;&quot;</span>) + <span class="string">&quot;&#x27;, null, true) &#125;)()&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span></span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL</span><br><span class="line">Java_com_github_toyobayashi_nodeexample_NodeJs_runMain(JNIEnv *env, jobject instance, jstring path) &#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> errmsg;</span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span>* pathString = env-&gt;GetStringUTFChars(path, JNI_FALSE);</span><br><span class="line">  jclass NodeJs = env-&gt;GetObjectClass(instance);</span><br><span class="line">  jfieldID contextId = env-&gt;GetFieldID(NodeJs, <span class="string">&quot;context&quot;</span>, <span class="string">&quot;Landroid/content/Context;&quot;</span>);</span><br><span class="line">  jobject context = env-&gt;GetObjectField(instance, contextId);</span><br><span class="line">  <span class="keyword">int</span> r = runNodeInstance(</span><br><span class="line">    env,</span><br><span class="line">    context,</span><br><span class="line">    <span class="literal">nullptr</span>,</span><br><span class="line">    moduleLoadEntry(pathString),</span><br><span class="line">    [](<span class="keyword">const</span> v8::Local&lt;v8::Context&gt;&amp; context, <span class="keyword">const</span> v8::Local&lt;v8::Value&gt;&amp; value, <span class="keyword">void</span>* data) &#123;&#125;,</span><br><span class="line">    <span class="literal">nullptr</span>, &amp;errmsg);</span><br><span class="line">  env-&gt;ReleaseStringUTFChars(path, pathString);</span><br><span class="line">  <span class="keyword">if</span> (r != <span class="number">0</span>) &#123;</span><br><span class="line">    env-&gt;ThrowNew(env-&gt;FindClass(<span class="string">&quot;java/lang/Exception&quot;</span>), errmsg.c_str());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NodeJs</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> &#123;</span><br><span class="line">    System.loadLibrary(<span class="string">&quot;native-lib&quot;</span>);</span><br><span class="line">    setupNode();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">setupNode</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">runMain</span><span class="params">(String path)</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="JS-调用-Java"><a href="#JS-调用-Java" class="headerlink" title="JS 调用 Java"></a>JS 调用 Java</h2><p>v8 引擎可以把 C++ 原生函数编译成 JS 函数，然后把它挂在全局对象上，原生函数中通过 JNI 调用 Java 的类。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// function toast (string) &#123; Toast.makeText(context, string, Toast.LENGTH_SHORT) &#125;</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">toast</span><span class="params">(<span class="keyword">const</span> v8::FunctionCallbackInfo&lt;v8::Value&gt;&amp; args)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 拿到当前的 v8 虚拟机实例</span></span><br><span class="line">  v8::Isolate* isolate = args.GetIsolate();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 判断 JS 传参数量</span></span><br><span class="line">  <span class="keyword">if</span> (args.Length() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">    isolate-&gt;ThrowException(v8::Exception::TypeError(</span><br><span class="line">        v8::String::NewFromUtf8(isolate, <span class="string">&quot;missing message&quot;</span>).ToLocalChecked()));</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 判断 JS 传参类型</span></span><br><span class="line">  <span class="keyword">if</span> (!args[<span class="number">0</span>]-&gt;IsString()) &#123;</span><br><span class="line">    isolate-&gt;ThrowException(v8::Exception::TypeError(</span><br><span class="line">        v8::String::NewFromUtf8(isolate, <span class="string">&quot;message is not a string&quot;</span>).ToLocalChecked()));</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 调 Java</span></span><br><span class="line">  JNIContext* ctx = <span class="keyword">static_cast</span>&lt;JNIContext*&gt;(args.Data().As&lt;v8::External&gt;()-&gt;Value());</span><br><span class="line">  JNIEnv* env = ctx-&gt;env;</span><br><span class="line">  jclass Toast = env-&gt;FindClass(<span class="string">&quot;android/widget/Toast&quot;</span>);</span><br><span class="line">  jmethodID show = env-&gt;GetMethodID(Toast, <span class="string">&quot;show&quot;</span>, <span class="string">&quot;()V&quot;</span>);</span><br><span class="line"></span><br><span class="line">  jmethodID makeText = env-&gt;GetStaticMethodID(Toast, <span class="string">&quot;makeText&quot;</span>, <span class="string">&quot;(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;&quot;</span>);</span><br><span class="line">  jobject toastObject = env-&gt;CallStaticObjectMethod(Toast, makeText, ctx-&gt;thiz, env-&gt;NewStringUTF(*v8::String::Utf8Value(isolate, args[<span class="number">0</span>])), <span class="number">0</span>);</span><br><span class="line">  env-&gt;CallVoidMethod(toastObject, show);</span><br><span class="line">  args.GetReturnValue().Set(v8::Undefined(isolate));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// function logd (string) &#123; Log.d(TAG, string) &#125;</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">logd</span><span class="params">(<span class="keyword">const</span> v8::FunctionCallbackInfo&lt;v8::Value&gt;&amp; args)</span> </span>&#123;</span><br><span class="line">  v8::Isolate* isolate = args.GetIsolate();</span><br><span class="line">  <span class="keyword">if</span> (args.Length() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">    isolate-&gt;ThrowException(v8::Exception::TypeError(</span><br><span class="line">        v8::String::NewFromUtf8(isolate, <span class="string">&quot;missing message&quot;</span>).ToLocalChecked()));</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!args[<span class="number">0</span>]-&gt;IsString()) &#123;</span><br><span class="line">    isolate-&gt;ThrowException(v8::Exception::TypeError(</span><br><span class="line">        v8::String::NewFromUtf8(isolate, <span class="string">&quot;message is not a string&quot;</span>).ToLocalChecked()));</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  v8::<span class="function">String::Utf8Value <span class="title">str</span><span class="params">(isolate, args[<span class="number">0</span>])</span></span>;</span><br><span class="line">  __android_log_write(ANDROID_LOG_DEBUG, LOG_TAG, *str);</span><br><span class="line">  args.GetReturnValue().Set(v8::Undefined(isolate));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addGlobals</span><span class="params">(<span class="keyword">const</span> v8::Local&lt;v8::Context&gt;&amp; context, JNIContext* jnictx)</span> </span>&#123;</span><br><span class="line">  v8::Isolate* isolate = context-&gt;GetIsolate();</span><br><span class="line">  v8::Local&lt;v8::Object&gt; global = context-&gt;Global();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// global.toast = function () &#123; [native] &#125;</span></span><br><span class="line">  v8::Local&lt;v8::FunctionTemplate&gt; toastTemplate = v8::FunctionTemplate::New(isolate, toast, v8::External::New(isolate, jnictx));</span><br><span class="line">  v8::Local&lt;v8::Function&gt; toastFunction = toastTemplate-&gt;GetFunction(context).ToLocalChecked();</span><br><span class="line">  v8::Local&lt;v8::String&gt; toastName = v8::String::NewFromUtf8(isolate, <span class="string">&quot;toast&quot;</span>).ToLocalChecked();</span><br><span class="line">  toastFunction-&gt;SetName(toastName);</span><br><span class="line">  global-&gt;Set(context, toastName, toastFunction).Check();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// global.androidLogd = function () &#123; [native] &#125;</span></span><br><span class="line">  v8::Local&lt;v8::FunctionTemplate&gt; logTemplate = v8::FunctionTemplate::New(isolate, logd);</span><br><span class="line">  v8::Local&lt;v8::Function&gt; logFunction = logTemplate-&gt;GetFunction(context).ToLocalChecked();</span><br><span class="line">  v8::Local&lt;v8::String&gt; logName = v8::String::NewFromUtf8(isolate, <span class="string">&quot;androidLogd&quot;</span>).ToLocalChecked();</span><br><span class="line">  logFunction-&gt;SetName(logName);</span><br><span class="line">  global-&gt;Set(context, logName, logFunction).Check();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JS 就可以从全局访问这两个原生函数了，从而实现了调用到了 Java 的类。</p>
+<h1 id="源码仓库"><a href="#源码仓库" class="headerlink" title="源码仓库"></a>源码仓库</h1><p>所有源码在<a target="_blank" rel="noopener" href="https://gitee.com/toyobayashi/NodeExample">这里</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"># 学习笔记</a>
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/11/ClassSpecialMembers/" rel="prev" title="如何写好一个 C++ 类">
+      <i class="fa fa-chevron-left"></i> 如何写好一个 C++ 类
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%88%90%E5%8A%A8%E6%80%81%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">编译成动态库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-%E5%B7%A5%E7%A8%8B%E4%BB%A5%E5%8F%8A-CMake-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">Android 工程以及 CMake 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Node-js-C-API"><span class="nav-number">3.</span> <span class="nav-text">Node.js C++ API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">进程初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C-Node-js-%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.2.</span> <span class="nav-text">运行 Node.js 实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JNI-%E8%83%B6%E6%B0%B4%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.3.</span> <span class="nav-text">JNI 胶水示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JS-%E8%B0%83%E7%94%A8-Java"><span class="nav-number">3.4.</span> <span class="nav-text">JS 调用 Java</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E4%BB%93%E5%BA%93"><span class="nav-number">4.</span> <span class="nav-text">源码仓库</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
