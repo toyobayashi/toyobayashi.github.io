@@ -136,12 +136,9 @@ class Args {
 public:
   Args() noexcept;
   ~Args();
-
   Args(const Args&) = delete;
   Args& operator=(const Args&) = delete;
-
   void parse(const std::vector<std::string>& arr);
-
   char** data() const noexcept;
   size_t size() const noexcept;
 private:
@@ -149,10 +146,16 @@ private:
   size_t len;
 };
 
+void _register_android(); // 后面说
 int initializeNode() {
   Args cliArgs;
   cliArgs.parse(args);
   uv_setup_args(cliArgs.size(), cliArgs.data());
+
+  // 在初始化前注册原生模块
+  // JS 通过 process._linkedBinding() 访问
+  _register_android();
+
   int exit_code = node::InitializeNodeWithArgs(&args, &exec_args, &errors);
   for (const std::string& error : errors)
     fprintf(stderr, "%s: %s\n", args[0].c_str(), error.c_str());
@@ -170,22 +173,50 @@ int initializeNode() {
 JNI 胶水：
 
 ```cpp
+// JNI 相关，用于 JS 的原生函数里调 Java
+struct JNIContext {
+  JNIEnv* env;
+  jobject ctx;
+  JNIContext(): env(nullptr), ctx(nullptr) {}
+};
+
+JNIContext jnictx;
+
 extern "C" JNIEXPORT jint JNICALL
-Java_com_github_toyobayashi_nodeexample_NodeJs_setupNode(JNIEnv *env, jclass clazz) {
+Java_com_github_toyobayashi_nodeexample_NodeJs_setupNode(JNIEnv *env, jclass clazz, jobject ctx) {
+  if (jnictx.ctx != nullptr) {
+    env->DeleteGlobalRef(jnictx.ctx);
+  }
+  jnictx.env = env;
+  jnictx.ctx = env->NewGlobalRef(ctx);
   return initializeNode();
 }
 ```
 
 ```java
-class NodeJs {
+public class NodeJs {
   static {
     System.loadLibrary("native-lib");
-    setupNode();
   }
 
-  public native static int setupNode();
+  public native static int setupNode(Context ctx);
   // ...
 }
+
+public class App extends Application {
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    // 初始化 Node.js
+    NodeJs.setupNode(this);
+  }
+}
+```
+
+```xml
+<!-- AndroidManifest.xml -->
+<application
+  android:name=".App" />
 ```
 
 ## 运行 Node.js 实例
@@ -196,22 +227,16 @@ class NodeJs {
 using EvalCallback =
   std::function<void(const v8::Local<v8::Context>&, const v8::Local<v8::Value>&, void*)>;
 
-// JNI 环境，方便传到 JS 的原生函数里要用
-struct JNIContext {
-  JNIEnv* env;
-  jobject thiz;
-  jclass clazz;
-};
+std::mutex mu;
 
 int runNodeInstance(
-  JNIEnv* jniEnv,
-  jobject javaContext,
-  jclass javaClass,
   const std::string& script,
   EvalCallback callback,
   void* data,
   std::string* errout
 ) {
+  // 线程安全  上锁
+  const std::lock_guard<std::mutex> lock(mu);
   // 初始化事件循环
   int exit_code = 0;
   uv_loop_t loop;
@@ -231,11 +256,6 @@ int runNodeInstance(
     return 1;
   }
 
-  JNIContext jnictx;
-  jnictx.env = jniEnv;
-  jnictx.thiz = javaContext;
-  jnictx.clazz = javaClass;
-
   {
     v8::Locker locker(isolate);
     v8::Isolate::Scope isolate_scope(isolate);
@@ -251,9 +271,6 @@ int runNodeInstance(
       return 1;
     }
 
-    // 添加自己的全局变量，实现在后文给出
-    addGlobals(context, &jnictx);
-
     // 要先进入 v8 上下文作用域
     v8::Context::Scope context_scope(context);
 
@@ -266,16 +283,16 @@ int runNodeInstance(
 
     // 设置 Node.js 环境实例
     // 重写 console.log 方法，打印到 logcat，并把 require 函数挂到 global 上
-    // androidLogd 是 addGlobals 加进去的
+    // androidLogd 是前文 _register_android() 加进去的，后面讲
     v8::MaybeLocal<v8::Value> loadenv_ret = node::LoadEnvironment(env.get(), 
       "(function () {"
-        "const androidLogd = globalThis.androidLogd;"
-        "delete globalThis.androidLogd;"
-        "console.log = function log (...args) { androidLogd(require('util').format(...args)) };"
-        "console.info = function info (...args) { androidLogd(require('util').format(...args)) };"
-        "console.debug = function debug (...args) { androidLogd(require('util').format(...args)) };"
-        "console.warn = function warn (...args) { androidLogd(require('util').format(...args)) };"
-        "console.error = function error (...args) { androidLogd(require('util').format(...args)) };"
+        "const androidLogd = process._linkedBinding('android').androidLogd;"
+        "const log = function (...args) { androidLogd(require('util').format(...args)) };"
+        "console.log = log;"
+        "console.info = log;"
+        "console.debug = log;"
+        "console.warn = log;"
+        "console.error = log;"
       "})();"
       "globalThis.require = require('module').createRequire(process.cwd() + '/');");
 
@@ -304,7 +321,9 @@ int runNodeInstance(
       return 1;
     }
 
-    callback(context, script_result.ToLocalChecked(), data);
+    if (callback) {
+      callback(context, script_result.ToLocalChecked(), data);
+    }
 
     {
       // 开启事件循环，处理 JS 的异步任务
@@ -335,7 +354,6 @@ int runNodeInstance(
   platform->UnregisterIsolate(isolate);
   isolate->Dispose();
 
-  // Wait until the platform has cleaned up all relevant resources.
   while (!platform_finished)
     uv_run(&loop, UV_RUN_ONCE);
   int err = uv_loop_close(&loop);
@@ -345,7 +363,7 @@ int runNodeInstance(
 }
 ```
 
-## JNI 胶水示例
+# Java 调用 JS
 
 运行 Java 传过来的 JS 脚本字符串，得到一个 double 值：
 
@@ -360,13 +378,7 @@ Java_com_github_toyobayashi_nodeexample_NodeJs_evalDouble(JNIEnv *env, jobject i
   std::string errmsg;
   double result = 0;
   const char* scriptString = env->GetStringUTFChars(script, JNI_FALSE);
-  jclass NodeJs = env->GetObjectClass(instance);
-  jfieldID contextId = env->GetFieldID(NodeJs, "context", "Landroid/content/Context;");
-  jobject context = env->GetObjectField(instance, contextId);
   int r = runNodeInstance(
-    env,
-    context,
-    nullptr,
     runInThisContext(scriptString),
     [](const v8::Local<v8::Context>& context, const v8::Local<v8::Value>& value, void* data) {
       if (data != nullptr && value->IsNumber()) {
@@ -386,17 +398,10 @@ Java_com_github_toyobayashi_nodeexample_NodeJs_evalDouble(JNIEnv *env, jobject i
 public class NodeJs {
   static {
     System.loadLibrary("native-lib");
-    setupNode();
   }
 
-  public native static int setupNode();
+  public native static int setupNode(Context ctx);
   public native double evalDouble(String script) throws Exception;
-
-  private Context context;
-  public NodeJs(Context ctx) {
-    this.context = ctx;
-  }
-  // ...
 }
 ```
 
@@ -412,15 +417,9 @@ JNIEXPORT void JNICALL
 Java_com_github_toyobayashi_nodeexample_NodeJs_runMain(JNIEnv *env, jobject instance, jstring path) {
   std::string errmsg;
   const char* pathString = env->GetStringUTFChars(path, JNI_FALSE);
-  jclass NodeJs = env->GetObjectClass(instance);
-  jfieldID contextId = env->GetFieldID(NodeJs, "context", "Landroid/content/Context;");
-  jobject context = env->GetObjectField(instance, contextId);
   int r = runNodeInstance(
-    env,
-    context,
-    nullptr,
     moduleLoadEntry(pathString),
-    [](const v8::Local<v8::Context>& context, const v8::Local<v8::Value>& value, void* data) {},
+    EvalCallback{},
     nullptr, &errmsg);
   env->ReleaseStringUTFChars(path, pathString);
   if (r != 0) {
@@ -433,20 +432,20 @@ Java_com_github_toyobayashi_nodeexample_NodeJs_runMain(JNIEnv *env, jobject inst
 public class NodeJs {
   static {
     System.loadLibrary("native-lib");
-    setupNode();
   }
 
-  public native static int setupNode();
+  public native static int setupNode(Context ctx);
   public native void runMain(String path) throws Exception;
-  // ...
 }
 ```
 
-## JS 调用 Java
+# JS 调用 Java
 
-v8 引擎可以把 C++ 原生函数编译成 JS 函数，然后把它挂在全局对象上，原生函数中通过 JNI 调用 Java 的类。
+v8 引擎可以把 C++ 原生函数编译成 JS 函数，然后把它注册到 Node.js 的 linked binding，在 JS 中就可以使用 `process._linkedBinding()` 访问到原生函数，原生函数中通过 JNI 调用 Java 的类。
 
 ```cpp
+JNIContext jnictx; // 回顾前文
+
 // function toast (string) { Toast.makeText(context, string, Toast.LENGTH_SHORT) }
 void toast(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // 拿到当前的 v8 虚拟机实例
@@ -467,13 +466,12 @@ void toast(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 
   // 调 Java
-  JNIContext* ctx = static_cast<JNIContext*>(args.Data().As<v8::External>()->Value());
-  JNIEnv* env = ctx->env;
+  JNIEnv* env = jnictx.env;
   jclass Toast = env->FindClass("android/widget/Toast");
   jmethodID show = env->GetMethodID(Toast, "show", "()V");
 
   jmethodID makeText = env->GetStaticMethodID(Toast, "makeText", "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;");
-  jobject toastObject = env->CallStaticObjectMethod(Toast, makeText, ctx->thiz, env->NewStringUTF(*v8::String::Utf8Value(isolate, args[0])), 0);
+  jobject toastObject = env->CallStaticObjectMethod(Toast, makeText, jnictx.ctx, env->NewStringUTF(*v8::String::Utf8Value(isolate, args[0])), 0);
   env->CallVoidMethod(toastObject, show);
   args.GetReturnValue().Set(v8::Undefined(isolate));
 }
@@ -498,27 +496,52 @@ void logd(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(v8::Undefined(isolate));
 }
 
-void addGlobals(const v8::Local<v8::Context>& context, JNIContext* jnictx) {
+void init(
+  v8::Local<v8::Object> exports,
+  v8::Local<v8::Value> module,
+  v8::Local<v8::Context> context,
+  void* priv
+) {
   v8::Isolate* isolate = context->GetIsolate();
-  v8::Local<v8::Object> global = context->Global();
 
-  // global.toast = function () { [native] }
-  v8::Local<v8::FunctionTemplate> toastTemplate = v8::FunctionTemplate::New(isolate, toast, v8::External::New(isolate, jnictx));
+  // exports.toast = toast;
+  v8::Local<v8::FunctionTemplate> toastTemplate = v8::FunctionTemplate::New(isolate, toast);
   v8::Local<v8::Function> toastFunction = toastTemplate->GetFunction(context).ToLocalChecked();
   v8::Local<v8::String> toastName = v8::String::NewFromUtf8(isolate, "toast").ToLocalChecked();
   toastFunction->SetName(toastName);
-  global->Set(context, toastName, toastFunction).Check();
+  exports->Set(context, toastName, toastFunction).Check();
 
-  // global.androidLogd = function () { [native] }
+  // exports.androidLogd = logd;
   v8::Local<v8::FunctionTemplate> logTemplate = v8::FunctionTemplate::New(isolate, logd);
   v8::Local<v8::Function> logFunction = logTemplate->GetFunction(context).ToLocalChecked();
   v8::Local<v8::String> logName = v8::String::NewFromUtf8(isolate, "androidLogd").ToLocalChecked();
   logFunction->SetName(logName);
-  global->Set(context, logName, logFunction).Check();
+  exports->Set(context, logName, logFunction);
 }
+
+enum {
+  NM_F_BUILTIN = 1 << 0,
+  NM_F_LINKED = 1 << 1,
+  NM_F_INTERNAL = 1 << 2,
+  NM_F_DELETEME = 1 << 3,
+};
+
+// 注册 Node.js 原生绑定
+static node::node_module _module = {
+  NODE_MODULE_VERSION,
+  NM_F_LINKED,
+  nullptr,
+  __FILE__,
+  nullptr,
+  (node::addon_context_register_func)(init),
+  NODE_STRINGIFY(android),
+  nullptr,
+  nullptr
+};
+void _register_android() { node::node_module_register(&_module); }
 ```
 
-JS 就可以从全局访问这两个原生函数了，从而实现了调用到了 Java 的类。
+这样 JS 就可以从 `process._linkedBinding('android')` 访问这两个原生函数了，从而实现调用到了 Java 的类。
 
 # 源码仓库
 
