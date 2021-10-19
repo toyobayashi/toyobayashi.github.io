@@ -125,7 +125,7 @@ target_link_libraries(native-lib
 ```cpp
 // 全局假的命令行参数和 v8 platform 单例
 namespace {
-  std::vector<std::string> args = { "node" };
+  std::vector<std::string> args;
   std::vector<std::string> exec_args;
   std::vector<std::string> errors;
   std::unique_ptr<node::MultiIsolatePlatform> platform;
@@ -146,15 +146,11 @@ private:
   size_t len;
 };
 
-void _register_android(); // 后面说
 int initializeNode() {
   Args cliArgs;
+  args = { "node" };
   cliArgs.parse(args);
   uv_setup_args(cliArgs.size(), cliArgs.data());
-
-  // 在初始化前注册原生模块
-  // JS 通过 process._linkedBinding() 访问
-  _register_android();
 
   int exit_code = node::InitializeNodeWithArgs(&args, &exec_args, &errors);
   for (const std::string& error : errors)
@@ -166,6 +162,7 @@ int initializeNode() {
   platform = node::MultiIsolatePlatform::Create(4);
   v8::V8::InitializePlatform(platform.get());
   v8::V8::Initialize();
+  NodeInstance::Get(); // 创建 NodeInstance 单例
   return 0;
 }
 ```
@@ -227,139 +224,178 @@ public class App extends Application {
 using EvalCallback =
   std::function<void(const v8::Local<v8::Context>&, const v8::Local<v8::Value>&, void*)>;
 
-std::mutex mu;
+class NodeInstance {
+public:
+  uv_loop_t loop_;
+  std::shared_ptr<node::ArrayBufferAllocator> allocator_;
+  v8::Isolate* isolate_;
+  node::IsolateData* isolate_data_;
+  node::Environment* env_;
+  v8::Global<v8::Context> context_;
+  std::mutex mu_;
 
-int runNodeInstance(
-  const std::string& script,
-  EvalCallback callback,
-  void* data,
-  std::string* errout
-) {
-  // 线程安全  上锁
-  const std::lock_guard<std::mutex> lock(mu);
-  // 初始化事件循环
-  int exit_code = 0;
-  uv_loop_t loop;
-  int ret = uv_loop_init(&loop);
+  NodeInstance() noexcept:
+    loop_(),
+    allocator_(nullptr),
+    isolate_(nullptr),
+    isolate_data_(nullptr),
+    env_(nullptr),
+    context_(),
+    mu_() {}
+
+  int Eval(const std::string& script,
+           const EvalCallback& callback,
+           void* data,
+           std::string* errout);
+
+  void SpinEventLoop();
+
+  static NodeInstance* instance;
+  static NodeInstance* Get();
+  static int Free();
+};
+
+NodeInstance* NodeInstance::instance = nullptr;
+
+void NodeInstance::SpinEventLoop() {
+  v8::SealHandleScope seal(isolate_);
+  bool more;
+  do {
+    uv_run(&loop_, UV_RUN_DEFAULT);
+
+    platform->DrainTasks(isolate_);
+    more = uv_loop_alive(&loop_);
+    if (more) continue;
+    node::EmitBeforeExit(env_);
+    more = uv_loop_alive(&loop_);
+  } while (more);
+}
+
+NodeInstance* NodeInstance::Get() {
+  if (instance != nullptr) return instance;
+  std::unique_ptr<NodeInstance> node_instance = std::make_unique<NodeInstance>();
+  int ret = uv_loop_init(&node_instance->loop_);
   if (ret != 0) {
     fprintf(stderr, "%s: Failed to initialize loop: %s\n",
             args[0].c_str(),
             uv_err_name(ret));
-    return 1;
+    return nullptr;
+  }
+  node_instance->allocator_ = node::ArrayBufferAllocator::Create();
+
+  node_instance->isolate_ = node::NewIsolate(node_instance->allocator_, &node_instance->loop_, platform.get());
+  if (node_instance->isolate_ == nullptr) {
+    fprintf(stderr, "%s: Failed to initialize V8 Isolate\n", args[0].c_str());
+    return nullptr;
   }
 
-  // 创建 v8 虚拟机
-  std::shared_ptr<node::ArrayBufferAllocator> allocator = node::ArrayBufferAllocator::Create();
-  v8::Isolate* isolate = node::NewIsolate(allocator, &loop, platform.get());
-  if (isolate == nullptr) {
-    fprintf(stderr, "%s: Failed to initialize V8 Isolate\n", args[0].c_str());
-    return 1;
+  v8::Locker locker(node_instance->isolate_);
+  v8::Isolate::Scope isolate_scope(node_instance->isolate_);
+  node_instance->isolate_data_ = node::CreateIsolateData(node_instance->isolate_, &node_instance->loop_, platform.get(), node_instance->allocator_.get());
+
+  v8::HandleScope handle_scope(node_instance->isolate_);
+  v8::Local<v8::Context> context = node::NewContext(node_instance->isolate_);
+  node_instance->context_.Reset(node_instance->isolate_, context);
+
+  if (context.IsEmpty()) {
+    fprintf(stderr, "%s: Failed to initialize V8 Context\n", args[0].c_str());
+    return nullptr;
   }
+
+  v8::Context::Scope context_scope(context);
+  node_instance->env_ = node::CreateEnvironment(node_instance->isolate_data_, context, args, exec_args);
+  node::AddLinkedBinding(node_instance->env_, "android", init, nullptr); // 后文讲
+
+  v8::TryCatch trycatch(node_instance->isolate_);
+  v8::MaybeLocal<v8::Value> loadenv_ret = node::LoadEnvironment(node_instance->env_,
+    "(function () {"
+    "const androidLogd = process._linkedBinding('android').androidLogd;"
+    "const log = function (...args) { androidLogd(require('util').format(...args)) };"
+    "console.log = log;"
+    "console.info = log;"
+    "console.debug = log;"
+    "console.warn = log;"
+    "console.error = log;"
+    "})();"
+    "globalThis.require = require('module').createRequire(process.cwd() + '/');");
+
+  if (loadenv_ret.IsEmpty()) {
+    // There has been a JS exception.
+    if (trycatch.HasCaught()) {
+      v8::String::Utf8Value err(node_instance->isolate_, trycatch.Exception());
+      const char* errmsg = *err;
+      fprintf(stderr, "%s\n", errmsg);
+    }
+    return nullptr;
+  }
+  node_instance->SpinEventLoop();
+  instance = node_instance.release();
+  return instance;
+}
+
+int NodeInstance::Free() {
+  if (!instance) return 0;
+  NodeInstance *node_instance = instance;
+  v8::Isolate* isolate = node_instance->isolate_;
+  bool platform_finished = false;
+  int exit_code;
 
   {
     v8::Locker locker(isolate);
     v8::Isolate::Scope isolate_scope(isolate);
+    exit_code = node::EmitExit(node_instance->env_);
+    node::Stop(node_instance->env_);
+    node::FreeEnvironment(node_instance->env_);
 
-    std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> isolate_data(
-        node::CreateIsolateData(isolate, &loop, platform.get(), allocator.get()),
-        node::FreeIsolateData);
-
-    v8::HandleScope handle_scope(isolate);
-    v8::Local<v8::Context> context = node::NewContext(isolate);
-    if (context.IsEmpty()) {
-      fprintf(stderr, "%s: Failed to initialize V8 Context\n", args[0].c_str());
-      return 1;
-    }
-
-    // 要先进入 v8 上下文作用域
-    v8::Context::Scope context_scope(context);
-
-    // 创建 Node.js 环境实例
-    std::unique_ptr<node::Environment, decltype(&node::FreeEnvironment)> env(
-        node::CreateEnvironment(isolate_data.get(), context, args, exec_args),
-        node::FreeEnvironment);
-
-    v8::TryCatch trycatch(isolate); // 捕获 JS 异常
-
-    // 设置 Node.js 环境实例
-    // 重写 console.log 方法，打印到 logcat，并把 require 函数挂到 global 上
-    // androidLogd 是前文 _register_android() 加进去的，后面讲
-    v8::MaybeLocal<v8::Value> loadenv_ret = node::LoadEnvironment(env.get(), 
-      "(function () {"
-        "const androidLogd = process._linkedBinding('android').androidLogd;"
-        "const log = function (...args) { androidLogd(require('util').format(...args)) };"
-        "console.log = log;"
-        "console.info = log;"
-        "console.debug = log;"
-        "console.warn = log;"
-        "console.error = log;"
-      "})();"
-      "globalThis.require = require('module').createRequire(process.cwd() + '/');");
-
-    if (loadenv_ret.IsEmpty()) {
-      // JS 抛错了
-      if (trycatch.HasCaught()) {
-        v8::String::Utf8Value err(isolate, trycatch.Exception());
-        if (errout) *errout = ToCString(err);
-      }
-      return 1;
-    }
-
-    // 使用 v8 引擎编译运行传进来的 JS 脚本字符串
-    v8::Local<v8::String> runScript = v8::String::NewFromUtf8(isolate, script.c_str()).ToLocalChecked();
-    auto maybe_script = v8::Script::Compile(context, runScript);
-    if (maybe_script.IsEmpty()) {
-      return 1;
-    }
-
-    auto script_result = maybe_script.ToLocalChecked()->Run(context);
-    if (script_result.IsEmpty()) {
-      if (trycatch.HasCaught()) {
-        v8::String::Utf8Value err(isolate, trycatch.Exception());
-        if (errout) *errout = ToCString(err);
-      }
-      return 1;
-    }
-
-    if (callback) {
-      callback(context, script_result.ToLocalChecked(), data);
-    }
-
-    {
-      // 开启事件循环，处理 JS 的异步任务
-      v8::SealHandleScope seal(isolate);
-      bool more;
-      do {
-        uv_run(&loop, UV_RUN_DEFAULT);
-
-        platform->DrainTasks(isolate);
-        more = uv_loop_alive(&loop);
-        if (more) continue;
-
-        node::EmitBeforeExit(env.get());
-        more = uv_loop_alive(&loop);
-      } while (more == true);
-    }
-
-    exit_code = node::EmitExit(env.get());
-
-    node::Stop(env.get());
+    platform->AddIsolateFinishedCallback(isolate, [](void *data) {
+      *static_cast<bool *>(data) = true;
+    }, &platform_finished);
+    platform->UnregisterIsolate(isolate);
+    node_instance->context_.Reset();
+    node::FreeIsolateData(node_instance->isolate_data_);
   }
 
-  // 代码跑完了，销毁 v8 虚拟机，关闭事件循环
-  bool platform_finished = false;
-  platform->AddIsolateFinishedCallback(isolate, [](void* data) {
-    *static_cast<bool*>(data) = true;
-  }, &platform_finished);
-  platform->UnregisterIsolate(isolate);
   isolate->Dispose();
-
+  node_instance->allocator_.reset();
   while (!platform_finished)
-    uv_run(&loop, UV_RUN_ONCE);
-  int err = uv_loop_close(&loop);
+    uv_run(&node_instance->loop_, UV_RUN_ONCE);
+  int err = uv_loop_close(&node_instance->loop_);
   assert(err == 0);
-
+  instance = nullptr;
   return exit_code;
+}
+
+int NodeInstance::Eval(const std::string& script,
+                       const EvalCallback& callback,
+                       void* data,
+                       std::string* errout) {
+  const std::lock_guard<std::mutex> lock(mu_);
+  v8::Locker locker(isolate_);
+  v8::Isolate::Scope isolate_scope(isolate_);
+  v8::HandleScope handle_scope(isolate_);
+  v8::Local<v8::String> runScript = v8::String::NewFromUtf8(isolate_, script.c_str()).ToLocalChecked();
+  auto context = context_.Get(isolate_);
+  v8::Context::Scope context_scope(context);
+  auto maybe_script = v8::Script::Compile(context, runScript);
+  if (maybe_script.IsEmpty()) {
+    return 1;
+  }
+
+  v8::TryCatch trycatch(isolate_);
+  auto script_result = maybe_script.ToLocalChecked()->Run(context);
+  if (script_result.IsEmpty()) {
+    if (trycatch.HasCaught()) {
+      v8::String::Utf8Value err(isolate_, trycatch.Exception());
+      if (errout) *errout = ToCString(err);
+    }
+    return 1;
+  }
+
+  if (callback) {
+    callback(context, script_result.ToLocalChecked(), data);
+  }
+  SpinEventLoop();
+  return 0;
 }
 ```
 
@@ -368,18 +404,14 @@ int runNodeInstance(
 运行 Java 传过来的 JS 脚本字符串，得到一个 double 值：
 
 ```cpp
-std::string runInThisContext(const std::string& script) {
-  return "(function(){ return require('vm').runInThisContext('" + std::regex_replace(script, std::regex("'"), "\\'") + "') })()";
-}
-
 extern "C"
 JNIEXPORT jdouble JNICALL
 Java_com_github_toyobayashi_nodeexample_NodeJs_evalDouble(JNIEnv *env, jobject instance, jstring script) {
   std::string errmsg;
   double result = 0;
   const char* scriptString = env->GetStringUTFChars(script, JNI_FALSE);
-  int r = runNodeInstance(
-    runInThisContext(scriptString),
+  int r = NodeInstance::Get()->Eval(
+    scriptString,
     [](const v8::Local<v8::Context>& context, const v8::Local<v8::Value>& value, void* data) {
       if (data != nullptr && value->IsNumber()) {
         *static_cast<double*>(data) = value->NumberValue(context).ToChecked();
@@ -409,7 +441,7 @@ public class NodeJs {
 
 ```cpp
 std::string moduleLoadEntry(const std::string& path) {
-  return "(function(){ const require = globalThis.require; delete globalThis.require; return require('module')._load('" + std::regex_replace(path, std::regex("'"), "\\'") + "', null, true) })()";
+  return "(function(){ return require('module')._load('" + std::regex_replace(path, std::regex("'"), "\\'") + "', null, true) })()";
 }
 
 extern "C"
@@ -417,7 +449,7 @@ JNIEXPORT void JNICALL
 Java_com_github_toyobayashi_nodeexample_NodeJs_runMain(JNIEnv *env, jobject instance, jstring path) {
   std::string errmsg;
   const char* pathString = env->GetStringUTFChars(path, JNI_FALSE);
-  int r = runNodeInstance(
+  int r = NodeInstance::Get()->Eval(
     moduleLoadEntry(pathString),
     EvalCallback{},
     nullptr, &errmsg);
@@ -441,7 +473,13 @@ public class NodeJs {
 
 # JS 调用 Java
 
-v8 引擎可以把 C++ 原生函数编译成 JS 函数，然后把它注册到 Node.js 的 linked binding，在 JS 中就可以使用 `process._linkedBinding()` 访问到原生函数，原生函数中通过 JNI 调用 Java 的类。
+v8 引擎可以把 C++ 原生函数编译成 JS 函数，然后通过 `node::AddLinkedBinding` 把它注册到 Node.js 的 linked binding，在 JS 中就可以使用 `process._linkedBinding()` 访问到原生函数，原生函数中通过 JNI 调用 Java 的类。
+
+`NodeInstance::Get()` 中有一处：
+
+```cpp
+node::AddLinkedBinding(node_instance->env_, "android", init, nullptr);
+```
 
 ```cpp
 JNIContext jnictx; // 回顾前文
@@ -518,27 +556,6 @@ void init(
   logFunction->SetName(logName);
   exports->Set(context, logName, logFunction);
 }
-
-enum {
-  NM_F_BUILTIN = 1 << 0,
-  NM_F_LINKED = 1 << 1,
-  NM_F_INTERNAL = 1 << 2,
-  NM_F_DELETEME = 1 << 3,
-};
-
-// 注册 Node.js 原生绑定
-static node::node_module _module = {
-  NODE_MODULE_VERSION,
-  NM_F_LINKED,
-  nullptr,
-  __FILE__,
-  nullptr,
-  (node::addon_context_register_func)(init),
-  NODE_STRINGIFY(android),
-  nullptr,
-  nullptr
-};
-void _register_android() { node::node_module_register(&_module); }
 ```
 
 这样 JS 就可以从 `process._linkedBinding('android')` 访问这两个原生函数了，从而实现调用到了 Java 的类。
