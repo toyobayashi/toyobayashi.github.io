@@ -560,6 +560,29 @@ void init(
 
 这样 JS 就可以从 `process._linkedBinding('android')` 访问这两个原生函数了，从而实现调用到了 Java 的类。
 
+### Node-API
+
+Linked Binding 也支持用 Node-API（以前称作 NAPI）来写
+
+```cpp
+napi_value NapiModuleInit(napi_env env, napi_value exports) {
+  napi_value world;
+  napi_create_string_utf8(env, "world", NAPI_AUTO_LENGTH, &world);
+  napi_set_named_property(env, exports, "hello", world);
+  return exports;
+}
+
+node::AddLinkedBinding(node_instance->env_, napi_module {
+  NAPI_MODULE_VERSION,
+  node::ModuleFlags::kLinked,
+  __FILE__,
+  NapiModuleInit,
+  "napibinding",
+  nullptr,
+  {0}
+});
+```
+
 # 源码仓库
 
 所有源码在[这里](https://gitee.com/toyobayashi/NodeExample)
