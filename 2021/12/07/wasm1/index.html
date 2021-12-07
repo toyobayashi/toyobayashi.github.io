@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://toyobayashi.github.io').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="面向前端或不熟悉 C&#x2F;C++ 开发人员的 Emscripten WebAssembly 入门介绍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面向前端同学的 Emscripten WebAssembly 介绍（一）">
+<meta property="og:url" content="https://toyobayashi.github.io/2021/12/07/wasm1/index.html">
+<meta property="og:site_name" content="Toyo">
+<meta property="og:description" content="面向前端或不熟悉 C&#x2F;C++ 开发人员的 Emscripten WebAssembly 入门介绍。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-07T09:31:33.000Z">
+<meta property="article:modified_time" content="2021-12-07T10:16:37.484Z">
+<meta property="article:author" content="Toyo">
+<meta property="article:tag" content="技术分享">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://toyobayashi.github.io/2021/12/07/wasm1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>面向前端同学的 Emscripten WebAssembly 介绍（一） | Toyo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Toyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2021/12/07/wasm1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Toyo">
+      <meta itemprop="description" content="Engyo.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Toyo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          面向前端同学的 Emscripten WebAssembly 介绍（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-07 17:31:33 / 修改时间：18:16:37" itemprop="dateCreated datePublished" datetime="2021-12-07T17:31:33+08:00">2021-12-07</time>
+            </span>
+
+          
+            <span id="/2021/12/07/wasm1/" class="post-meta-item leancloud_visitors" data-flag-title="面向前端同学的 Emscripten WebAssembly 介绍（一）" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/07/wasm1/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/07/wasm1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>面向前端或不熟悉 C/C++ 开发人员的 Emscripten WebAssembly 入门介绍。</p>
+<span id="more"></span>
+
+<h1 id="WebAssembly"><a href="#WebAssembly" class="headerlink" title="WebAssembly"></a>WebAssembly</h1><p>MDN 传送门：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/WebAssembly">https://developer.mozilla.org/zh-CN/docs/WebAssembly</a></p>
+<p>WebAssembly 把服务端语言带进了浏览器，在需要大量 CPU 密集运算的场景（如前端加密算法，3D 图形渲染等等）可以弥补 JavaScript 的性能不足，也为 Web 开发生态打开了新的一扇窗。</p>
+<p>支持编译到 WebAssembly 的主流编程语言包括但不限于：</p>
+<ul>
+<li>C/C++</li>
+<li>Rust</li>
+<li>Go</li>
+<li>AssemblyScript (阉割版的 TypeScript)</li>
+</ul>
+<p>目前主流浏览器已支持 WebAssembly，浏览器外也有独立的 WebAssembly 运行时如 wasmtime / wasmer 等等。</p>
+<h1 id="Emscripten"><a href="#Emscripten" class="headerlink" title="Emscripten"></a>Emscripten</h1><h2 id="编译工具链"><a href="#编译工具链" class="headerlink" title="编译工具链"></a>编译工具链</h2><p>C/C++ 在不同平台有不同的编译工具链：</p>
+<ul>
+<li>Windows: Microsoft Visual C++ (<code>cl.exe</code>, <code>link.exe</code>, …)</li>
+<li>Linux: GNU GCC (<code>gcc</code>, <code>g++</code>, …)</li>
+<li>macOS: Clang (<code>clang</code>, <code>clang++</code>, …)</li>
+<li>Android: NDK (<code>aarch64-linux-android23-clang</code>, <code>aarch64-linux-android23-clang++</code>, …)</li>
+</ul>
+<p>这些工具链所做的事情类比前端就相当于是 Webpack / Rollup / Vite + Babel + Terser，把 JS / JSX / TS / TSX / Vue 的模板 / Svelte 的模板转译到 ES5 再打包摇树压缩。</p>
+<p>它们可以将 C/C++ 源码编译到不同 CPU 架构操作系统所支持的机器码，链接出来的可执行文件可以被操作系统直接运行，不像 Java / JavaScript 需要有 JVM / V8 那样的虚拟机来解释执行。</p>
+<p>但是 WebAssembly 有自己的一套二进制标准，它的可执行文件（.wasm）并不直接由操作系统运行，而是由 WebAssembly 虚拟机来运行，WebAssembly 平台的 C/C++ 编译工具链是 <a target="_blank" rel="noopener" href="https://emscripten.org/">Emscripten</a>。</p>
+<ul>
+<li>WebAssembly: Emscripten (<code>emcc</code>, <code>em++</code>, <code>emar</code>, …)</li>
+</ul>
+<h2 id="安装-Emscripten"><a href="#安装-Emscripten" class="headerlink" title="安装 Emscripten"></a>安装 Emscripten</h2><p>官方提供了专门的安装工具 <a target="_blank" rel="noopener" href="https://github.com/emscripten-core/emsdk">emscripten-core/emsdk</a>，使用 emsdk 需要 Git 和 <a target="_blank" rel="noopener" href="https://www.python.org/downloads/">Python 3</a> 环境，安装过程中请保持<strong>良好的网络环境</strong>。</p>
+<p>除此之外，使用 Emscripten 时也需要 Node.js 环境。</p>
+<p>检查环境：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git --version</span><br><span class="line">python -V</span><br><span class="line">node -v</span><br></pre></td></tr></table></figure>
+
+<h3 id="非-Windows"><a href="#非-Windows" class="headerlink" title="非 Windows"></a>非 Windows</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">~/Projects$ git clone https://github.com/emscripten-core/emsdk.git</span><br><span class="line">~/Projects$ cd emsdk</span><br><span class="line">~/Projects/emsdk$ ./emsdk install latest</span><br><span class="line">~/Projects/emsdk$ ./emsdk activate latest</span><br><span class="line">~/Projects/emsdk$ source ./emsdk_env.sh</span><br><span class="line">~/Projects/emsdk$ emcc -v</span><br></pre></td></tr></table></figure>
+
+<p>加环境变量</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> EMSDK=~/Projects/emsdk</span><br><span class="line"><span class="built_in">export</span> PATH=~/Projects/emsdk:~/Projects/emsdk/upstream/emscripten:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Projects&gt; git clone https://github.com/emscripten-core/emsdk.git</span><br><span class="line">C:\Projects&gt; cd emsdk</span><br><span class="line">C:\Projects\emsdk&gt; emsdk install latest</span><br><span class="line">C:\Projects\emsdk&gt; emsdk activate latest</span><br><span class="line">C:\Projects\emsdk&gt; emcc -v</span><br></pre></td></tr></table></figure>
+
+<p>编辑系统环境变量</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> EMSDK=C:\Projects\emsdk</span><br><span class="line"><span class="built_in">set</span> <span class="built_in">PATH</span>=<span class="variable">%Path%</span>;C:\Projects\emsdk;C:\Projects\emsdk\upstream\emscripten</span><br></pre></td></tr></table></figure>
+
+<h1 id="编译-Hello-World"><a href="#编译-Hello-World" class="headerlink" title="编译 Hello World"></a>编译 Hello World</h1><p>以下是 C 语言的 Hello World 代码，命名为 <code>main.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Hello World\n&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc -o main.js main.c</span><br></pre></td></tr></table></figure>
+
+<p>生成了 <code>main.js</code> 和 <code>main.wasm</code>。</p>
+<p>启动本地服务在浏览器中运行：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;main.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到 Console 输出了 <code>Hello World</code>。</p>
+<h2 id="编译过程"><a href="#编译过程" class="headerlink" title="编译过程"></a>编译过程</h2><p>C/C++ 源码的编译过程分以下几个步骤：</p>
+<ol>
+<li>预处理（Preprocessing）</li>
+<li>编译（Compilation）</li>
+<li>汇编（Assemble）</li>
+<li>链接（Linking）</li>
+</ol>
+<p>预处理阶段会处理源码中的 <code>#include</code>、<code>#ifdef</code>、<code>#define</code> 等等编译器指令，可以近似理解为是代码复制粘贴加替换。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc -E -o main.i main.c</span><br></pre></td></tr></table></figure>
+
+<p>编译阶段会把预处理得到的代码转换成文本格式的汇编代码（.s）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc -S -o main.s main.i</span><br></pre></td></tr></table></figure>
+
+<p>汇编阶段会由上一步得到的汇编代码生成二进制格式的目标文件（.o）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc -c -o main.o main.s</span><br></pre></td></tr></table></figure>
+
+<p>每个编译单元都会经过这三个步骤生成一个目标文件，如果源文件中不 include 其他源文件，那么一个源文件就是一个编译单元。等价于 <code>emcc -c -o main.o main.c</code>。这三步类比前端就像是 Webpack 的 <code>DefinePlugin</code> 在编译时就处理了代码中的 <code>process.env.NODE_ENV</code>，根据配置的值自动删掉了 if else 走不到的分支，然后 Babel 转译 ESNext JS / JSX 源码到 Pure ES5。</p>
+<p>链接阶段会把多个目标文件和需要用到的库文件（静态链接库或动态链接库）链接输出最终的可执行文件或动态链接库。不过 Emscripten 没有动态链接库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc -o main.js main.o [xxx.o xxx.o xxx.a]</span><br></pre></td></tr></table></figure>
+
+<p>类比前端就像是 Webpack 把全部 JS 模块打包成一个 JS 文件，并且经过了 tree shaking 和压缩，把没有用到的代码都去掉了。</p>
+<p><code>emcc -o main.js main.c</code> 这个命令是一次性做完了所有步骤，一步到位生成了可执行文件。</p>
+<p>如果要编译多个源文件，一般会用到 Makefile 或 CMake 来配置构建，本质上还是把所有编译单元编译成目标文件，最后再进行链接。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">emcc -c -o file1.o file1.c</span><br><span class="line">emcc -c -o file2.o file2.c</span><br><span class="line">emcc -c -o file3.o file3.c</span><br><span class="line">emcc -o out.js file1.o file2.o file3.o library1.a library2.a</span><br></pre></td></tr></table></figure>
+
+<p>更多 emcc 的参数用法在<a target="_blank" rel="noopener" href="https://emscripten.org/docs/tools_reference/emcc.html">这里</a>查看。</p>
+<h2 id="编译目标类型"><a href="#编译目标类型" class="headerlink" title="编译目标类型"></a>编译目标类型</h2><p>C/C++ 最终的编译目标可以是可执行文件、静态链接库或动态链接库。</p>
+<h3 id="可执行文件"><a href="#可执行文件" class="headerlink" title="可执行文件"></a>可执行文件</h3><p>Windows 的可执行文件后缀是 <code>.exe</code>，Linux / macOS / Android 的可执行文件没有后缀，Emscripten 的可执行文件后缀是 <code>.wasm</code>。</p>
+<p>可执行文件是链接时生成的包含机器码的二进制文件，操作系统的可执行文件可以由操作系统直接运行。</p>
+<p>类比前端就像是 <code>&lt;script&gt;</code> 引入的 JS 文件。</p>
+<h3 id="静态链接库"><a href="#静态链接库" class="headerlink" title="静态链接库"></a>静态链接库</h3><p>Windows 的静态链接库后缀是 <code>.lib</code>，Linux / macOS / Android / Emscripten 的静态链接库后缀都是 <code>.a</code>。</p>
+<p>静态链接库是由编译后的目标文件打包生成的结果，在链接时传给链接器，链接器会去目标文件里寻找最终可执行文件或动态链接库要用的函数符号。</p>
+<p>类比前端就像是 node_modules 里的 package，Webpack 打包时静态解析 <code>import</code> 和 <code>require</code>，把 node_modules 里包打进了最终的 JS 里。</p>
+<h3 id="动态链接库"><a href="#动态链接库" class="headerlink" title="动态链接库"></a>动态链接库</h3><p>Windows 的动态链接库后缀是 <code>.dll</code>，Linux / Android 的动态链接库后缀是 <code>.so</code>，macOS 的动态链接库后缀是 <code>.dylib</code>，Emscripten 不存在真正意义上的动态链接库，有也只是把 <code>.wasm</code> 改个后缀名改成了 <code>.so</code>。</p>
+<p>动态链接库和可执行文件类似，都经过链接生成，包含机器码，但是动态链接库不能直接运行，必须在可执行文件运行时动态装入内存再运行。</p>
+<p>类比前端就像是 Webpack 动态 <code>import()</code> 分出来的包，可以按需加载。</p>
+<h1 id="从-C-C-导出函数给-JavaScript"><a href="#从-C-C-导出函数给-JavaScript" class="headerlink" title="从 C/C++ 导出函数给 JavaScript"></a>从 C/C++ 导出函数给 JavaScript</h1><p>一般来说大部分情况使用 WebAssembly 不会直接写 main 函数，而是暴露原生函数给 JS，在 JS 要调用的时候再去调用原生函数。这里我推荐几种做法。</p>
+<h2 id="EMSCRIPTEN-KEEPALIVE"><a href="#EMSCRIPTEN-KEEPALIVE" class="headerlink" title="EMSCRIPTEN_KEEPALIVE"></a>EMSCRIPTEN_KEEPALIVE</h2><p>第一种最原始也是效率最好的办法，就是在函数签名上加上 <code>EMSCRIPTEN_KEEPALIVE</code>，它会告诉编译器这个函数会被用到，不要在“tree shaking”的时候删掉，并且会将函数名加上前缀 <code>_</code> 导出给 JS，就和编译器参数 <code>-sEXPORTED_FUNCTIONS</code> 一样。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lib.c</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;emscripten.h&gt;</span>  <span class="comment">// EMSCRIPTEN_KEEPALIVE</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EXTERN_C extern <span class="meta-string">&quot;C&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EXTERN_C</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果这个源码被 C++ 的编译器编译</span></span><br><span class="line"><span class="comment">// extern &quot;C&quot; 告诉 C++ 编译器不要修饰函数名称</span></span><br><span class="line"><span class="comment">// 按 C 的方式保留原函数名</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// EMSCRIPTEN_KEEPALIVE 展开为 __attribute__((used))</span></span><br><span class="line"><span class="comment">// 告诉编译器不要删掉这个函数，并导出给 JS</span></span><br><span class="line"></span><br><span class="line"><span class="function">EXTERN_C EMSCRIPTEN_KEEPALIVE</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc -o lib.js lib.c</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;lib.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  Module.onRuntimeInitialized = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(Module._add(<span class="number">3</span>, <span class="number">4</span>)); <span class="comment">// 7</span></span></span><br><span class="line"><span class="javascript">  &#125;;</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>用这种方法导出的函数参数只能是数字类型或裸指针（指针也是数字），返回值也只能是数字类型或 <code>void</code>，在 JS 传的参数只能是 <code>number</code> 类型，返回值也只能是 <code>number</code> 或 <code>undefined</code>。</p>
+<h3 id="JS-传字符串给-C"><a href="#JS-传字符串给-C" class="headerlink" title="JS 传字符串给 C"></a>JS 传字符串给 C</h3><p>字符串在 C 中实际上是一个以 0 结尾的字符数组，内存是连续的。如果要把 JS 的 <code>string</code> 传到 C，首先要开辟一块 C 的内存，在把 JS 的字符串放进这段内存里，C 中就可以访问到了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span>  <span class="comment">// printf</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;emscripten.h&gt;</span>  <span class="comment">// EMSCRIPTEN_KEEPALIVE</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">EXTERN_C EMSCRIPTEN_KEEPALIVE</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">log_js_string</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导出 C 的 malloc 和 free 在 JS 中分配和释放 C 的内存</span></span><br><span class="line">emcc -sEXPORTED_FUNCTIONS=[<span class="string">&quot;_malloc&quot;</span>,<span class="string">&quot;_free&quot;</span>] -o lib.js lib.c</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;lib.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  Module.onRuntimeInitialized = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> str = <span class="string">&#x27;Hello World&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    <span class="comment">// utf8 字符串 buffer</span></span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> strBuffer = <span class="keyword">new</span> TextEncoder().encode(str);</span></span><br><span class="line"><span class="javascript">    <span class="comment">/**</span></span></span><br><span class="line"><span class="comment"><span class="javascript">     * 分配字符串所需的内存空间</span></span></span><br><span class="line"><span class="comment"><span class="javascript">     * <span class="doctag">@type <span class="type">&#123;number&#125;</span></span></span></span></span><br><span class="line"><span class="comment"><span class="javascript">     */</span></span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> strPointer = Module._malloc(strBuffer.length + <span class="number">1</span>);</span></span><br><span class="line"><span class="javascript">    <span class="comment">// 把字符串内容复制到 C 的内存中</span></span></span><br><span class="line"><span class="javascript">    Module.HEAPU8.set(strBuffer, strPointer);</span></span><br><span class="line"><span class="javascript">    Module.HEAPU8[strPointer + strBuffer.length] = <span class="number">0</span>; <span class="comment">// 以 0 结尾</span></span></span><br><span class="line"><span class="javascript">    Module._log_js_string(strPointer); <span class="comment">// Hello World</span></span></span><br><span class="line"><span class="javascript">    Module._free(strPointer); <span class="comment">// 用完以后释放内存</span></span></span><br><span class="line"><span class="javascript">  &#125;;</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="C-传字符串给-JS"><a href="#C-传字符串给-JS" class="headerlink" title="C 传字符串给 JS"></a>C 传字符串给 JS</h3><p>同理，传字符串指针，往 JS 分配的内存中写入字符串内容。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span>  <span class="comment">// snprintf</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stddef.h&gt;</span>  <span class="comment">// size_t</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;emscripten.h&gt;</span>  <span class="comment">// EMSCRIPTEN_KEEPALIVE</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">EXTERN_C EMSCRIPTEN_KEEPALIVE</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">get_c_string</span><span class="params">(<span class="keyword">char</span>* out_str, <span class="keyword">size_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (out_str == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">12</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">snprintf</span>(out_str, size, <span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc -sEXPORTED_FUNCTIONS=[<span class="string">&quot;_malloc&quot;</span>,<span class="string">&quot;_free&quot;</span>] -o lib.js lib.c</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;lib.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  Module.onRuntimeInitialized = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="comment">// 第一次调用先获取需要的内存大小</span></span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> size = Module._get_c_string(<span class="number">0</span>, <span class="number">0</span>);</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> strPointer = Module._malloc(size);</span></span><br><span class="line"><span class="javascript">    Module._get_c_string(strPointer, size);</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> strBuffer = <span class="keyword">new</span> <span class="built_in">Uint8Array</span>(Module.HEAPU8.buffer, strPointer, size - <span class="number">1</span>);</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> str = <span class="keyword">new</span> TextDecoder().decode(strBuffer);</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(str); <span class="comment">// Hello World</span></span></span><br><span class="line"><span class="javascript">    Module._free(strPointer);</span></span><br><span class="line"><span class="javascript">  &#125;;</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>原则上内存是谁分配的就由谁来释放。</p>
+<h2 id="embind"><a href="#embind" class="headerlink" title="embind"></a>embind</h2><p>第二种办法是使用 Emscripten 官方提供的 <a target="_blank" rel="noopener" href="https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#embind">Embind</a> 来绑定 C++ 的函数和类到 JavaScript 对象，写起来更自然，类似 Node.js 的 NAPI，没有了传参类型的限制。</p>
+<p>使用这个特性时必须用 C++ 语言，编译命令必须加上链接器选项 <code>--bind</code>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span>  <span class="comment">// std::string</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span>  <span class="comment">// std::cout</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;emscripten/bind.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">LogJsString</span><span class="params">(<span class="keyword">const</span> std::string&amp; str)</span> </span>&#123;</span><br><span class="line">  std::cout &lt;&lt; str &lt;&lt; <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">std::string <span class="title">GetCppString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;Hello World&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">EMSCRIPTEN_BINDINGS</span>(my_module) &#123;</span><br><span class="line">  emscripten::<span class="built_in">function</span>(<span class="string">&quot;add&quot;</span>, Add);</span><br><span class="line">  emscripten::<span class="built_in">function</span>(<span class="string">&quot;logJsString&quot;</span>, LogJsString);</span><br><span class="line">  emscripten::<span class="built_in">function</span>(<span class="string">&quot;getCppString&quot;</span>, GetCppString);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -sDISABLE_EXCEPTION_CATCHING=0 启用 C++ 异常</span></span><br><span class="line"><span class="comment"># -sALLOW_MEMORY_GROWTH=1 内存超出初始化的大小时自动开辟新内存</span></span><br><span class="line"><span class="comment"># --bind 启用 embind</span></span><br><span class="line">em++ -sDISABLE_EXCEPTION_CATCHING=0 \</span><br><span class="line">     -sALLOW_MEMORY_GROWTH=1 \</span><br><span class="line">     --<span class="built_in">bind</span> \</span><br><span class="line">     -o lib.js \</span><br><span class="line">     lib.cpp</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;lib.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  Module.onRuntimeInitialized = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(Module.add(<span class="number">3</span>, <span class="number">4</span>)); <span class="comment">// 7</span></span></span><br><span class="line"><span class="javascript">    Module.logJsString(<span class="string">&#x27;Hello World&#x27;</span>); <span class="comment">// Hello World</span></span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> str = Module.getCppString();</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(str); <span class="comment">// Hello World</span></span></span><br><span class="line"><span class="javascript">  &#125;;</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="类型映射"><a href="#类型映射" class="headerlink" title="类型映射"></a>类型映射</h3><p>上面 <code>Add</code> 函数用到的类型 <code>int</code>，Embind 可以自动映射成 JS 的 <code>number</code> 类型，用 TypeScript 声明来描述的话相当于：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">declare</span> <span class="function"><span class="keyword">function</span> <span class="title">add</span> (<span class="params">a: <span class="built_in">number</span>, b: <span class="built_in">number</span></span>): <span class="title">number</span></span></span><br></pre></td></tr></table></figure>
+
+<p>也就是说 JS 调用的时候可以传 <code>number</code> 类型进来，如果传别的类型就会抛错。</p>
+<p>下表是 Embind 支持的类型映射：</p>
+<table>
+<thead>
+<tr>
+<th align="left">C++ 类型</th>
+<th>JavaScript 类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>void</code></td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td align="left"><code>bool</code></td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td align="left"><code>char</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>signed char</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned char</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>short</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned short</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>int</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned int</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>long</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>unsigned long</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>float</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>double</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td align="left"><code>std::string</code></td>
+<td><code>string | ArrayBuffer | Uint8Array | Uint8ClampedArray | Int8Array</code></td>
+</tr>
+<tr>
+<td align="left"><code>std::wstring</code></td>
+<td><code>string (utf-16)</code></td>
+</tr>
+<tr>
+<td align="left"><code>emscripten::val</code></td>
+<td><code>any</code></td>
+</tr>
+</tbody></table>
+<p>值得注意的是 <code>emscripten::val</code> 这个类，定义在 <code>&lt;emscripten/val.h&gt;</code> 里面，它可以映射成任意 JS 类型，相当于是 NAPI 的 <code>Napi::Value</code>，可以用它来直接操作 JS 对象。</p>
+<p>比如这样用：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;emscripten/val.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">std::string <span class="title">stringify</span><span class="params">(<span class="keyword">const</span> emscripten::val&amp; jsobj)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (jsobj.<span class="built_in">isString</span>()) &#123;</span><br><span class="line">    <span class="keyword">return</span> jsobj.as&lt;std::string&gt;();</span><br><span class="line">  &#125;</span><br><span class="line">  emscripten::val result = emscripten::val::<span class="built_in">global</span>(<span class="string">&quot;JSON&quot;</span>)</span><br><span class="line">    .call&lt;emscripten::val&gt;(<span class="string">&quot;stringify&quot;</span>, jsobj);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (result.<span class="built_in">isUndefined</span>()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result.as&lt;std::string&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>等价于：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">stringify</span> (<span class="params">jsobj: <span class="built_in">any</span></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> jsobj === <span class="string">&#x27;string&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> jsobj</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> result = <span class="built_in">JSON</span>.stringify(jsobj)</span><br><span class="line">  <span class="keyword">if</span> (result === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Node-API-Emscripten-实现"><a href="#Node-API-Emscripten-实现" class="headerlink" title="Node-API Emscripten 实现"></a>Node-API Emscripten 实现</h2><p>第三种方法是使用 Node.js 原生扩展的 API，官方没有提供，我自己实现了一套 <a target="_blank" rel="noopener" href="https://github.com/toyobayashi/emnapi">emnapi</a>，方便一套代码同时编译到 WebAssembly 和 Node 原生扩展。具体写法请参照代码仓库的 README 和 Node.js 官方文档。</p>
+<h1 id="从-C-C-调用-JavaScript-函数"><a href="#从-C-C-调用-JavaScript-函数" class="headerlink" title="从 C/C++ 调用 JavaScript 函数"></a>从 C/C++ 调用 JavaScript 函数</h1><p>使用 embind 或 Node-API 很容易做到，这里不做介绍。重点介绍 Emscripten 的 JS Library 写法。</p>
+<ol>
+<li><p>写一个 JavaScript 文件 <code>library_add.js</code></p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mergeInto(LibraryManager.library, &#123;</span><br><span class="line">  <span class="attr">add</span>: <span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p> 这个文件是 Emscripten 编译时去运行的，只有函数体的内容会被内联进最终的运行时 JS，生成的内容：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_add</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// _add 会被加入传入 WebAssembly 初始化对象中</span></span><br></pre></td></tr></table></figure></li>
+<li><p>在 C/C++ 中声明函数后直接使用</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.c</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span>  <span class="comment">// printf</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EXTERN_C extern <span class="meta-string">&quot;C&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EXTERN_C</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">EXTERN_C <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, add(<span class="number">3</span>, <span class="number">4</span>));</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>编译命令</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --js-library 可以重复多个，链接时要链接的 JavaScript library</span></span><br><span class="line">emcc --js-library=library_add.js -o main.js main.c</span><br></pre></td></tr></table></figure></li>
+<li><p>HTML</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;main.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/" rel="tag"># 技术分享</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/27/ReactiveReact/" rel="prev" title="用最简单的方法让 React 用上 @vue/reactivity">
+      <i class="fa fa-chevron-left"></i> 用最简单的方法让 React 用上 @vue/reactivity
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WebAssembly"><span class="nav-number">1.</span> <span class="nav-text">WebAssembly</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Emscripten"><span class="nav-number">2.</span> <span class="nav-text">Emscripten</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-number">2.1.</span> <span class="nav-text">编译工具链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Emscripten"><span class="nav-number">2.2.</span> <span class="nav-text">安装 Emscripten</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E-Windows"><span class="nav-number">2.2.1.</span> <span class="nav-text">非 Windows</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows"><span class="nav-number">2.2.2.</span> <span class="nav-text">Windows</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-Hello-World"><span class="nav-number">3.</span> <span class="nav-text">编译 Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B"><span class="nav-number">3.1.</span> <span class="nav-text">编译过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E7%9B%AE%E6%A0%87%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">编译目标类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="nav-number">3.2.1.</span> <span class="nav-text">可执行文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93"><span class="nav-number">3.2.2.</span> <span class="nav-text">静态链接库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93"><span class="nav-number">3.2.3.</span> <span class="nav-text">动态链接库</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E-C-C-%E5%AF%BC%E5%87%BA%E5%87%BD%E6%95%B0%E7%BB%99-JavaScript"><span class="nav-number">4.</span> <span class="nav-text">从 C&#x2F;C++ 导出函数给 JavaScript</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EMSCRIPTEN-KEEPALIVE"><span class="nav-number">4.1.</span> <span class="nav-text">EMSCRIPTEN_KEEPALIVE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JS-%E4%BC%A0%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%BB%99-C"><span class="nav-number">4.1.1.</span> <span class="nav-text">JS 传字符串给 C</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E4%BC%A0%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%BB%99-JS"><span class="nav-number">4.1.2.</span> <span class="nav-text">C 传字符串给 JS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#embind"><span class="nav-number">4.2.</span> <span class="nav-text">embind</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E6%98%A0%E5%B0%84"><span class="nav-number">4.2.1.</span> <span class="nav-text">类型映射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Node-API-Emscripten-%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.3.</span> <span class="nav-text">Node-API Emscripten 实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E-C-C-%E8%B0%83%E7%94%A8-JavaScript-%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">从 C&#x2F;C++ 调用 JavaScript 函数</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Toyo</p>
+  <div class="site-description" itemprop="description">Engyo.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Toyo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.4.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      placeholder: "请开始你的表演",
+      avatar: 'retro',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
