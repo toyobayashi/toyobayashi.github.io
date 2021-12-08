@@ -88,7 +88,7 @@ C:\Projects\emsdk> emcc -v
 
 ```bat
 set EMSDK=C:\Projects\emsdk
-set PATH=%Path%;C:\Projects\emsdk;C:\Projects\emsdk\upstream\emscripten
+set Path=%Path%;C:\Projects\emsdk;C:\Projects\emsdk\upstream\emscripten
 ```
 
 # 编译 Hello World
@@ -473,7 +473,7 @@ function stringify (jsobj: any): string {
     // _add 会被加入传入 WebAssembly 初始化对象中
     ```
 
-2. 在 C/C++ 中声明函数后直接使用
+2. 在 C/C++ 中只声明函数，不写定义（函数体）
 
     ```c
     // main.c
