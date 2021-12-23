@@ -12,39 +12,13 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Consolas:300,300italic,400,400italic,700,700italic|Cascadia Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-
 <script id="hexo-configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    hostname: new URL('https://toyobayashi.github.io').hostname,
-    root: '/',
-    scheme: 'Muse',
-    version: '7.7.0',
-    exturl: false,
-    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
-    bookmark: {"enable":false,"color":"#222","save":"auto"},
-    fancybox: false,
-    mediumzoom: false,
-    lazyload: false,
-    pangu: false,
-    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
-    algolia: {
-      appID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    },
-    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
-    path: '',
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
-  };
-</script>
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"toyobayashi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
   <meta name="description" content="什么三原则五原则六原则，统统不需要！">
 <meta property="og:type" content="article">
@@ -66,8 +40,9 @@
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome: false,
-    isPost: true
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -110,17 +85,6 @@
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
-  <div class="site-meta">
-
-    <div>
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Toyo</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-  </div>
-
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
@@ -128,11 +92,26 @@
       <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Toyo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
 
+
+
 <nav class="site-nav">
-  
   <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
 
@@ -145,8 +124,11 @@
 
   </li>
   </ul>
-
 </nav>
+
+
+
+
 </div>
     </header>
 
@@ -162,14 +144,13 @@
         <div class="content-wrap">
           
 
-          <div class="content">
+          <div class="content post posts-expand">
             
 
-  <div class="posts-expand">
-      
+    
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2021/03/11/ClassSpecialMembers/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -213,7 +194,7 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/03/11/ClassSpecialMembers/#comments" itemprop="discussionUrl">
+    <a title="valine" href="/2021/03/11/ClassSpecialMembers/#valine-comments" itemprop="discussionUrl">
       <span class="post-comments-count valine-comment-count" data-xid="/2021/03/11/ClassSpecialMembers/" itemprop="commentCount"></span>
     </a>
   </span>
@@ -230,7 +211,7 @@
 
       
         <p>什么三原则五原则六原则，统统不需要！</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h1 id="类的关注点与特殊成员函数"><a href="#类的关注点与特殊成员函数" class="headerlink" title="类的关注点与特殊成员函数"></a>类的关注点与特殊成员函数</h1><p>代码写出来除了运行，也是给人看的。拿到一个类的代码，我们阅读时关注的是（按优先级）：</p>
 <ul>
@@ -261,7 +242,7 @@
 </li>
 </ul>
 <p>所以要按这样的顺序写：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 成员变量，一眼看出这个类大概有什么东西</span></span><br><span class="line">  A a_;</span><br><span class="line">  B b_;</span><br><span class="line">  C* c_;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 析构函数里可以看出这个类有没有指针成员需要释放</span></span><br><span class="line">  <span class="comment">// 有 virtual 就可以继承</span></span><br><span class="line">  <span class="keyword">virtual</span> ~MyClass() <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果声明了其它构造函数，编译器不会提供默认构造函数</span></span><br><span class="line">  <span class="comment">// 所以类如果需要默认构造，要跟在析构函数后面出现</span></span><br><span class="line">  <span class="comment">// 这样可以一眼看出能不能默认构造、默认构造在干什么</span></span><br><span class="line">  MyClass() <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 拷贝构造和拷贝赋值</span></span><br><span class="line">  MyClass(<span class="keyword">const</span> MyClass&amp;);</span><br><span class="line">  MyClass&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> MyClass&amp;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 移动构造和移动赋值</span></span><br><span class="line">  MyClass(MyClass&amp;&amp;) <span class="keyword">noexcept</span>;</span><br><span class="line">  MyClass&amp; <span class="keyword">operator</span>=(MyClass&amp;&amp;) <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 其它构造函数和成员函数</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 成员变量，一眼看出这个类大概有什么东西</span></span><br><span class="line">  A a_;</span><br><span class="line">  B b_;</span><br><span class="line">  C* c_;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 析构函数里可以看出这个类有没有指针成员需要释放</span></span><br><span class="line">  <span class="comment">// 有 virtual 就可以继承</span></span><br><span class="line">  <span class="keyword">virtual</span> ~<span class="built_in">MyClass</span>() <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果声明了其它构造函数，编译器不会提供默认构造函数</span></span><br><span class="line">  <span class="comment">// 所以类如果需要默认构造，要跟在析构函数后面出现</span></span><br><span class="line">  <span class="comment">// 这样可以一眼看出能不能默认构造、默认构造在干什么</span></span><br><span class="line">  <span class="built_in">MyClass</span>() <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 拷贝构造和拷贝赋值</span></span><br><span class="line">  <span class="built_in">MyClass</span>(<span class="keyword">const</span> MyClass&amp;);</span><br><span class="line">  MyClass&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> MyClass&amp;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 移动构造和移动赋值</span></span><br><span class="line">  <span class="built_in">MyClass</span>(MyClass&amp;&amp;) <span class="keyword">noexcept</span>;</span><br><span class="line">  MyClass&amp; <span class="keyword">operator</span>=(MyClass&amp;&amp;) <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 其它构造函数和成员函数</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <h1 id="编译器行为"><a href="#编译器行为" class="headerlink" title="编译器行为"></a>编译器行为</h1><p>一张表说明一切</p>
 <table>
@@ -351,17 +332,13 @@
 </tbody></table>
 <h1 id="套餐选择"><a href="#套餐选择" class="headerlink" title="套餐选择"></a>套餐选择</h1><ol>
 <li><p>不写特殊成员（不存在指针释放的简单类）</p>
- <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Normal</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Normal</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
 <li><p>像上面那样按优先级顺序写全（容器）</p>
 </li>
 <li><p>只可移动不可拷贝（系统资源封装，如文件描述符）</p>
- <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ResourceHandle</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  ~ResourceHandle() <span class="keyword">noexcept</span>;</span><br><span class="line">  ResourceHandle() <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ResourceHandle(const ResourceHandle&amp;) = delete;</span></span><br><span class="line">  <span class="comment">// ResourceHandle&amp; operator=(const ResourceHandle&amp;) = delete;</span></span><br><span class="line"></span><br><span class="line">  ResourceHandle(ResourceHandle&amp;&amp; other) <span class="keyword">noexcept</span>;</span><br><span class="line">  ResourceHandle&amp; <span class="keyword">operator</span>=(ResourceHandle&amp;&amp; other) <span class="keyword">noexcept</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ResourceHandle</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  ~<span class="built_in">ResourceHandle</span>() <span class="keyword">noexcept</span>;</span><br><span class="line">  <span class="built_in">ResourceHandle</span>() <span class="keyword">noexcept</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ResourceHandle(const ResourceHandle&amp;) = delete;</span></span><br><span class="line">  <span class="comment">// ResourceHandle&amp; operator=(const ResourceHandle&amp;) = delete;</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">ResourceHandle</span>(ResourceHandle&amp;&amp; other) <span class="keyword">noexcept</span>;</span><br><span class="line">  ResourceHandle&amp; <span class="keyword">operator</span>=(ResourceHandle&amp;&amp; other) <span class="keyword">noexcept</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
 <li><p>不可拷贝不可移动</p>
- <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Immovable</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  Immovable(<span class="keyword">const</span> Immovable&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">  Immovable&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Immovable&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Immovable(Immovable&amp;&amp; other) noexcept;</span></span><br><span class="line">  <span class="comment">// Immovable&amp; operator=(Immovable&amp;&amp; other) noexcept;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-</li>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Immovable</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Immovable</span>(<span class="keyword">const</span> Immovable&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">  Immovable&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Immovable&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Immovable(Immovable&amp;&amp; other) noexcept;</span></span><br><span class="line">  <span class="comment">// Immovable&amp; operator=(Immovable&amp;&amp; other) noexcept;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>特别注意：析构函数会使编译器提供的的拷贝变危险，使编译器不提供移动构造和移动赋值。所以如果写了析构函数最好把拷贝和移动都显式地写全。</p>
 
@@ -397,7 +374,6 @@
   
   
 
-  </div>
 
 
           </div>
@@ -406,7 +382,7 @@
 
 <script>
   window.addEventListener('tabs:register', () => {
-    let activeClass = CONFIG.comments.activeClass;
+    let { activeClass } = CONFIG.comments;
     if (CONFIG.comments.storage) {
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
@@ -463,7 +439,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -491,6 +467,8 @@
       <div class="footer-inner">
         
 
+        
+
 <div class="copyright">
   
   &copy; 
@@ -500,10 +478,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Toyo</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.4.0
-  </div>
-  <span class="post-meta-divider">|</span>
-  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         
@@ -567,20 +542,20 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       return GUEST.includes(item);
     });
     new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
-      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey     : 'RqVWBpqChiOJVNyg1jSQ1chJ',
       placeholder: "请开始你的表演",
-      avatar: 'retro',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: true,
-      lang: '' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
     });
   }, window.Valine);
 });

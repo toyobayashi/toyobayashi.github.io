@@ -12,39 +12,13 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Consolas:300,300italic,400,400italic,700,700italic|Cascadia Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-
 <script id="hexo-configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    hostname: new URL('https://toyobayashi.github.io').hostname,
-    root: '/',
-    scheme: 'Muse',
-    version: '7.7.0',
-    exturl: false,
-    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
-    bookmark: {"enable":false,"color":"#222","save":"auto"},
-    fancybox: false,
-    mediumzoom: false,
-    lazyload: false,
-    pangu: false,
-    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
-    algolia: {
-      appID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    },
-    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
-    path: '',
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
-  };
-</script>
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"toyobayashi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
   <meta name="description" content="Windows下 node-gyp 使用 VS 2019 的 VC 工具集编译踩坑记录。">
 <meta property="og:type" content="article">
@@ -66,8 +40,9 @@
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome: false,
-    isPost: true
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -110,17 +85,6 @@
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
-  <div class="site-meta">
-
-    <div>
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Toyo</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-  </div>
-
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
@@ -128,11 +92,26 @@
       <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Toyo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
 
+
+
 <nav class="site-nav">
-  
   <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
 
@@ -145,8 +124,11 @@
 
   </li>
   </ul>
-
 </nav>
+
+
+
+
 </div>
     </header>
 
@@ -162,14 +144,13 @@
         <div class="content-wrap">
           
 
-          <div class="content">
+          <div class="content post posts-expand">
             
 
-  <div class="posts-expand">
-      
+    
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2019/04/04/NodeGypAndVS2019/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -219,7 +200,7 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/04/04/NodeGypAndVS2019/#comments" itemprop="discussionUrl">
+    <a title="valine" href="/2019/04/04/NodeGypAndVS2019/#valine-comments" itemprop="discussionUrl">
       <span class="post-comments-count valine-comment-count" data-xid="/2019/04/04/NodeGypAndVS2019/" itemprop="commentCount"></span>
     </a>
   </span>
@@ -236,7 +217,7 @@
 
       
         <p>Windows下 <code>node-gyp</code> 使用 VS 2019 的 VC 工具集编译踩坑记录。</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h1 id="现状"><a href="#现状" class="headerlink" title="现状"></a>现状</h1><p>写这篇笔记时 <code>node-gyp</code> 版本还是八个月前最新发布的 <code>3.8.0</code>，官方不支持 VS 2019。</p>
 <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><ol>
@@ -258,7 +239,7 @@
 </ul>
 <p>根据需要，修改其中某个或某几个 <code>node-gyp</code> 中的代码。</p>
 <p><code>node-gyp/lib/configure.js</code> 152 行左右：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (vsSetup) &#123;</span><br><span class="line">  gyp.opts.msvs_version = <span class="string">'2015'</span></span><br><span class="line">  process.env[<span class="string">'GYP_MSVS_VERSION'</span>] = <span class="number">2015</span></span><br><span class="line">  process.env[<span class="string">'GYP_MSVS_OVERRIDE_PATH'</span>] = vsSetup.path</span><br><span class="line">  <span class="comment">// defaults['msbuild_toolset'] = 'v141'</span></span><br><span class="line">  defaults[<span class="string">'msbuild_toolset'</span>] = <span class="string">'v142'</span></span><br><span class="line">  defaults[<span class="string">'msvs_windows_target_platform_version'</span>] = vsSetup.sdk</span><br><span class="line">  <span class="comment">/* variables['msbuild_path'] = path.join(vsSetup.path, 'MSBuild', '15.0',</span></span><br><span class="line"><span class="comment">                                           'Bin', 'MSBuild.exe') */</span></span><br><span class="line">  variables[<span class="string">'msbuild_path'</span>] = path.join(vsSetup.path, <span class="string">'MSBuild'</span>, <span class="string">'Current'</span>,</span><br><span class="line">                                           <span class="string">'Bin'</span>, <span class="string">'MSBuild.exe'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (vsSetup) &#123;</span><br><span class="line">  gyp.opts.msvs_version = <span class="string">&#x27;2015&#x27;</span></span><br><span class="line">  process.env[<span class="string">&#x27;GYP_MSVS_VERSION&#x27;</span>] = <span class="number">2015</span></span><br><span class="line">  process.env[<span class="string">&#x27;GYP_MSVS_OVERRIDE_PATH&#x27;</span>] = vsSetup.path</span><br><span class="line">  <span class="comment">// defaults[&#x27;msbuild_toolset&#x27;] = &#x27;v141&#x27;</span></span><br><span class="line">  defaults[<span class="string">&#x27;msbuild_toolset&#x27;</span>] = <span class="string">&#x27;v142&#x27;</span></span><br><span class="line">  defaults[<span class="string">&#x27;msvs_windows_target_platform_version&#x27;</span>] = vsSetup.sdk</span><br><span class="line">  <span class="comment">/* variables[&#x27;msbuild_path&#x27;] = path.join(vsSetup.path, &#x27;MSBuild&#x27;, &#x27;15.0&#x27;,</span></span><br><span class="line"><span class="comment">                                           &#x27;Bin&#x27;, &#x27;MSBuild.exe&#x27;) */</span></span><br><span class="line">  variables[<span class="string">&#x27;msbuild_path&#x27;</span>] = path.join(vsSetup.path, <span class="string">&#x27;MSBuild&#x27;</span>, <span class="string">&#x27;Current&#x27;</span>,</span><br><span class="line">                                           <span class="string">&#x27;Bin&#x27;</span>, <span class="string">&#x27;MSBuild.exe&#x27;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>把默认的 v141 工具集改成 v142 的，还有把 <code>MSbuild</code> 的寻找路径改一下。</p>
 <h1 id="未解决"><a href="#未解决" class="headerlink" title="未解决"></a>未解决</h1><p>这么一改自己写的原生模块和别的一些原生模块都能编译过了，唯独 <code>sqlite3</code> 编译不过，报错找不到 VS 2015 的 v140 工具集，没有找到原因在哪里。</p>
@@ -296,7 +277,6 @@
   
   
 
-  </div>
 
 
           </div>
@@ -305,7 +285,7 @@
 
 <script>
   window.addEventListener('tabs:register', () => {
-    let activeClass = CONFIG.comments.activeClass;
+    let { activeClass } = CONFIG.comments;
     if (CONFIG.comments.storage) {
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
@@ -362,7 +342,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -390,6 +370,8 @@
       <div class="footer-inner">
         
 
+        
+
 <div class="copyright">
   
   &copy; 
@@ -399,10 +381,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Toyo</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.4.0
-  </div>
-  <span class="post-meta-divider">|</span>
-  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         
@@ -466,20 +445,20 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       return GUEST.includes(item);
     });
     new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
-      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey     : 'RqVWBpqChiOJVNyg1jSQ1chJ',
       placeholder: "请开始你的表演",
-      avatar: 'retro',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: true,
-      lang: '' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
     });
   }, window.Valine);
 });

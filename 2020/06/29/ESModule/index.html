@@ -12,39 +12,13 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Consolas:300,300italic,400,400italic,700,700italic|Cascadia Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-
 <script id="hexo-configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    hostname: new URL('https://toyobayashi.github.io').hostname,
-    root: '/',
-    scheme: 'Muse',
-    version: '7.7.0',
-    exturl: false,
-    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
-    bookmark: {"enable":false,"color":"#222","save":"auto"},
-    fancybox: false,
-    mediumzoom: false,
-    lazyload: false,
-    pangu: false,
-    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
-    algolia: {
-      appID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    },
-    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
-    path: '',
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
-  };
-</script>
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"toyobayashi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
   <meta name="description" content="简要说明 Webpack 和 TypeScript 编译器对 __esModule 的处理方式">
 <meta property="og:type" content="article">
@@ -66,8 +40,9 @@
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome: false,
-    isPost: true
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -110,17 +85,6 @@
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
-  <div class="site-meta">
-
-    <div>
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Toyo</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-  </div>
-
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
@@ -128,11 +92,26 @@
       <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Toyo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
 
+
+
 <nav class="site-nav">
-  
   <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
 
@@ -145,8 +124,11 @@
 
   </li>
   </ul>
-
 </nav>
+
+
+
+
 </div>
     </header>
 
@@ -162,14 +144,13 @@
         <div class="content-wrap">
           
 
-          <div class="content">
+          <div class="content post posts-expand">
             
 
-  <div class="posts-expand">
-      
+    
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2020/06/29/ESModule/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -213,7 +194,7 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/06/29/ESModule/#comments" itemprop="discussionUrl">
+    <a title="valine" href="/2020/06/29/ESModule/#valine-comments" itemprop="discussionUrl">
       <span class="post-comments-count valine-comment-count" data-xid="/2020/06/29/ESModule/" itemprop="commentCount"></span>
     </a>
   </span>
@@ -230,7 +211,7 @@
 
       
         <p>简要说明 Webpack 和 TypeScript 编译器对 <code>__esModule</code> 的处理方式 </p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h1 id="JS-模块化的历史包袱"><a href="#JS-模块化的历史包袱" class="headerlink" title="JS 模块化的历史包袱"></a>JS 模块化的历史包袱</h1><p>最开始的 JS 没有模块化这么一说，在同一个页面中多个 JS 脚本跑在同一个全局上下文中，从上到下顺序跑，污染全局变量，依赖顺序混乱，难维护等等问题就暴露出来了。</p>
 <p>随着 JS 不断发展和 Node.js 的出现，JS 慢慢有了模块化方案。在 ES6 之前，最有名的就是 CommonJS / AMD，AMD 就不提了现在基本不用。CommonJS 被 Node.js 采用至今，与 ES 模块共存。由于 Node.js 早期模块化方案选择了 CommonJS，导致现在 NPM 上仍然存在大量的 CommonJS 模块，JS 圈子一时半会儿是丢不掉 CommonJS 了。</p>
@@ -240,30 +221,30 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESM mod.js</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">bar</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> foo</span><br></pre></td></tr></table></figure>
 
 <p>ES 模块使用侧：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESM index.js</span></span><br><span class="line"><span class="keyword">import</span> defaultExport, &#123; bar &#125; <span class="keyword">from</span> <span class="string">'./mod.js'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESM index.js</span></span><br><span class="line"><span class="keyword">import</span> defaultExport, &#123; bar &#125; <span class="keyword">from</span> <span class="string">&#x27;./mod.js&#x27;</span></span><br></pre></td></tr></table></figure>
 
 <p>CommonJS 模块使用侧：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CJS index.js</span></span><br><span class="line"><span class="keyword">const</span> &#123; <span class="attr">default</span>: defaultExport, bar &#125; = <span class="built_in">require</span>(<span class="string">'./mod.js'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CJS index.js</span></span><br><span class="line"><span class="keyword">const</span> &#123; <span class="attr">default</span>: defaultExport, bar &#125; = <span class="built_in">require</span>(<span class="string">&#x27;./mod.js&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
 <p>ES 的默认导出可以对应 CommonJS 模块导出对象的 default 属性，但是反过来就麻烦了。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CJS mod.js</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="built_in">module</span>.exports = foo</span><br><span class="line"><span class="built_in">module</span>.exports.bar = bar <span class="comment">// foo.bar === bar</span></span><br></pre></td></tr></table></figure>
 
 <p>CommonJS 模块使用侧：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CJS index.js</span></span><br><span class="line"><span class="keyword">const</span> foo = <span class="built_in">require</span>(<span class="string">'./mod.js'</span>)</span><br><span class="line"><span class="keyword">const</span> bar = foo.bar</span><br><span class="line"><span class="comment">// 或 const &#123; bar &#125; = require('./mod.js')</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CJS index.js</span></span><br><span class="line"><span class="keyword">const</span> foo = <span class="built_in">require</span>(<span class="string">&#x27;./mod.js&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> bar = foo.bar</span><br><span class="line"><span class="comment">// 或 const &#123; bar &#125; = require(&#x27;./mod.js&#x27;)</span></span><br></pre></td></tr></table></figure>
 
 <p>ES 模块使用侧：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESM index.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; bar &#125; <span class="keyword">from</span> <span class="string">'./mod.js'</span></span><br><span class="line"><span class="keyword">import</span> foo <span class="keyword">from</span> <span class="string">'./mod.js'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(bar)</span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line"><span class="built_in">console</span>.log(foo())</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESM index.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; bar &#125; <span class="keyword">from</span> <span class="string">&#x27;./mod.js&#x27;</span></span><br><span class="line"><span class="keyword">import</span> foo <span class="keyword">from</span> <span class="string">&#x27;./mod.js&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(bar)</span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line"><span class="built_in">console</span>.log(foo())</span><br></pre></td></tr></table></figure>
 
 <p>可以发现 CommonJS 的 <code>module.exports</code> 没法对应 ES 模块。</p>
 <h1 id="esModule-标识"><a href="#esModule-标识" class="headerlink" title="__esModule 标识"></a>__esModule 标识</h1><p>然后为了解决这个问题，不知道是 JS 圈子里的谁最先提出了 <code>__esModule</code> 这个解决方案，现在市面上的打包器都非常默契地遵守了这个约定。</p>
 <p>表面上看就是把一个导出对象标识为一个 ES 模块：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exports.__esModule = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exports</span>.__esModule = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <p>或</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Object</span>.defineProperty(exports, <span class="string">'__esModule'</span>, &#123; <span class="attr">value</span>: <span class="literal">true</span> &#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Object</span>.defineProperty(<span class="built_in">exports</span>, <span class="string">&#x27;__esModule&#x27;</span>, &#123; <span class="attr">value</span>: <span class="literal">true</span> &#125;)</span><br></pre></td></tr></table></figure>
 
 <h2 id="Webpack-的处理方法"><a href="#Webpack-的处理方法" class="headerlink" title="Webpack 的处理方法"></a>Webpack 的处理方法</h2><p>上面 ES 模块中导入 CommonJS 模块的例子，在 Webpack 4.43.0 打包后变成了这样（去掉所有注释）：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">modules</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">__webpack_require__</span> (<span class="params">moduleId</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  __webpack_require__.d = <span class="function"><span class="keyword">function</span>(<span class="params">exports, name, getter</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!__webpack_require__.o(exports, name)) &#123;</span><br><span class="line">      <span class="built_in">Object</span>.defineProperty(exports, name, &#123; <span class="attr">enumerable</span>: <span class="literal">true</span>, <span class="attr">get</span>: getter &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  __webpack_require__.r = <span class="function"><span class="keyword">function</span>(<span class="params">exports</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">typeof</span> <span class="built_in">Symbol</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">Symbol</span>.toStringTag) &#123;</span><br><span class="line">      <span class="built_in">Object</span>.defineProperty(exports, <span class="built_in">Symbol</span>.toStringTag, &#123; <span class="attr">value</span>: <span class="string">'Module'</span> &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Object</span>.defineProperty(exports, <span class="string">'__esModule'</span>, &#123; <span class="attr">value</span>: <span class="literal">true</span> &#125;); <span class="comment">// &lt;-- 重点</span></span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  __webpack_require__.n = <span class="function"><span class="keyword">function</span>(<span class="params">module</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> getter = <span class="built_in">module</span> &amp;&amp; <span class="built_in">module</span>.__esModule ?</span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">getDefault</span>(<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="built_in">module</span>[<span class="string">'default'</span>]; &#125; :</span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">getModuleExports</span>(<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="built_in">module</span>; &#125;; <span class="comment">// &lt;-- 兼容处理</span></span><br><span class="line">    __webpack_require__.d(getter, <span class="string">'a'</span>, getter);</span><br><span class="line">    <span class="keyword">return</span> getter;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> __webpack_require__(__webpack_require__.s = <span class="number">0</span>);</span><br><span class="line">&#125;)(&#123;</span><br><span class="line">  <span class="string">"./mod.js"</span>: <span class="function"><span class="keyword">function</span> (<span class="params">module, exports</span>) </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">foo</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">    <span class="built_in">module</span>.exports = foo</span><br><span class="line">    <span class="built_in">module</span>.exports.bar = bar</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"./index.js"</span>: <span class="function"><span class="keyword">function</span> (<span class="params">module, __webpack_exports__, __webpack_require__</span>) </span>&#123;</span><br><span class="line"><span class="meta">    "use strict"</span>;</span><br><span class="line">    __webpack_require__.r(__webpack_exports__); <span class="comment">// &lt;-- 标识 ES 模块</span></span><br><span class="line">    <span class="keyword">var</span> _mod_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(<span class="string">"./mod.js"</span>);</span><br><span class="line">    <span class="keyword">var</span> _mod_js__WEBPACK_IMPORTED_MODULE_0___default = __webpack_require__.n(_mod_js__WEBPACK_IMPORTED_MODULE_0__);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(_mod_js__WEBPACK_IMPORTED_MODULE_0__[<span class="string">"bar"</span>])</span><br><span class="line">    <span class="built_in">console</span>.log(_mod_js__WEBPACK_IMPORTED_MODULE_0___default.a)</span><br><span class="line">    <span class="built_in">console</span>.log(_mod_js__WEBPACK_IMPORTED_MODULE_0___default()())</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="number">0</span>: <span class="function"><span class="keyword">function</span> (<span class="params">module, exports, __webpack_require__</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">module</span>.exports = __webpack_require__(<span class="string">"./index.js"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">modules</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">__webpack_require__</span> (<span class="params">moduleId</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  __webpack_require__.d = <span class="function"><span class="keyword">function</span>(<span class="params"><span class="built_in">exports</span>, name, getter</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!__webpack_require__.o(<span class="built_in">exports</span>, name)) &#123;</span><br><span class="line">      <span class="built_in">Object</span>.defineProperty(<span class="built_in">exports</span>, name, &#123; <span class="attr">enumerable</span>: <span class="literal">true</span>, <span class="attr">get</span>: getter &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  __webpack_require__.r = <span class="function"><span class="keyword">function</span>(<span class="params"><span class="built_in">exports</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">typeof</span> <span class="built_in">Symbol</span> !== <span class="string">&#x27;undefined&#x27;</span> &amp;&amp; <span class="built_in">Symbol</span>.toStringTag) &#123;</span><br><span class="line">      <span class="built_in">Object</span>.defineProperty(<span class="built_in">exports</span>, <span class="built_in">Symbol</span>.toStringTag, &#123; <span class="attr">value</span>: <span class="string">&#x27;Module&#x27;</span> &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Object</span>.defineProperty(<span class="built_in">exports</span>, <span class="string">&#x27;__esModule&#x27;</span>, &#123; <span class="attr">value</span>: <span class="literal">true</span> &#125;); <span class="comment">// &lt;-- 重点</span></span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  __webpack_require__.n = <span class="function"><span class="keyword">function</span>(<span class="params"><span class="built_in">module</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> getter = <span class="built_in">module</span> &amp;&amp; <span class="built_in">module</span>.__esModule ?</span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">getDefault</span>(<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="built_in">module</span>[<span class="string">&#x27;default&#x27;</span>]; &#125; :</span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">getModuleExports</span>(<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="built_in">module</span>; &#125;; <span class="comment">// &lt;-- 兼容处理</span></span><br><span class="line">    __webpack_require__.d(getter, <span class="string">&#x27;a&#x27;</span>, getter);</span><br><span class="line">    <span class="keyword">return</span> getter;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> __webpack_require__(__webpack_require__.s = <span class="number">0</span>);</span><br><span class="line">&#125;)(&#123;</span><br><span class="line">  <span class="string">&quot;./mod.js&quot;</span>: <span class="function"><span class="keyword">function</span> (<span class="params"><span class="built_in">module</span>, <span class="built_in">exports</span></span>) </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">foo</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">    <span class="built_in">module</span>.exports = foo</span><br><span class="line">    <span class="built_in">module</span>.exports.bar = bar</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">&quot;./index.js&quot;</span>: <span class="function"><span class="keyword">function</span> (<span class="params"><span class="built_in">module</span>, __webpack_exports__, __webpack_require__</span>) </span>&#123;</span><br><span class="line"><span class="meta">    &quot;use strict&quot;</span>;</span><br><span class="line">    __webpack_require__.r(__webpack_exports__); <span class="comment">// &lt;-- 标识 ES 模块</span></span><br><span class="line">    <span class="keyword">var</span> _mod_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(<span class="string">&quot;./mod.js&quot;</span>);</span><br><span class="line">    <span class="keyword">var</span> _mod_js__WEBPACK_IMPORTED_MODULE_0___default = __webpack_require__.n(_mod_js__WEBPACK_IMPORTED_MODULE_0__);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(_mod_js__WEBPACK_IMPORTED_MODULE_0__[<span class="string">&quot;bar&quot;</span>])</span><br><span class="line">    <span class="built_in">console</span>.log(_mod_js__WEBPACK_IMPORTED_MODULE_0___default.a)</span><br><span class="line">    <span class="built_in">console</span>.log(_mod_js__WEBPACK_IMPORTED_MODULE_0___default()())</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="number">0</span>: <span class="function"><span class="keyword">function</span> (<span class="params"><span class="built_in">module</span>, <span class="built_in">exports</span>, __webpack_require__</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">module</span>.exports = __webpack_require__(<span class="string">&quot;./index.js&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
 <p>可以看到在使用侧导入的默认导出实际上是一个 Getter 函数，读取值的时候访问了其自身的 <code>a</code> 属性，如果 __esModule 为 <code>true</code> 那么 <code>a</code> 就是 <code>module.exports.default</code>，Getter 调用也返回 <code>module.exports.default</code>，否则 <code>a</code> 的值和 Getter 返回值就是 <code>module.exports</code>。所以在 Webpack 中这样用是没有问题的，Webpack 会根据 __esModule 标识来自动处理 CommonJS 的模块导出对象，兼容 ES 模块中的导入。</p>
 <h2 id="TypeScript-的处理方法"><a href="#TypeScript-的处理方法" class="headerlink" title="TypeScript 的处理方法"></a>TypeScript 的处理方法</h2><p>同样的例子，在 TypeScript 3.9.5 中：</p>
@@ -271,12 +252,12 @@
 
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mod.d.ts</span></span><br><span class="line"><span class="keyword">declare</span> <span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>): <span class="title">void</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">declare</span> <span class="keyword">namespace</span> foo &#123;</span><br><span class="line">  <span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>): <span class="title">void</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> = foo;</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESM index.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; bar &#125; <span class="keyword">from</span> <span class="string">'./mod'</span></span><br><span class="line"><span class="keyword">import</span> foo <span class="keyword">from</span> <span class="string">'./mod'</span> <span class="comment">// &lt;-- 必须配置 esModuleInterop: true</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(bar)</span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line"><span class="built_in">console</span>.log(foo())</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESM index.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; bar &#125; <span class="keyword">from</span> <span class="string">&#x27;./mod&#x27;</span></span><br><span class="line"><span class="keyword">import</span> foo <span class="keyword">from</span> <span class="string">&#x27;./mod&#x27;</span> <span class="comment">// &lt;-- 必须配置 esModuleInterop: true</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(bar)</span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line"><span class="built_in">console</span>.log(foo())</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; tsconfig.json</span><br><span class="line">&#123;</span><br><span class="line">  &quot;compilerOptions&quot;: &#123;</span><br><span class="line">    &quot;module&quot;: &quot;commonjs&quot;,</span><br><span class="line">    &quot;target&quot;: &quot;ES2019&quot;,</span><br><span class="line">    &quot;esModuleInterop&quot;: true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// tsconfig.json</span><br><span class="line">&#123;</span><br><span class="line">  &quot;compilerOptions&quot;: &#123;</span><br><span class="line">    &quot;module&quot;: &quot;commonjs&quot;,</span><br><span class="line">    &quot;target&quot;: &quot;ES2019&quot;,</span><br><span class="line">    &quot;esModuleInterop&quot;: true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>输出 <code>index.js</code> 是这样的：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">"use strict"</span>;</span><br><span class="line"><span class="keyword">var</span> __importDefault = (<span class="keyword">this</span> &amp;&amp; <span class="keyword">this</span>.__importDefault) || <span class="function"><span class="keyword">function</span> (<span class="params">mod</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (mod &amp;&amp; mod.__esModule) ? mod : &#123; <span class="string">"default"</span>: mod &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">Object</span>.defineProperty(exports, <span class="string">"__esModule"</span>, &#123; <span class="attr">value</span>: <span class="literal">true</span> &#125;); <span class="comment">// &lt;-- 标识当前模块是 ES 模块</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> mod_1 = <span class="built_in">require</span>(<span class="string">"./mod"</span>);</span><br><span class="line"><span class="keyword">const</span> mod_2 = __importDefault(<span class="built_in">require</span>(<span class="string">"./mod"</span>));</span><br><span class="line"><span class="built_in">console</span>.log(mod_1.bar);</span><br><span class="line"><span class="built_in">console</span>.log(mod_2.default);</span><br><span class="line"><span class="built_in">console</span>.log(mod_2.default());</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&quot;use strict&quot;</span>;</span><br><span class="line"><span class="keyword">var</span> __importDefault = (<span class="built_in">this</span> &amp;&amp; <span class="built_in">this</span>.__importDefault) || <span class="function"><span class="keyword">function</span> (<span class="params">mod</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (mod &amp;&amp; mod.__esModule) ? mod : &#123; <span class="string">&quot;default&quot;</span>: mod &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">Object</span>.defineProperty(<span class="built_in">exports</span>, <span class="string">&quot;__esModule&quot;</span>, &#123; <span class="attr">value</span>: <span class="literal">true</span> &#125;); <span class="comment">// &lt;-- 标识当前模块是 ES 模块</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> mod_1 = <span class="built_in">require</span>(<span class="string">&quot;./mod&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> mod_2 = __importDefault(<span class="built_in">require</span>(<span class="string">&quot;./mod&quot;</span>));</span><br><span class="line"><span class="built_in">console</span>.log(mod_1.bar);</span><br><span class="line"><span class="built_in">console</span>.log(mod_2.default);</span><br><span class="line"><span class="built_in">console</span>.log(mod_2.default());</span><br></pre></td></tr></table></figure>
 
 <p>开启 <code>esModuleInterop</code> 后，如果被导入的模块没有标识 <code>__esModule</code>，则默认导入将直接返回一个只含有 <code>default</code> 属性的对象。如果不开启 <code>esModuleInterop</code> 编译选项，则不能使用默认导入，必须用 <code>import * as mod from &#39;./mod&#39;</code> 才能通过编译。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><code>__esModule</code> 是用来兼容 ES 模块导入 CommonJS 模块默认导出方案。个人推荐向标准看齐，在以后写 CommonJS 模块的时候尽量不要用 module.exports 导出单对象，而是导出具体的属性名 <code>exports.foo = bar</code>。在 ES 模块中也尽量不要用 <code>export default</code>。</p>
@@ -313,7 +294,6 @@
   
   
 
-  </div>
 
 
           </div>
@@ -322,7 +302,7 @@
 
 <script>
   window.addEventListener('tabs:register', () => {
-    let activeClass = CONFIG.comments.activeClass;
+    let { activeClass } = CONFIG.comments;
     if (CONFIG.comments.storage) {
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
@@ -379,7 +359,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -407,6 +387,8 @@
       <div class="footer-inner">
         
 
+        
+
 <div class="copyright">
   
   &copy; 
@@ -416,10 +398,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Toyo</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.4.0
-  </div>
-  <span class="post-meta-divider">|</span>
-  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         
@@ -483,20 +462,20 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       return GUEST.includes(item);
     });
     new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
-      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey     : 'RqVWBpqChiOJVNyg1jSQ1chJ',
       placeholder: "请开始你的表演",
-      avatar: 'retro',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: true,
-      lang: '' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
     });
   }, window.Valine);
 });

@@ -12,39 +12,13 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Consolas:300,300italic,400,400italic,700,700italic|Cascadia Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-
 <script id="hexo-configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    hostname: new URL('https://toyobayashi.github.io').hostname,
-    root: '/',
-    scheme: 'Muse',
-    version: '7.7.0',
-    exturl: false,
-    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
-    bookmark: {"enable":false,"color":"#222","save":"auto"},
-    fancybox: false,
-    mediumzoom: false,
-    lazyload: false,
-    pangu: false,
-    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
-    algolia: {
-      appID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    },
-    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
-    path: '',
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
-  };
-</script>
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"toyobayashi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
   <meta name="description" content="react + @vue&#x2F;reactivity &#x3D; reactivuety">
 <meta property="og:type" content="article">
@@ -66,8 +40,9 @@
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome: false,
-    isPost: true
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -110,17 +85,6 @@
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
-  <div class="site-meta">
-
-    <div>
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Toyo</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-  </div>
-
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
@@ -128,11 +92,26 @@
       <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Toyo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
 
+
+
 <nav class="site-nav">
-  
   <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
 
@@ -145,8 +124,11 @@
 
   </li>
   </ul>
-
 </nav>
+
+
+
+
 </div>
     </header>
 
@@ -162,14 +144,13 @@
         <div class="content-wrap">
           
 
-          <div class="content">
+          <div class="content post posts-expand">
             
 
-  <div class="posts-expand">
-      
+    
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2020/12/13/ReactVue/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -219,7 +200,7 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/12/13/ReactVue/#comments" itemprop="discussionUrl">
+    <a title="valine" href="/2020/12/13/ReactVue/#valine-comments" itemprop="discussionUrl">
       <span class="post-comments-count valine-comment-count" data-xid="/2020/12/13/ReactVue/" itemprop="commentCount"></span>
     </a>
   </span>
@@ -236,7 +217,7 @@
 
       
         <p>react + @vue/reactivity = reactivuety</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h1 id="关于-vue-reactivity"><a href="#关于-vue-reactivity" class="headerlink" title="关于 @vue/reactivity"></a>关于 @vue/reactivity</h1><p>Vue 3 的核心响应式实现都在这个库里。</p>
 <h2 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h2><p><code>ref()</code> / <code>shallowRef()</code> 返回一个 <code>RefImpl</code>。</p>
@@ -255,23 +236,23 @@
 <h2 id="effect"><a href="#effect" class="headerlink" title="effect"></a>effect</h2><p>重头戏。<code>effect(fn, options)</code> 返回一个包装 fn 后的 runner 函数，如果设置 <code>options.lazy</code> 为 false 或不设置，fn 立即执行，如果设置为 true，可以自行手动调用 runner 执行 fn。fn 里的 ref / reactive 如果被访问过值就会被依赖收集，被收集过的响应式对象如果值变了，<code>options.scheduler</code> 就会执行，如果没有设置 <code>options.scheduler</code>，那么 fn 本身就是 scheduler。</p>
 <h2 id="stop"><a href="#stop" class="headerlink" title="stop"></a>stop</h2><p><code>stop()</code> 传入 <code>effect</code> 返回的 runner，停止监听变化，当响应式对象的值变了后 scheduler 不会再执行。</p>
 <h1 id="集成到-react"><a href="#集成到-react" class="headerlink" title="集成到 react"></a>集成到 react</h1><p>先看一个 Vue 3 计数器例子：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123;count&#125;&#125; * 2 = &#123;&#123;doubleCount&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> @<span class="attr">click</span>=<span class="string">"add"</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, computed, defineComponent &#125; <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> defineComponent(&#123;</span><br><span class="line">  setup () &#123;</span><br><span class="line">    <span class="keyword">const</span> count = ref(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">const</span> doubleCount = computed(<span class="function"><span class="params">()</span> =&gt;</span> count.value * <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">const</span> add = <span class="function"><span class="params">()</span> =&gt;</span> &#123; count.value++ &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; count, doubleCount, add &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123;count&#125;&#125; * 2 = &#123;&#123;doubleCount&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> @<span class="attr">click</span>=<span class="string">&quot;add&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, computed, defineComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> defineComponent(&#123;</span><br><span class="line">  setup () &#123;</span><br><span class="line">    <span class="keyword">const</span> count = ref(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">const</span> doubleCount = computed(<span class="function">() =&gt;</span> count.value * <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">const</span> add = <span class="function">() =&gt;</span> &#123; count.value++ &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; count, doubleCount, add &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
 <p>实现用 react 来这样写：</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> (props) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; count, doubleCount, add &#125; = useSetup(<span class="function">(<span class="params">propsProxy</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> count = ref(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">const</span> doubleCount = computed(<span class="function"><span class="params">()</span> =&gt;</span> count.value * <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">const</span> add = <span class="function"><span class="params">()</span> =&gt;</span> &#123; count.value++ &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; count, doubleCount, add &#125;</span><br><span class="line">  &#125;, props)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;div&gt;&#123;count.value&#125; * <span class="number">2</span> = &#123;doubleCount.value&#125;&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">      &lt;button onClick=&#123;add&#125;&gt;&lt;/</span>button&gt;</span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">  )</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> (props) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; count, doubleCount, add &#125; = useSetup(<span class="function">(<span class="params">propsProxy</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> count = ref(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">const</span> doubleCount = computed(<span class="function">() =&gt;</span> count.value * <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">const</span> add = <span class="function">() =&gt;</span> &#123; count.value++ &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123; count, doubleCount, add &#125;</span><br><span class="line">  &#125;, props)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;count.value&#125; * 2 = &#123;doubleCount.value&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;add&#125;</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>useSetup hook 传入 setup 函数，返回响应式对象，直接写在 JSX 上。</p>
 <h2 id="第一步：forceUpdate"><a href="#第一步：forceUpdate" class="headerlink" title="第一步：forceUpdate"></a>第一步：forceUpdate</h2><p>这样写意味着组件的状态更新全部交给 vue 的响应式系统来处理，自然要使用 forceUpdate 强制更新组件。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useForceUpdate</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> setState = useState(<span class="built_in">Object</span>.create(<span class="literal">null</span>))[<span class="number">1</span>]</span><br><span class="line">  <span class="keyword">return</span> useCallback(<span class="function"><span class="params">()</span> =&gt;</span> &#123; setState(<span class="built_in">Object</span>.create(<span class="literal">null</span>)) &#125;, [setState])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useForceUpdate</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> setState = useState(<span class="built_in">Object</span>.create(<span class="literal">null</span>))[<span class="number">1</span>]</span><br><span class="line">  <span class="keyword">return</span> useCallback(<span class="function">() =&gt;</span> &#123; setState(<span class="built_in">Object</span>.create(<span class="literal">null</span>)) &#125;, [setState])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="第二步：依赖收集"><a href="#第二步：依赖收集" class="headerlink" title="第二步：依赖收集"></a>第二步：依赖收集</h2><p>setup 函数返回的响应式对象都要被依赖收集，所以要把收集的过程丢进 effect 里执行，并且只执行一次，大概是这样</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useRef, useCallback &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> &#123; effect, reactive, readonly &#125; <span class="keyword">from</span> <span class="string">'@vue/reactivity'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useSetup</span> (<span class="params">setup, props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">const</span> forceUpdate = useForceUpdate()</span><br><span class="line">  <span class="keyword">const</span> instanceRef = useRef()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> updateProps = useCallback(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (instanceRef.current) &#123;</span><br><span class="line">      <span class="keyword">const</span> keys = <span class="built_in">Object</span>.keys(props)</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; keys.length; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> key = keys[i]</span><br><span class="line">        instanceRef.current.props[key] = props[key]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [props])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!updateProps.__called) &#123;</span><br><span class="line">    updateProps()</span><br><span class="line">    updateProps.__called = <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> updateCallback = useCallback(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 生命周期 onBeforeUpdate</span></span><br><span class="line">    forceUpdate()</span><br><span class="line">    <span class="comment">// 生命周期 onUpdated</span></span><br><span class="line">  &#125;, [])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!instanceRef.current) &#123;</span><br><span class="line">    <span class="keyword">const</span> reactiveProps = reactive(&#123; ...props &#125;)</span><br><span class="line">    <span class="keyword">const</span> readonlyProps = readonly(reactiveProps)</span><br><span class="line">    instanceRef.current = &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">let</span> runner = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">let</span> ret</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      ret = setup(readonlyProps)</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="comment">// 其它错误处理</span></span><br><span class="line">      <span class="keyword">throw</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    runner = effect(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      traverse(ret)</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      lazy: <span class="literal">true</span>,</span><br><span class="line">      scheduler: <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        queueJob(updateCallback) <span class="comment">// 入队，本轮同步代码全部执行完后在下一个 tick 更新组件</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125;)</span><br><span class="line">    runner()</span><br><span class="line">    <span class="comment">// 生命周期 onBeforeMount</span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  useEffect(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 生命周期 onMounted</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// 生命周期 onUnmounted</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useRef, useCallback &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; effect, reactive, readonly &#125; <span class="keyword">from</span> <span class="string">&#x27;@vue/reactivity&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">useSetup</span> (<span class="params">setup, props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">const</span> forceUpdate = useForceUpdate()</span><br><span class="line">  <span class="keyword">const</span> instanceRef = useRef()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> updateProps = useCallback(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (instanceRef.current) &#123;</span><br><span class="line">      <span class="keyword">const</span> keys = <span class="built_in">Object</span>.keys(props)</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; keys.length; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> key = keys[i]</span><br><span class="line">        instanceRef.current.props[key] = props[key]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [props])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!updateProps.__called) &#123;</span><br><span class="line">    updateProps()</span><br><span class="line">    updateProps.__called = <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> updateCallback = useCallback(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 生命周期 onBeforeUpdate</span></span><br><span class="line">    forceUpdate()</span><br><span class="line">    <span class="comment">// 生命周期 onUpdated</span></span><br><span class="line">  &#125;, [])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!instanceRef.current) &#123;</span><br><span class="line">    <span class="keyword">const</span> reactiveProps = reactive(&#123; ...props &#125;)</span><br><span class="line">    <span class="keyword">const</span> readonlyProps = readonly(reactiveProps)</span><br><span class="line">    instanceRef.current = &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">let</span> runner = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">let</span> ret</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      ret = setup(readonlyProps)</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="comment">// 其它错误处理</span></span><br><span class="line">      <span class="keyword">throw</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    runner = effect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      traverse(ret)</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      <span class="attr">lazy</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">scheduler</span>: <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        queueJob(updateCallback) <span class="comment">// 入队，本轮同步代码全部执行完后在下一个 tick 更新组件</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125;)</span><br><span class="line">    runner()</span><br><span class="line">    <span class="comment">// 生命周期 onBeforeMount</span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 生命周期 onMounted</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// 生命周期 onUnmounted</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>收集过程就是递归遍历访问值。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">traverse</span> (<span class="params">value, seen = new Set(</span>)) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!isObject(value) || seen.has(value)) &#123;</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line">  &#125;</span><br><span class="line">  seen.add(value)</span><br><span class="line">  <span class="keyword">if</span> (isRef(value)) &#123;</span><br><span class="line">    traverse(value.value, seen)</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isArray(value)) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; value.length; i++) &#123;</span><br><span class="line">      traverse(value[i], seen)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isSet(value) || isMap(value)) &#123;</span><br><span class="line">    value.forEach(<span class="function">(<span class="params">v</span>) =&gt;</span> &#123;</span><br><span class="line">      traverse(v, seen)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> value) &#123;</span><br><span class="line">      traverse(value[key], seen)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">traverse</span> (<span class="params">value, seen = <span class="keyword">new</span> <span class="built_in">Set</span>()</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!isObject(value) || seen.has(value)) &#123;</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line">  &#125;</span><br><span class="line">  seen.add(value)</span><br><span class="line">  <span class="keyword">if</span> (isRef(value)) &#123;</span><br><span class="line">    traverse(value.value, seen)</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isArray(value)) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; value.length; i++) &#123;</span><br><span class="line">      traverse(value[i], seen)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isSet(value) || isMap(value)) &#123;</span><br><span class="line">    value.forEach(<span class="function">(<span class="params">v</span>) =&gt;</span> &#123;</span><br><span class="line">      traverse(v, seen)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> value) &#123;</span><br><span class="line">      traverse(value[key], seen)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>完整实现请移步 <a href="https://github.com/toyobayashi/reactivuety" target="_blank" rel="noopener">toyobayashi/reactivuety</a>。</p>
+<p>完整实现请移步 <a target="_blank" rel="noopener" href="https://github.com/toyobayashi/reactivuety">toyobayashi/reactivuety</a>。</p>
 <p>Feature：</p>
 <ul>
 <li><p><code>useSetup(setup, reactProps)</code> react hook, setup 函数可返回对象或 render 函数。</p>
@@ -320,7 +301,6 @@
   
   
 
-  </div>
 
 
           </div>
@@ -329,7 +309,7 @@
 
 <script>
   window.addEventListener('tabs:register', () => {
-    let activeClass = CONFIG.comments.activeClass;
+    let { activeClass } = CONFIG.comments;
     if (CONFIG.comments.storage) {
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
@@ -386,7 +366,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -414,6 +394,8 @@
       <div class="footer-inner">
         
 
+        
+
 <div class="copyright">
   
   &copy; 
@@ -423,10 +405,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Toyo</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.4.0
-  </div>
-  <span class="post-meta-divider">|</span>
-  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         
@@ -490,20 +469,20 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       return GUEST.includes(item);
     });
     new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
-      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey     : 'RqVWBpqChiOJVNyg1jSQ1chJ',
       placeholder: "请开始你的表演",
-      avatar: 'retro',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: true,
-      lang: '' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
     });
   }, window.Valine);
 });

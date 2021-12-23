@@ -12,39 +12,13 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Consolas:300,300italic,400,400italic,700,700italic|Cascadia Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-
 <script id="hexo-configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    hostname: new URL('https://toyobayashi.github.io').hostname,
-    root: '/',
-    scheme: 'Muse',
-    version: '7.7.0',
-    exturl: false,
-    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
-    bookmark: {"enable":false,"color":"#222","save":"auto"},
-    fancybox: false,
-    mediumzoom: false,
-    lazyload: false,
-    pangu: false,
-    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
-    algolia: {
-      appID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    },
-    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
-    path: '',
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
-  };
-</script>
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"toyobayashi.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
   <meta name="description" content="一个菜鸟前端的自娱自乐。">
 <meta property="og:type" content="article">
@@ -66,8 +40,9 @@
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome: false,
-    isPost: true
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -110,17 +85,6 @@
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
-  <div class="site-meta">
-
-    <div>
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Toyo</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-  </div>
-
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
@@ -128,11 +92,26 @@
       <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Toyo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
 
+
+
 <nav class="site-nav">
-  
   <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
 
@@ -145,8 +124,11 @@
 
   </li>
   </ul>
-
 </nav>
+
+
+
+
 </div>
     </header>
 
@@ -162,14 +144,13 @@
         <div class="content-wrap">
           
 
-          <div class="content">
+          <div class="content post posts-expand">
             
 
-  <div class="posts-expand">
-      
+    
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://toyobayashi.github.io/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -219,7 +200,7 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/#comments" itemprop="discussionUrl">
+    <a title="valine" href="/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/#valine-comments" itemprop="discussionUrl">
       <span class="post-comments-count valine-comment-count" data-xid="/2018/04/01/CGSS%E6%A1%8C%E9%9D%A2%E5%BA%94%E7%94%A8mishiro%E8%83%8C%E5%90%8E%E7%9A%84%E6%95%85%E4%BA%8B/" itemprop="commentCount"></span>
     </a>
   </span>
@@ -236,7 +217,7 @@
 
       
         <p>一个菜鸟前端的自娱自乐。</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h1 id="关于mishiro"><a href="#关于mishiro" class="headerlink" title="关于mishiro"></a>关于mishiro</h1><h2 id="mishiro是什么"><a href="#mishiro是什么" class="headerlink" title="mishiro是什么"></a>mishiro是什么</h2><p>mishiro是一个针对《偶像大师灰姑娘女孩星光舞台》这款音乐手游开发的Windows PC桌面端应用程序（或许以后可以跨平台）。它最大的用处是提取游戏里的各种资源，此外还提供游戏卡片数据的搜索、模拟游戏内的抽卡、估算玩家打活动的效率、模拟游戏LIVE的过程等功能。为什么取mishiro这个名字，是因为它在日语里写作汉字是「美城」，一说到灰姑娘，自然会联想到安徒生童话里的「美丽的城堡」。</p>
 <h2 id="为什么开发mishiro"><a href="#为什么开发mishiro" class="headerlink" title="为什么开发mishiro"></a>为什么开发mishiro</h2><p>去年大三实习，我正好在玩这个游戏，比较喜欢它里面的音乐，无奈在网上没有找到提取音乐资源的工具，就自己做一个得了，同时也正好可以拿来当作实习的成果。不过去年做的是网页版的CinderellaHelper（仓库已删除）和一个命令行工具CGSSAssetsDownloader。今年大四实习要搞毕设，正好可以把这两个东西结合起来改一下，做成更完善的一个东西。所以mishiro其实可以算是一年前就已经开始开发了。</p>
@@ -259,9 +240,9 @@
 <li>Viewer ID</li>
 <li>User ID</li>
 </ul>
-<p>其中UDID(Unique Device Identifier)是唯一设备标识。形如<br><code>/^[0-9]{9}:[0-9]{9}:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/</code><br>和GUID的格式一样。Viewer ID就是我们在游戏里可以看到的9位数的ID。User ID也是9位数的ID，但是和Viewer ID不一样。用户注册时Viewer ID和User ID由服务器生成。这三个东西就相当于是一个帐号。至于上哪儿找——抓包。</p>
+<p>其中UDID(Unique Device Identifier)是唯一设备标识。形如<br><code>/^[0-9]&#123;9&#125;:[0-9]&#123;9&#125;:[0-9a-f]&#123;8&#125;-[0-9a-f]&#123;4&#125;-4[0-9a-f]&#123;3&#125;-[89ab][0-9a-f]&#123;3&#125;-[0-9a-f]&#123;12&#125;$/</code><br>和GUID的格式一样。Viewer ID就是我们在游戏里可以看到的9位数的ID。User ID也是9位数的ID，但是和Viewer ID不一样。用户注册时Viewer ID和User ID由服务器生成。这三个东西就相当于是一个帐号。至于上哪儿找——抓包。</p>
 <p>UDID和User ID被加密放在请求头<code>UDID</code>和<code>USER_ID</code>中。加密的算法是这样的，前四位数是16进制，用来表示字符串的长度。例如长度为36的UDID，加密后的前四位就是<code>0024</code>。随后，分别在字符串中的每一个字符前加两位随机数，在后面加一位随机数，并把该字符变成ascii码中后十位的字符。最后加上32位的随机数。用JS实现加解密如下：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">encode</span> (<span class="params">s</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> arr = []</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; s.length; i++) &#123;</span><br><span class="line">    <span class="keyword">let</span> c = s[i]</span><br><span class="line">    arr.push(createRandomNumberString(<span class="number">2</span>) + chr(ord(c) + <span class="number">10</span>) + createRandomNumberString(<span class="number">1</span>))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> $<span class="number">04</span>x(s.length) + arr.join(<span class="string">''</span>) + createRandomNumberString(<span class="number">32</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">decode</span> (<span class="params">s</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> l = <span class="built_in">parseInt</span>(s.substr(<span class="number">0</span>, <span class="number">4</span>), <span class="number">16</span>)</span><br><span class="line">  <span class="keyword">let</span> e = <span class="string">''</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">6</span>; i &lt; s.length; i += <span class="number">4</span>) &#123;</span><br><span class="line">    e += s[i]</span><br><span class="line">  &#125;</span><br><span class="line">  e = e.substr(<span class="number">0</span>, l)</span><br><span class="line">  <span class="keyword">let</span> arr = []</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; e.length; i++) &#123;</span><br><span class="line">    arr.push(chr(ord(e[i]) - <span class="number">10</span>))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> arr.join(<span class="string">''</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">chr</span> (<span class="params">code</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">String</span>.fromCharCode(code)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ord</span> (<span class="params">str</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> str.charCodeAt()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createRandomNumberString</span> (<span class="params">l</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = <span class="string">''</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; l; i++) &#123;</span><br><span class="line">    s += <span class="built_in">Math</span>.floor(<span class="number">10</span> * <span class="built_in">Math</span>.random())</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$04x</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = n.toString(<span class="number">16</span>)</span><br><span class="line">  <span class="keyword">let</span> d = <span class="number">4</span> - s.length</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Array</span>.from(&#123; <span class="attr">length</span>: d &#125;, () =&gt; <span class="string">'0'</span>).join(<span class="string">''</span>) + s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">encode</span> (<span class="params">s</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> arr = []</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; s.length; i++) &#123;</span><br><span class="line">    <span class="keyword">let</span> c = s[i]</span><br><span class="line">    arr.push(createRandomNumberString(<span class="number">2</span>) + chr(ord(c) + <span class="number">10</span>) + createRandomNumberString(<span class="number">1</span>))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> $04x(s.length) + arr.join(<span class="string">&#x27;&#x27;</span>) + createRandomNumberString(<span class="number">32</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">decode</span> (<span class="params">s</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> l = <span class="built_in">parseInt</span>(s.substr(<span class="number">0</span>, <span class="number">4</span>), <span class="number">16</span>)</span><br><span class="line">  <span class="keyword">let</span> e = <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">6</span>; i &lt; s.length; i += <span class="number">4</span>) &#123;</span><br><span class="line">    e += s[i]</span><br><span class="line">  &#125;</span><br><span class="line">  e = e.substr(<span class="number">0</span>, l)</span><br><span class="line">  <span class="keyword">let</span> arr = []</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; e.length; i++) &#123;</span><br><span class="line">    arr.push(chr(ord(e[i]) - <span class="number">10</span>))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> arr.join(<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">chr</span> (<span class="params">code</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">String</span>.fromCharCode(code)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ord</span> (<span class="params">str</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> str.charCodeAt()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createRandomNumberString</span> (<span class="params">l</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; l; i++) &#123;</span><br><span class="line">    s += <span class="built_in">Math</span>.floor(<span class="number">10</span> * <span class="built_in">Math</span>.random())</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$04x</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = n.toString(<span class="number">16</span>)</span><br><span class="line">  <span class="keyword">let</span> d = <span class="number">4</span> - s.length</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Array</span>.from(&#123; <span class="attr">length</span>: d &#125;, <span class="function">() =&gt;</span> <span class="string">&#x27;0&#x27;</span>).join(<span class="string">&#x27;&#x27;</span>) + s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>有了前面说的这三个东西，并且他们是正确的，剩下的就是拼接请求头和请求体了。注意每个接口需要的请求参数都不一样，但是请求参数中必须包含<code>timezone</code>和<code>viewer_id</code>字段。</p>
 <h3 id="请求头"><a href="#请求头" class="headerlink" title="请求头"></a>请求头</h3><p>需要下面这些请求头：</p>
 <table>
@@ -350,7 +331,7 @@
 </tbody></table>
 <h3 id="请求体"><a href="#请求体" class="headerlink" title="请求体"></a>请求体</h3><p>前面说了不同的接口需要不同的请求参数，请求参数中必须存在<code>timezone</code>和<code>viewer_id</code>字段。<code>timezone</code>没什么好说的，就是日本时间与UTC时间的时间差<code>09:00:00</code>，<code>viewer_id</code>按以下步骤加密Viewer ID：</p>
 <ol>
-<li>生成一个32位的随机列（形如<code>/^[0-9]{32}$/</code>）</li>
+<li>生成一个32位的随机列（形如<code>/^[0-9]&#123;32&#125;$/</code>）</li>
 <li>使用Rijndael-256-cbc算法加密Viewer ID，向量为第1步生成的32位随机数，key为<code>s%5VNQ(H$&amp;Bqb6#3+78h29!Ft4wSg)ex</code></li>
 <li>使用base64编码加密后的数据</li>
 <li>把刚才的向量拼接在base64字符串的最前面，就得到了<code>viewer_id</code>字段里要填的数据。</li>
@@ -372,7 +353,7 @@
 <li>使用base64解码第2步得到的数据</li>
 <li>使用MessagePack解码第3步得到的数据，就得到了JSON明文</li>
 </ol>
-<h3 id="JavaScript简单伪代码实现"><a href="#JavaScript简单伪代码实现" class="headerlink" title="JavaScript简单伪代码实现"></a>JavaScript简单伪代码实现</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> sid = <span class="string">''</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">post</span> (<span class="params">path, args</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> viewerIV = createRandomNumberString(<span class="number">32</span>)</span><br><span class="line">  args.timezone = <span class="string">'09:00:00'</span></span><br><span class="line">  args.viewer_id = viewerIV + b64encode(encryptRJ256(viewerID, viewerIV, VIEWER_ID_KEY))</span><br><span class="line">  <span class="keyword">let</span> plain = b64encode(msgpack.encode(args))</span><br><span class="line">  <span class="keyword">let</span> key = b64encode($xFFFF32()).substring(<span class="number">0</span>, <span class="number">32</span>)</span><br><span class="line">  <span class="keyword">let</span> bodyIV = UDID.replace(<span class="regexp">/-/g</span>, <span class="string">''</span>)</span><br><span class="line">  <span class="keyword">let</span> body = b64encode(encryptRJ256(plain, bodyIV, key) + key)</span><br><span class="line">  sid = sid ? sid : viewerID + UDID</span><br><span class="line">  <span class="keyword">let</span> headers = &#123;</span><br><span class="line">    <span class="string">'PARAM'</span>: sha1(UDID + viewerID + path + plain),</span><br><span class="line">    <span class="string">'KEYCHAIN'</span>: <span class="string">''</span>,</span><br><span class="line">    <span class="string">'USER_ID'</span>: encode(userID),</span><br><span class="line">    <span class="string">'CARRIER'</span>: <span class="string">'google'</span>,</span><br><span class="line">    <span class="string">'UDID'</span>: encode(UDID),</span><br><span class="line">    <span class="string">'APP_VER'</span>: <span class="string">'9.9.9'</span>,</span><br><span class="line">    <span class="string">'RES_VER'</span>: resVer,</span><br><span class="line">    <span class="string">'IP_ADDRESS'</span>: <span class="string">'127.0.0.1'</span>,</span><br><span class="line">    <span class="string">'DEVICE_NAME'</span>: <span class="string">'Nexus 42'</span>,</span><br><span class="line">    <span class="string">'X-Unity-Version'</span>: <span class="string">'5.1.2f1'</span>,</span><br><span class="line">    <span class="string">'SID'</span>: md5(sid + SID_KEY),</span><br><span class="line">    <span class="string">'GRAPHICS_DEVICE_NAME'</span>: <span class="string">'3dfx Voodoo2 (TM)'</span>,</span><br><span class="line">    <span class="string">'DEVICE_ID'</span>: md5(<span class="string">'Totally a real Android'</span>),</span><br><span class="line">    <span class="string">'PLATFORM_OS_VERSION'</span>: <span class="string">'Android OS 13.3.7 / API-42 (XYZZ1Y/74726f6c6c)'</span>,</span><br><span class="line">    <span class="string">'DEVICE'</span>: <span class="string">'2'</span>,</span><br><span class="line">    <span class="string">'Content-Type'</span>: <span class="string">'application/x-www-form-urlencoded'</span>,</span><br><span class="line">    <span class="string">'User-Agent'</span>: <span class="string">'Dalvik/2.1.0 (Linux; U; Android 13.3.7; Nexus 42 Build/XYZZ1Y)'</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    request(&#123;</span><br><span class="line">      url: <span class="string">`https://game.starlight-stage.jp<span class="subst">$&#123;path&#125;</span>`</span>,</span><br><span class="line">      timeout: <span class="number">10000</span>,</span><br><span class="line">      headers: headers,</span><br><span class="line">      body: body</span><br><span class="line">    &#125;, (err, res, body) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) reject(err)</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> bin = Buffer.from(body, <span class="string">'base64'</span>)</span><br><span class="line">        <span class="keyword">let</span> data = bin.slice(<span class="number">0</span>, bin.length - <span class="number">32</span>)</span><br><span class="line">        <span class="keyword">let</span> key = bin.slice(bin.length - <span class="number">32</span>).toString(<span class="string">'ascii'</span>)</span><br><span class="line">        <span class="keyword">let</span> plain = decryptRJ256(data, bodyIV, key)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> msg = msgpack.decode(Buffer.from(plain, <span class="string">'base64'</span>))</span><br><span class="line">        sid = <span class="keyword">typeof</span> msg === <span class="string">'object'</span> ? (msg.data_headers ? msg.data_headers.sid : <span class="keyword">void</span> <span class="number">0</span>) : <span class="keyword">void</span> <span class="number">0</span></span><br><span class="line">        resolve(msg)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$xFFFF32</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = <span class="string">''</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;</span><br><span class="line">    s += <span class="built_in">Math</span>.floor(<span class="number">65536</span> * <span class="built_in">Math</span>.random()).toString(<span class="number">16</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JavaScript简单伪代码实现"><a href="#JavaScript简单伪代码实现" class="headerlink" title="JavaScript简单伪代码实现"></a>JavaScript简单伪代码实现</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> sid = <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">post</span> (<span class="params">path, args</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> viewerIV = createRandomNumberString(<span class="number">32</span>)</span><br><span class="line">  args.timezone = <span class="string">&#x27;09:00:00&#x27;</span></span><br><span class="line">  args.viewer_id = viewerIV + b64encode(encryptRJ256(viewerID, viewerIV, VIEWER_ID_KEY))</span><br><span class="line">  <span class="keyword">let</span> plain = b64encode(msgpack.encode(args))</span><br><span class="line">  <span class="keyword">let</span> key = b64encode($xFFFF32()).substring(<span class="number">0</span>, <span class="number">32</span>)</span><br><span class="line">  <span class="keyword">let</span> bodyIV = UDID.replace(<span class="regexp">/-/g</span>, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">  <span class="keyword">let</span> body = b64encode(encryptRJ256(plain, bodyIV, key) + key)</span><br><span class="line">  sid = sid ? sid : viewerID + UDID</span><br><span class="line">  <span class="keyword">let</span> headers = &#123;</span><br><span class="line">    <span class="string">&#x27;PARAM&#x27;</span>: sha1(UDID + viewerID + path + plain),</span><br><span class="line">    <span class="string">&#x27;KEYCHAIN&#x27;</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;USER_ID&#x27;</span>: encode(userID),</span><br><span class="line">    <span class="string">&#x27;CARRIER&#x27;</span>: <span class="string">&#x27;google&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;UDID&#x27;</span>: encode(UDID),</span><br><span class="line">    <span class="string">&#x27;APP_VER&#x27;</span>: <span class="string">&#x27;9.9.9&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;RES_VER&#x27;</span>: resVer,</span><br><span class="line">    <span class="string">&#x27;IP_ADDRESS&#x27;</span>: <span class="string">&#x27;127.0.0.1&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;DEVICE_NAME&#x27;</span>: <span class="string">&#x27;Nexus 42&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;X-Unity-Version&#x27;</span>: <span class="string">&#x27;5.1.2f1&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;SID&#x27;</span>: md5(sid + SID_KEY),</span><br><span class="line">    <span class="string">&#x27;GRAPHICS_DEVICE_NAME&#x27;</span>: <span class="string">&#x27;3dfx Voodoo2 (TM)&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;DEVICE_ID&#x27;</span>: md5(<span class="string">&#x27;Totally a real Android&#x27;</span>),</span><br><span class="line">    <span class="string">&#x27;PLATFORM_OS_VERSION&#x27;</span>: <span class="string">&#x27;Android OS 13.3.7 / API-42 (XYZZ1Y/74726f6c6c)&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;DEVICE&#x27;</span>: <span class="string">&#x27;2&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Dalvik/2.1.0 (Linux; U; Android 13.3.7; Nexus 42 Build/XYZZ1Y)&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    request(&#123;</span><br><span class="line">      <span class="attr">url</span>: <span class="string">`https://game.starlight-stage.jp<span class="subst">$&#123;path&#125;</span>`</span>,</span><br><span class="line">      <span class="attr">timeout</span>: <span class="number">10000</span>,</span><br><span class="line">      <span class="attr">headers</span>: headers,</span><br><span class="line">      <span class="attr">body</span>: body</span><br><span class="line">    &#125;, <span class="function">(<span class="params">err, res, body</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) reject(err)</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> bin = Buffer.from(body, <span class="string">&#x27;base64&#x27;</span>)</span><br><span class="line">        <span class="keyword">let</span> data = bin.slice(<span class="number">0</span>, bin.length - <span class="number">32</span>)</span><br><span class="line">        <span class="keyword">let</span> key = bin.slice(bin.length - <span class="number">32</span>).toString(<span class="string">&#x27;ascii&#x27;</span>)</span><br><span class="line">        <span class="keyword">let</span> plain = decryptRJ256(data, bodyIV, key)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> msg = msgpack.decode(Buffer.from(plain, <span class="string">&#x27;base64&#x27;</span>))</span><br><span class="line">        sid = <span class="keyword">typeof</span> msg === <span class="string">&#x27;object&#x27;</span> ? (msg.data_headers ? msg.data_headers.sid : <span class="keyword">void</span> <span class="number">0</span>) : <span class="keyword">void</span> <span class="number">0</span></span><br><span class="line">        resolve(msg)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$xFFFF32</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> s = <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;</span><br><span class="line">    s += <span class="built_in">Math</span>.floor(<span class="number">65536</span> * <span class="built_in">Math</span>.random()).toString(<span class="number">16</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这样一来，通过<code>/load/check</code>就很方便自动更新资源版本了，以前不懂原理的时候只有用暴力的方法，用一个一个版本号去请求服务器看是不是404。</p>
 <h2 id="提取资源"><a href="#提取资源" class="headerlink" title="提取资源"></a>提取资源</h2><ul>
@@ -391,21 +372,21 @@
 </ul>
 <p>获取地址：</p>
 <ul>
-<li>unity3d文件：<code>/dl/resources/High/AssetBundles/Android/${hash}</code>（部分404）</li>
-<li>acb文件：<code>/dl/resources/High/Sound/Common/${name.split(&#39;/&#39;)[0]}/${hash}</code></li>
-<li>bdb文件和mdb文件：<code>/dl/resources/Generic/${hash}</code></li>
+<li>unity3d文件：<code>/dl/resources/High/AssetBundles/Android/$&#123;hash&#125;</code>（部分404）</li>
+<li>acb文件：<code>/dl/resources/High/Sound/Common/$&#123;name.split(&#39;/&#39;)[0]&#125;/$&#123;hash&#125;</code></li>
+<li>bdb文件和mdb文件：<code>/dl/resources/Generic/$&#123;hash&#125;</code></li>
 </ul>
-<h3 id="主数据库Master"><a href="#主数据库Master" class="headerlink" title="主数据库Master"></a>主数据库Master</h3><p>即资源清单中的<code>master.mdb</code>。主数据库内包含游戏内的各种数据，包括角色、卡片、活动等等。它同样也是SQLite3数据库，下载下来需要先LZ4解压。地址是：<br><code>/dl/resources/Generic/${hash}</code></p>
+<h3 id="主数据库Master"><a href="#主数据库Master" class="headerlink" title="主数据库Master"></a>主数据库Master</h3><p>即资源清单中的<code>master.mdb</code>。主数据库内包含游戏内的各种数据，包括角色、卡片、活动等等。它同样也是SQLite3数据库，下载下来需要先LZ4解压。地址是：<br><code>/dl/resources/Generic/$&#123;hash&#125;</code></p>
 <h3 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h3><p>可以使用Unity Assets Bundle Extractor来批量提取unity3d文件内的texture2d。我不懂Unity文件格式，所以没办法只有用工具提取UI贴图了，在mishiro中是直接从<code>starlight.kirara.ca</code>获取卡面和头像的图片。</p>
 <h3 id="ACB文件的格式"><a href="#ACB文件的格式" class="headerlink" title="ACB文件的格式"></a>ACB文件的格式</h3><p>CGSS的音频用的是CRI Middleware公司提供的格式。简单概括一下就是acb文件里有acb、awb文件，awb文件里有hca文件，acb文件里有utf表，根据表就能从awb文件中提取出hca文件。acb并没有压缩hca文件，只是把hca和其它的utf表和一些索引混在了一起。</p>
-<p>ACB文件的二进制数值采用的是<strong>大端序</strong>。</p>
-<h4 id="文件头"><a href="#文件头" class="headerlink" title="文件头"></a>文件头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 40 55 54 46 | 固定（&#39;@UTF&#39;）</span><br><span class="line">0x0004 | 00 39 02 78 | 除了文件头的文件大小（也就是总大小减8）</span><br></pre></td></tr></table></figure>
+<p>ACB文件的二进制数值采用的是__大端序__。</p>
+<h4 id="文件头"><a href="#文件头" class="headerlink" title="文件头"></a>文件头</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 40 55 54 46 | 固定（&#x27;@UTF&#x27;）</span><br><span class="line">0x0004 | 00 39 02 78 | 除了文件头的文件大小（也就是总大小减8）</span><br></pre></td></tr></table></figure>
 
 <h4 id="表头"><a href="#表头" class="headerlink" title="表头"></a>表头</h4><p>8位以后开始就是表头，下面所有的偏移值都从这里开始计算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 00 01       | 不清楚</span><br><span class="line">0x0002 | 01 58       | 表数据的偏移值</span><br><span class="line">0x0004 | 00 00 02 8D | 字符串数据的偏移值</span><br><span class="line">0x0008 | 00 00 05 B8 | 二进制数据的偏移值</span><br><span class="line">0x000c | 00 00 00 00 | 字符串数据中表名字符串的偏移值</span><br><span class="line">0x0010 | 00 40       | 列数</span><br><span class="line">0x0012 | 01 35       | 各行总字节数（除了常数）</span><br><span class="line">0x0014 | 00 00 00 01 | 行数</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 00 01       | 不清楚</span><br><span class="line">0x0002 | 01 58       | 表数据的偏移值</span><br><span class="line">0x0004 | 00 00 02 8D | 字符串数据的偏移值</span><br><span class="line">0x0008 | 00 00 05 B8 | 二进制数据的偏移值</span><br><span class="line">0x000c | 00 00 00 00 | 字符串数据中表名字符串的偏移值</span><br><span class="line">0x0010 | 00 40       | 列数</span><br><span class="line">0x0012 | 01 35       | 各行总字节数（除了常数）</span><br><span class="line">0x0014 | 00 00 00 01 | 行数</span><br></pre></td></tr></table></figure>
 
 <h4 id="列字段数据"><a href="#列字段数据" class="headerlink" title="列字段数据"></a>列字段数据</h4><p>指定各列的类型和列名。列类型是 0x10 或 0x50 的情况就是5字节，0x30 或 0x70 的情况下在5字节后面有常数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x0018 | 54          | 类型 ID</span><br><span class="line">0x0019 | 00 00 00 07 | 字符串数据中列名字符串的偏移值</span><br><span class="line"></span><br><span class="line">0x001d | 54          | 类型 ID</span><br><span class="line">0x001e | 00 00 00 16 | 字符串数据中列名字符串的偏移值</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">0x0153 | 5B          | 类型 ID</span><br><span class="line">0x0154 | 00 00 02 D2 | 字符串数据中列名字符串的偏移值</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x0018 | 54          | 类型 ID</span><br><span class="line">0x0019 | 00 00 00 07 | 字符串数据中列名字符串的偏移值</span><br><span class="line"></span><br><span class="line">0x001d | 54          | 类型 ID</span><br><span class="line">0x001e | 00 00 00 16 | 字符串数据中列名字符串的偏移值</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">0x0153 | 5B          | 类型 ID</span><br><span class="line">0x0154 | 00 00 02 D2 | 字符串数据中列名字符串的偏移值</span><br></pre></td></tr></table></figure>
 
 <p>类型 ID 是列类型和该列数据类型的逻辑或（|）。</p>
 <table>
@@ -502,21 +483,21 @@
 </tr>
 </tbody></table>
 <h4 id="表数据"><a href="#表数据" class="headerlink" title="表数据"></a>表数据</h4><p>列字段数据接下来就是表数据，从表头里的「表数据的偏移值」的位置开始。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x0158 | 00 00 00 00             | 第一列的数据（Int32）</span><br><span class="line">0x015c | 00 00 00 00             | 第二列的数据（Int32）</span><br><span class="line">...</span><br><span class="line">0x0285 | 00 00 00 00 00 00 00 00 | 最后（第64列）一列的数据（Binary）</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x0158 | 00 00 00 00             | 第一列的数据（Int32）</span><br><span class="line">0x015c | 00 00 00 00             | 第二列的数据（Int32）</span><br><span class="line">...</span><br><span class="line">0x0285 | 00 00 00 00 00 00 00 00 | 最后（第64列）一列的数据（Binary）</span><br></pre></td></tr></table></figure>
 
 <h4 id="字符串数据"><a href="#字符串数据" class="headerlink" title="字符串数据"></a>字符串数据</h4><p>接下来是字符串数据，每个单词以 00 （NULL）结尾。从表头里的「字符串数据的偏移值」的位置开始。第一个单词是表名。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x028d | 48 65 61 64 65 72 00                         | Header（表名）</span><br><span class="line">0x0294 | 46 69 6C 65 49 64 65 6E 74 69 66 69 65 72 00 | FileIdentifier（第一列的列名）</span><br><span class="line">...</span><br><span class="line">0x0596 | 73 6F 6E 67 5F 33 30 32 39 00                | song_3029（第35列「Name」下的字符串）</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x028d | 48 65 61 64 65 72 00                         | Header（表名）</span><br><span class="line">0x0294 | 46 69 6C 65 49 64 65 6E 74 69 66 69 65 72 00 | FileIdentifier（第一列的列名）</span><br><span class="line">...</span><br><span class="line">0x0596 | 73 6F 6E 67 5F 33 30 32 39 00                | song_3029（第35列「Name」下的字符串）</span><br></pre></td></tr></table></figure>
 
 <h4 id="二进制数据"><a href="#二进制数据" class="headerlink" title="二进制数据"></a>二进制数据</h4><p>接下来是二进制数据，从表头里的「二进制数据的偏移值」的位置开始。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x05b8 | 0E F7 50 41 ... | 第6列「AcfMd5Hash」下的二进制</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x05b8 | 0E F7 50 41 ... | 第6列「AcfMd5Hash」下的二进制</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
-<h3 id="AWB文件的格式"><a href="#AWB文件的格式" class="headerlink" title="AWB文件的格式"></a>AWB文件的格式</h3><p>AWB文件的二进制数值采用的是<strong>小端序</strong>。</p>
-<h4 id="文件头-1"><a href="#文件头-1" class="headerlink" title="文件头"></a>文件头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 41 46 53 32 | 固定（&#39;AFS2&#39;）</span><br><span class="line">0x0004 | 01          | 不清楚</span><br><span class="line">0x0005 | 04          | 数据长度</span><br><span class="line">0x0006 | 02 00       | 不清楚</span><br><span class="line">0x0008 | 24 00 00 00 | 包含的文件数</span><br><span class="line">0x000c | 20 00 00 00 | 校准值</span><br></pre></td></tr></table></figure>
+<h3 id="AWB文件的格式"><a href="#AWB文件的格式" class="headerlink" title="AWB文件的格式"></a>AWB文件的格式</h3><p>AWB文件的二进制数值采用的是__小端序__。</p>
+<h4 id="文件头-1"><a href="#文件头-1" class="headerlink" title="文件头"></a>文件头</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0x0000 | 41 46 53 32 | 固定（&#x27;AFS2&#x27;）</span><br><span class="line">0x0004 | 01          | 不清楚</span><br><span class="line">0x0005 | 04          | 数据长度</span><br><span class="line">0x0006 | 02 00       | 不清楚</span><br><span class="line">0x0008 | 24 00 00 00 | 包含的文件数</span><br><span class="line">0x000c | 20 00 00 00 | 校准值</span><br></pre></td></tr></table></figure>
 
-<h4 id="文件索引"><a href="#文件索引" class="headerlink" title="文件索引"></a>文件索引</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x0010 | 00          | ID</span><br><span class="line">0x0011 | 00          | 不清楚</span><br><span class="line"></span><br><span class="line">0x0012 | 01          | ID</span><br><span class="line">0x0013 | 00          | 不清楚</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">0x0056 | 23          | ID</span><br><span class="line">0x0057 | 00          | 不清楚</span><br></pre></td></tr></table></figure>
+<h4 id="文件索引"><a href="#文件索引" class="headerlink" title="文件索引"></a>文件索引</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0x0010 | 00          | ID</span><br><span class="line">0x0011 | 00          | 不清楚</span><br><span class="line"></span><br><span class="line">0x0012 | 01          | ID</span><br><span class="line">0x0013 | 00          | 不清楚</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">0x0056 | 23          | ID</span><br><span class="line">0x0057 | 00          | 不清楚</span><br></pre></td></tr></table></figure>
 
 <h4 id="文件终点位置"><a href="#文件终点位置" class="headerlink" title="文件终点位置"></a>文件终点位置</h4><p>头里面的「数据长度」是多少字节这里就是多少字节，这个文件是4字节。总长度为包含的文件数＋1。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x0058 | EC 00 00 00 | 头终点（236）</span><br><span class="line">0x005c | 60 52 01 00 | 第一个文件的终点（86624）</span><br><span class="line">0x0060 | C0 12 02 00 | 第二个文件的终点（135872）</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0x0058 | EC 00 00 00 | 头终点（236）</span><br><span class="line">0x005c | 60 52 01 00 | 第一个文件的终点（86624）</span><br><span class="line">0x0060 | C0 12 02 00 | 第二个文件的终点（135872）</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <p>文件的起始点一定是校准值的倍数。所以，前一个文件的终点位置向上取到第一个校准值的倍数就是当前文件的起始点。比如上面的例子里，第一个文件是从 0x0100 开始 而不是 从 0x00EC 开始。</p>
 <h3 id="处理HCA"><a href="#处理HCA" class="headerlink" title="处理HCA"></a>处理HCA</h3><p>HCA完全搞不懂，mishiro直接用别人写的C++解码库，通过编译成Node.js的C++扩展模块，供JavaScript调用。HCA解码后就得到了WAV文件，再使用FFMPEG转成MP3，喂给HTML5 Audio。</p>
@@ -2193,7 +2174,7 @@
 <td>debug/send_present_random</td>
 </tr>
 </tbody></table>
-<h1 id="参考文献和引用"><a href="#参考文献和引用" class="headerlink" title="参考文献和引用"></a>参考文献和引用</h1><p><a href="https://subdiox.github.io/deresute/" target="_blank" rel="noopener">デレステ解析ノート</a></p>
+<h1 id="参考文献和引用"><a href="#参考文献和引用" class="headerlink" title="参考文献和引用"></a>参考文献和引用</h1><p><a target="_blank" rel="noopener" href="https://subdiox.github.io/deresute/">デレステ解析ノート</a></p>
 
     </div>
 
@@ -2227,7 +2208,6 @@
   
   
 
-  </div>
 
 
           </div>
@@ -2236,7 +2216,7 @@
 
 <script>
   window.addEventListener('tabs:register', () => {
-    let activeClass = CONFIG.comments.activeClass;
+    let { activeClass } = CONFIG.comments;
     if (CONFIG.comments.storage) {
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
@@ -2293,7 +2273,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2321,6 +2301,8 @@
       <div class="footer-inner">
         
 
+        
+
 <div class="copyright">
   
   &copy; 
@@ -2330,10 +2312,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Toyo</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v5.4.0
-  </div>
-  <span class="post-meta-divider">|</span>
-  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         
@@ -2397,20 +2376,20 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       return GUEST.includes(item);
     });
     new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
-      appKey: 'RqVWBpqChiOJVNyg1jSQ1chJ',
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'je6b3LE8DAXqsREbw1E0hcnr-gzGzoHsz',
+      appKey     : 'RqVWBpqChiOJVNyg1jSQ1chJ',
       placeholder: "请开始你的表演",
-      avatar: 'retro',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: true,
-      lang: '' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
     });
   }, window.Valine);
 });
