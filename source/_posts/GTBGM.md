@@ -19,7 +19,7 @@ tags: ['游戏']
 
 下面提到的所有路径不要包含中文字符，以免出现奇奇怪怪的问题。
 
-1. 把 `/storage/emulated/0/Android/data/com.bilibili.snake/files/AssetBundles/Android/audio/bgms` 这个目录拷出来，比如拷到 `C:\GTBGM`
+1. 把 `/storage/emulated/0/Android/data/com.bilibili.snake/files/AssetBundles/Android/audio/bgms` 这个目录拷出来，比如拷到 `C:\GTBGM`。（活动曲在 `com.bilibili.snake/files/AssetBundles/Android/ondemand/*/audio`）
 
 2. 文件资源管理器进入 `C:\GTBGM`，按类型排序后，把全部以 `.sha1` 结尾的文件删掉，留下不带后缀的文件
 
