@@ -204,7 +204,7 @@ Windows 的动态链接库后缀是 `.dll`，Linux / Android 的动态链接库�
 
 ## EMSCRIPTEN_KEEPALIVE
 
-第一种最原始也是效率最好的办法，就是在函数签名上加上 `EMSCRIPTEN_KEEPALIVE`，它会告诉编译器这个函数会被用到，不要在“tree shaking”的时候删掉，并且会将函数名加上前缀 `_` 导出给 JS，就和编译器参数 `-sEXPORTED_FUNCTIONS` 一样。
+第一种最原始也是效率最好的办法，就是在函数签名上加上 `EMSCRIPTEN_KEEPALIVE`，它会告诉编译器这个函数会被用到，不要在“tree shaking”的时候删掉，并且会将函数名加上前缀 `_` 导出给 JS，就和编译器参数 `-sEXPORTED_FUNCTIONS` 一样。使用 C++ 时还需要加上 `extern "C"` 告诉 C++ 编译器不要修改函数名，保留 C 语言的函数名。
 
 ```cpp
 // lib.c
@@ -247,7 +247,7 @@ emcc -o lib.js lib.c
 
 ### JS 传字符串给 C
 
-字符串在 C 中实际上是一个以 0 结尾的字符数组，内存是连续的。如果要把 JS 的 `string` 传到 C，首先要开辟一块 C 的内存，在把 JS 的字符串放进这段内存里，C 中就可以访问到了。
+字符串在 C 中实际上是一个以 0 结尾的字符数组，内存是连续的。如果要把 JS 的 `string` 传到 C，首先要开辟一块 C 的内存，再把 JS 的字符串放进这段内存里，C 中就可以访问到了。
 
 ```c
 #include <stdio.h>  // printf
@@ -325,11 +325,47 @@ emcc -sEXPORTED_FUNCTIONS=["_malloc","_free"] -o lib.js lib.c
 
 原则上内存是谁分配的就由谁来释放。
 
+还有一种做法可以直接从 C 函数返回字符串的首地址指针，不返回字符串长度，然后在 JS 中用循环拼接字符串，遇到 0 时跳出循环。
+
+```c
+#include <stdio.h>  // snprintf
+#include <stddef.h>  // size_t
+#include <emscripten.h>  // EMSCRIPTEN_KEEPALIVE
+
+EXTERN_C EMSCRIPTEN_KEEPALIVE
+const char* get_c_string() {
+  return "Hello World"; // 字面量字符串存储在文字常量区
+}
+```
+
+```bash
+emcc -o lib.js lib.c
+```
+
+```html
+<script src="lib.js"></script>
+<script>
+  Module.onRuntimeInitialized = function () {
+    // 第一次调用先获取需要的内存大小
+    var strPointer = Module._get_c_string();
+    var p = strPointer
+    while (Module.HEAPU8[p] !== 0) {
+      ++p
+    }
+    var strBuffer = new Uint8Array(Module.HEAPU8.buffer, strPointer, p - strPointer - 1);
+    var str = new TextDecoder().decode(strBuffer);
+    console.log(str); // Hello World
+  };
+</script>
+```
+
 ## embind
 
 第二种办法是使用 Emscripten 官方提供的 [Embind](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#embind) 来绑定 C++ 的函数和类到 JavaScript 对象，写起来更自然，类似 Node.js 的 NAPI，没有了传参类型的限制。
 
-使用这个特性时必须用 C++ 语言，编译命令必须加上链接器选项 `--bind`。
+使用这个特性时必须用 C++ 语言。
+
+Emscripten 3.1.3 之前要加链接器选项 `--bind`。从 3.1.3 版本开始此选项被废弃，改用 `-lembind`。
 
 ```cpp
 #include <string>  // std::string
@@ -358,10 +394,10 @@ EMSCRIPTEN_BINDINGS(my_module) {
 ```bash
 # -sDISABLE_EXCEPTION_CATCHING=0 启用 C++ 异常
 # -sALLOW_MEMORY_GROWTH=1 内存超出初始化的大小时自动开辟新内存
-# --bind 启用 embind
+# -lembind 链接 embind 库
 em++ -sDISABLE_EXCEPTION_CATCHING=0 \
      -sALLOW_MEMORY_GROWTH=1 \
-     --bind \
+     -lembind \
      -o lib.js \
      lib.cpp
 ```
